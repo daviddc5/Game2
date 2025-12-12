@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shadows of Judgment</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        #game-container {
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container"></div>
+    <script src="node_modules/phaser/dist/phaser.min.js"></script>
+    <script src="src/config.js"></script>
+    <script src="src/scenes/BootScene.js"></script>
+    <script src="src/scenes/MenuScene.js"></script>
+    <script src="src/scenes/BattleScene.js"></script>
+    <script src="src/scenes/GameOverScene.js"></script>
+    <script src="src/main.js"></script>
+</body>
+</html>
