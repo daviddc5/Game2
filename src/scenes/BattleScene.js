@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import { getDeckForCharacter, drawCards } from "../data/cards.js";
+import { getCharacter, getOpponent } from "../data/characters.js";
 
 export default class BattleScene extends Phaser.Scene {
   constructor() {
@@ -7,14 +8,17 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   create() {
-    this.playerCharacter = this.registry.get("playerCharacter");
-    this.opponentCharacter =
-      this.playerCharacter === "Detective L" ? "Kira" : "Detective L";
+    const playerCharacterName = this.registry.get("playerCharacter");
+
+    // Get character data from config
+    this.playerCharacter = getCharacter(playerCharacterName);
+    this.opponentCharacter = getOpponent(playerCharacterName);
+
     const centerX = this.cameras.main.width / 2;
 
     // Title showing who you're playing as
     this.add
-      .text(centerX, 60, `Playing as: ${this.playerCharacter}`, {
+      .text(centerX, 60, `Playing as: ${this.playerCharacter.name}`, {
         fontFamily: "Arial, sans-serif",
         fontSize: "36px",
         color: "#ffffff",
@@ -38,8 +42,8 @@ export default class BattleScene extends Phaser.Scene {
     this.createStatBars();
 
     // Get both decks
-    this.playerDeck = getDeckForCharacter(this.playerCharacter);
-    this.opponentDeck = getDeckForCharacter(this.opponentCharacter);
+    this.playerDeck = getDeckForCharacter(this.playerCharacter.name);
+    this.opponentDeck = getDeckForCharacter(this.opponentCharacter.name);
 
     // Draw initial hands
     this.hand = drawCards(this.playerDeck, 3);
@@ -301,18 +305,74 @@ export default class BattleScene extends Phaser.Scene {
   aiTurn() {
     console.log("AI turn...");
 
-    // AI draws random card from opponent deck
-    const aiCards = drawCards(this.opponentDeck, 1);
+    // AI draws 3 random cards to choose from
+    const aiCards = drawCards(this.opponentDeck, 3);
     if (aiCards.length === 0) return;
 
-    const aiCard = aiCards[0];
-    console.log("AI plays:", aiCard.name);
+    // Choose the best card based on AI logic
+    const bestCard = this.chooseBestAICard(aiCards);
+    console.log("AI plays:", bestCard.name);
 
     // Apply AI card effects
-    this.applyCardEffects(aiCard.effects);
+    this.applyCardEffects(bestCard.effects);
 
     // Check win/loss
     this.checkGameOver();
+  }
+
+  chooseBestAICard(cards) {
+    // Get AI's stats from character config
+    const positiveStats = this.opponentCharacter.positiveStats;
+    const negativeStats = this.opponentCharacter.negativeStats;
+
+    // Score each card
+    const scoredCards = cards.map((card) => {
+      let score = 0;
+      const effects = card.effects;
+
+      // Reward cards that increase AI's positive stats
+      positiveStats.forEach((stat) => {
+        score += effects[stat] * 2; // 2x weight for positive stats
+      });
+
+      // Reward cards that decrease AI's negative stats
+      negativeStats.forEach((stat) => {
+        score -= effects[stat] * 2; // Negative decrease = good
+      });
+
+      // Penalize cards that hurt the AI
+      negativeStats.forEach((stat) => {
+        if (effects[stat] > 0) {
+          score -= effects[stat] * 3; // 3x penalty for increasing negative stat
+        }
+      });
+
+      // CRITICAL: If AI's negative stat is high (>80), prioritize reducing it
+      negativeStats.forEach((stat) => {
+        if (this.stats[stat] > 80 && effects[stat] < 0) {
+          score += Math.abs(effects[stat]) * 5; // 5x bonus for emergency defense
+        }
+      });
+
+      // CRITICAL: If AI is close to winning, go for the win
+      positiveStats.forEach((stat) => {
+        if (this.stats[stat] > 80 && effects[stat] > 0) {
+          score += effects[stat] * 5; // 5x bonus for finishing move
+        }
+      });
+
+      return { card, score };
+    });
+
+    // Sort by score (highest first) and return best card
+    scoredCards.sort((a, b) => b.score - a.score);
+
+    console.log(
+      "AI card scores:",
+      scoredCards.map((sc) => `${sc.card.name}: ${sc.score}`)
+    );
+
+    return scoredCards[0].card;
   }
 
   checkGameOver() {
@@ -351,7 +411,7 @@ export default class BattleScene extends Phaser.Scene {
     // Switch to GameOverScene and pass winner data
     this.scene.start("GameOverScene", {
       winner: winner,
-      playerCharacter: this.playerCharacter,
+      playerCharacter: this.playerCharacter.name,
     });
   }
 }
