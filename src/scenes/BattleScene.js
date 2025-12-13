@@ -7,7 +7,7 @@ export default class BattleScene extends Phaser.Scene {
 
   create() {
     const character = this.registry.get("playerCharacter");
-    const centerX = this.cameras.main;
+    const centerX = this.cameras.main.width / 2;
 
     // Title showing who you're playing as
     this.add
@@ -32,60 +32,68 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   createStatBars() {
-    // L's stats on the left
-    //positive stats in green
-    this.createStatBar(40, 100, "Evidence", this.stats.evidence, 0x00ff00);
-    // this.createStatBar(40, 140, "Logic", 80, 0x00ff00);
-
-    // negative stats in red
+    // L's stats
     this.createStatBar(
       40,
-      180,
-      "Public Pressure",
+      80,
+      "+ Evidence",
+      this.stats.evidence,
+      0x4444ff,
+      true
+    );
+    this.createStatBar(
+      40,
+      150,
+      "- Public Pressure",
       this.stats.publicPressure,
-      0xff0000
+      0xff4444,
+      false
     );
 
-    // Kira's stats on the right
-    //positive stats in green
+    // Kira's stats
     this.createStatBar(
       40,
-      280,
-      "Justice Influence",
+      250,
+      "+ Justice Influence",
       this.stats.justiceInfluence,
-      0x00ff00
+      0x4444ff,
+      true
     );
-
-    // negative stats in red
-    this.createStatBar(40, 360, "Suspicion", this.stats.suspicion, 0xff0000);
+    this.createStatBar(
+      40,
+      320,
+      "- Suspicion",
+      this.stats.suspicion,
+      0xff4444,
+      false
+    );
   }
 
-  createStatBar(x, y, label, value, color) {
-    //Label for the Stat
+  createStatBar(x, y, label, value, color, isPositive) {
+    //Label for the Stat (with +/- prefix)
     this.add
-      .text(text(x, y, label), {
+      .text(x, y, label, {
         fontFamily: "Arial, sans-serif",
-        fontSize: "14px",
-        color: "fffff",
+        fontSize: "16px",
+        color: "#ffffff",
       })
       .setOrigin(0, 0.5);
 
     // Background bar (dark gray)
-    this.add.rectangle(x, y + 20, 200, 20, 0x333333).setOrigin(0, 0.5);
+    this.add.rectangle(x, y + 25, 250, 24, 0x333333).setOrigin(0, 0.5);
 
     // Foreground bar (colored, shows the value)
     const bar = this.add
-      .rectangle(x, y + 20, (value / 100) * 200, 20, color)
+      .rectangle(x, y + 25, (value / 100) * 250, 24, color)
       .setOrigin(0, 0.5);
+
     // Value text
     this.add
-      .text(x + 210, y + 20, value, {
+      .text(x + 260, y + 25, value, {
         fontFamily: "Arial, sans-serif",
-        fontSize: "14px",
+        fontSize: "16px",
         color: "#ffffff",
       })
       .setOrigin(0, 0.5);
   }
-
-  //Background bar (white)
 }

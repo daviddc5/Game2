@@ -6,15 +6,21 @@ import BattleScene from "./scenes/BattleScene.js";
 const config = {
   //type is the rendering context
   type: Phaser.AUTO,
-  //mobile-first dimensions (iPhone 8 size)
-  width: 375,
-  height: 667,
+  //Higher resolution for sharper graphics (2x mobile size)
+  width: 750,
+  height: 1334,
   parent: "game-container",
-  backgroundColor: 0x1a1a1a,
+  backgroundColor: 0x000000,
   //responsive scaling for all screen sizes
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
+  },
+  //render settings for sharper text
+  render: {
+    pixelArt: false,
+    antialias: true,
+    roundPixels: false,
   },
   //sets the scenes to load
   scene: [BootScene, MenuScene, BattleScene],
