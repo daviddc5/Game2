@@ -29,7 +29,7 @@ export default class MenuScene extends Phaser.Scene {
 
     // L button (stacked vertically for mobile)
     const lButton = this.add
-      .text(centerX, 320, "Play as L", {
+      .text(centerX, 320, "Detective L", {
         fontFamily: "DeathNote",
         fontSize: "28px",
         color: "#ffffff",
@@ -42,7 +42,7 @@ export default class MenuScene extends Phaser.Scene {
 
     // Kira button (below L button for vertical layout)
     const kiraButton = this.add
-      .text(centerX, 420, "Play as Kira", {
+      .text(centerX, 420, "Kira", {
         fontFamily: "DeathNote",
         fontSize: "28px",
         color: "#ffffff",
