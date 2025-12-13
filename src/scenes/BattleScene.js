@@ -38,6 +38,9 @@ export default class BattleScene extends Phaser.Scene {
     this.statBars = {};
     this.statTexts = {};
 
+    // Display character portraits
+    this.createPortraits();
+
     // Create the stat bars
     this.createStatBars();
 
@@ -53,11 +56,53 @@ export default class BattleScene extends Phaser.Scene {
     this.createCardHand();
   }
 
+  createPortraits() {
+    // Determine which portraits to show based on player character
+    const playerPortrait =
+      this.playerCharacter.name === "Detective L"
+        ? "l-portrait"
+        : "kira-portrait";
+    const opponentPortrait =
+      this.opponentCharacter.name === "Detective L"
+        ? "l-portrait"
+        : "kira-portrait";
+
+    // Left side - Player portrait (above stat bars)
+    const leftPortrait = this.add.image(150, 280, playerPortrait);
+    leftPortrait.setScale(0.3); // Adjust size
+    leftPortrait.setBlendMode(Phaser.BlendModes.SCREEN); // Blend white background with black
+
+    // Add label below player portrait
+    this.add
+      .text(150, 420, this.playerCharacter.displayName, {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "24px",
+        color: "#ffffff",
+        align: "center",
+      })
+      .setOrigin(0.5);
+
+    // Right side - Opponent portrait (above stat bars)
+    const rightPortrait = this.add.image(600, 280, opponentPortrait);
+    rightPortrait.setScale(0.3); // Adjust size
+    rightPortrait.setBlendMode(Phaser.BlendModes.SCREEN); // Blend white background with black
+
+    // Add label below opponent portrait
+    this.add
+      .text(600, 420, this.opponentCharacter.displayName, {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "24px",
+        color: "#ffffff",
+        align: "center",
+      })
+      .setOrigin(0.5);
+  }
+
   createStatBars() {
-    // L's stats
+    // L's stats (moved down to avoid portraits)
     this.createStatBar(
       80,
-      160,
+      480,
       "+ Evidence",
       this.stats.evidence,
       0x00ff00,
@@ -66,7 +111,7 @@ export default class BattleScene extends Phaser.Scene {
     );
     this.createStatBar(
       80,
-      300,
+      560,
       "- Morale",
       this.stats.morale,
       0xff0000,
@@ -77,7 +122,7 @@ export default class BattleScene extends Phaser.Scene {
     // Kira's stats
     this.createStatBar(
       80,
-      500,
+      640,
       "+ Justice Influence",
       this.stats.justiceInfluence,
       0x00ff00,
@@ -86,7 +131,7 @@ export default class BattleScene extends Phaser.Scene {
     );
     this.createStatBar(
       80,
-      640,
+      720,
       "- Suspicion",
       this.stats.suspicion,
       0xff0000,
