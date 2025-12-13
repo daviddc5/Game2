@@ -2,7 +2,11 @@
 
 ## 📜 Learning Contract
 
-**Goal:** Build this game while deeply understanding every line of code and concept.
+**Primary Goal:** Become a competent JavaScript programmer through game development.
+
+**Secondary Goal:** Build a complete, playable game while deeply understanding every line of code.
+
+**Philosophy:** This project is not just about making a game—it's about learning to think like a programmer, write clean code, debug effectively, and build real projects from scratch.
 
 **My Role as Your Guide:**
 - ✅ Explain concepts before you code them
