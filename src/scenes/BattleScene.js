@@ -2,6 +2,9 @@ import Phaser from "phaser";
 import { getDeckForCharacter, drawCards } from "../data/cards.js";
 import { getCharacter, getOpponent } from "../data/characters.js";
 import StatBarGroup from "../ui/StatBarGroup.js";
+import CardHand from "../ui/CardHand.js";
+import GameLogic from "../logic/GameLogic.js";
+import AIController from "../logic/AIController.js";
 
 export default class BattleScene extends Phaser.Scene {
   constructor() {
@@ -40,7 +43,13 @@ export default class BattleScene extends Phaser.Scene {
 
     // Draw initial hands
     this.hand = drawCards(this.playerDeck, 3);
-    this.cardObjects = []; // Track card visual objects
+    
+    // Initialize AI controller
+    this.aiController = new AIController(this.opponentCharacter, this.stats);
+    
+    // Initialize card hand UI
+    this.cardHand = new CardHand(this);
+    this.cardHand.onCardPlayed = (card, index) => this.playCard(card, index);
   }
 
   createTitle() {
@@ -153,110 +162,8 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   createCardHand() {
-    // Clear existing card visuals
-    this.cardObjects.forEach((obj) => obj.destroy());
-    this.cardObjects = [];
-
-    const startY = 900;
-    const cardWidth = 200;
-    const cardHeight = 280;
-    const spacing = 30;
-    const centerX = this.cameras.main.width / 2;
-
-    // Calculate starting X position to center the 3 cards
-    const totalWidth = cardWidth * 3 + spacing * 2;
-    let startX = centerX - totalWidth / 2;
-
-    this.hand.forEach((card, index) => {
-      const x = startX + (cardWidth + spacing) * index;
-      this.createCard(x, startY, card, index);
-    });
-  }
-
-  createCard(x, y, cardData, cardIndex) {
-    // Card background (dark rectangle)
-    const cardBg = this.add
-      .rectangle(x, y, 200, 280, 0x222222)
-      .setOrigin(0, 0)
-      .setInteractive({ useHandCursor: true });
-
-    // Card border
-    const cardBorder = this.add
-      .rectangle(x, y, 200, 280)
-      .setOrigin(0, 0)
-      .setStrokeStyle(4, 0xffffff);
-
-    // Card name
-    const nameText = this.add
-      .text(x + 100, y + 30, cardData.name, {
-        fontFamily: "Arial, sans-serif",
-        fontSize: "20px",
-        color: "#ffffff",
-        align: "center",
-        wordWrap: { width: 180 },
-      })
-      .setOrigin(0.5, 0);
-
-    // Card description
-    const descText = this.add
-      .text(x + 100, y + 100, cardData.description, {
-        fontFamily: "Arial, sans-serif",
-        fontSize: "16px",
-        color: "#cccccc",
-        align: "center",
-        wordWrap: { width: 180 },
-      })
-      .setOrigin(0.5, 0);
-
-    // Display effects
-    let effectY = y + 180;
-    const effects = cardData.effects;
-    const effectText = [];
-
-    if (effects.evidence !== 0)
-      effectText.push(
-        `Evidence: ${effects.evidence > 0 ? "+" : ""}${effects.evidence}`
-      );
-    if (effects.morale !== 0)
-      effectText.push(
-        `Morale: ${effects.morale > 0 ? "+" : ""}${effects.morale}`
-      );
-    if (effects.justiceInfluence !== 0)
-      effectText.push(
-        `Justice: ${effects.justiceInfluence > 0 ? "+" : ""}${
-          effects.justiceInfluence
-        }`
-      );
-    if (effects.suspicion !== 0)
-      effectText.push(
-        `Suspicion: ${effects.suspicion > 0 ? "+" : ""}${effects.suspicion}`
-      );
-
-    this.add
-      .text(x + 100, effectY, effectText.join("\n"), {
-        fontFamily: "Arial, sans-serif",
-        fontSize: "14px",
-        color: "#ffff00",
-        align: "center",
-      })
-      .setOrigin(0.5, 0);
-
-    // Hover effect
-    cardBg.on("pointerover", () => {
-      cardBg.setFillStyle(0x444444);
-    });
-
-    cardBg.on("pointerout", () => {
-      cardBg.setFillStyle(0x222222);
-    });
-
-    // Store card objects for cleanup
-    this.cardObjects.push(cardBg, cardBorder, nameText, descText);
-
-    // Click to play card
-    cardBg.on("pointerdown", () => {
-      this.playCard(cardData, cardIndex);
-    });
+    this.cardHand.setCards(this.hand);
+    this.cardHand.render();
   }
 
   playCard(card, cardIndex) {
@@ -289,23 +196,8 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   applyCardEffects(effects) {
-    // Update stats
-    this.stats.evidence = Math.max(
-      0,
-      Math.min(100, this.stats.evidence + effects.evidence)
-    );
-    this.stats.morale = Math.max(
-      0,
-      Math.min(100, this.stats.morale + effects.morale)
-    );
-    this.stats.justiceInfluence = Math.max(
-      0,
-      Math.min(100, this.stats.justiceInfluence + effects.justiceInfluence)
-    );
-    this.stats.suspicion = Math.max(
-      0,
-      Math.min(100, this.stats.suspicion + effects.suspicion)
-    );
+    // Use GameLogic to apply effects with clamping
+    this.stats = GameLogic.applyEffects(this.stats, effects);
 
     // Update visual bars
     this.updateStatBars();
@@ -345,86 +237,17 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   chooseBestAICard(cards) {
-    // Get AI's stats from character config
-    const positiveStats = this.opponentCharacter.positiveStats;
-    const negativeStats = this.opponentCharacter.negativeStats;
-
-    // Score each card
-    const scoredCards = cards.map((card) => {
-      let score = 0;
-      const effects = card.effects;
-
-      // Reward cards that increase AI's positive stats
-      positiveStats.forEach((stat) => {
-        score += effects[stat] * 2; // 2x weight for positive stats
-      });
-
-      // Reward cards that decrease AI's negative stats
-      negativeStats.forEach((stat) => {
-        score -= effects[stat] * 2; // Negative decrease = good
-      });
-
-      // Penalize cards that hurt the AI
-      negativeStats.forEach((stat) => {
-        if (effects[stat] > 0) {
-          score -= effects[stat] * 3; // 3x penalty for increasing negative stat
-        }
-      });
-
-      // CRITICAL: If AI's negative stat is high (>80), prioritize reducing it
-      negativeStats.forEach((stat) => {
-        if (this.stats[stat] > 80 && effects[stat] < 0) {
-          score += Math.abs(effects[stat]) * 5; // 5x bonus for emergency defense
-        }
-      });
-
-      // CRITICAL: If AI is close to winning, go for the win
-      positiveStats.forEach((stat) => {
-        if (this.stats[stat] > 80 && effects[stat] > 0) {
-          score += effects[stat] * 5; // 5x bonus for finishing move
-        }
-      });
-
-      return { card, score };
-    });
-
-    // Sort by score (highest first) and return best card
-    scoredCards.sort((a, b) => b.score - a.score);
-
-    console.log(
-      "AI card scores:",
-      scoredCards.map((sc) => `${sc.card.name}: ${sc.score}`)
-    );
-
-    return scoredCards[0].card;
+    // Delegate to AIController
+    return this.aiController.chooseBestCard(cards);
   }
 
   checkGameOver() {
-    // Check L win condition
-    if (this.stats.evidence >= 100) {
-      console.log("L WINS - Evidence reached 100!");
-      this.gameOver("Detective L");
-      return true;
-    }
-
-    // Check L loss condition
-    if (this.stats.morale >= 100) {
-      console.log("L LOSES - Morale reached 100!");
-      this.gameOver("Kira");
-      return true;
-    }
-
-    // Check Kira win condition
-    if (this.stats.justiceInfluence >= 100) {
-      console.log("KIRA WINS - Justice Influence reached 100!");
-      this.gameOver("Kira");
-      return true;
-    }
-
-    // Check Kira loss condition
-    if (this.stats.suspicion >= 100) {
-      console.log("KIRA LOSES - Suspicion reached 100!");
-      this.gameOver("Detective L");
+    // Use GameLogic to check win conditions
+    const result = GameLogic.checkWinConditions(this.stats);
+    
+    if (result.gameOver) {
+      console.log(`Game Over! ${result.winner} wins - ${result.reason}`);
+      this.gameOver(result.winner);
       return true;
     }
 
