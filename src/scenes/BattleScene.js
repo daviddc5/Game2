@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import { getDeckForCharacter, drawCards } from "../data/cards.js";
 import { getCharacter, getOpponent } from "../data/characters.js";
+import StatBarGroup from "../ui/StatBarGroup.js";
 
 export default class BattleScene extends Phaser.Scene {
   constructor() {
@@ -8,23 +9,22 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   create() {
-    const playerCharacterName = this.registry.get("playerCharacter");
+    // Initialize game state
+    this.initializeGameState();
+    
+    // Create UI elements
+    this.createTitle();
+    this.createPortraits();
+    this.createStatBarGroups();
+    this.createCardHand();
+  }
 
+  initializeGameState() {
+    const playerCharacterName = this.registry.get("playerCharacter");
+    
     // Get character data from config
     this.playerCharacter = getCharacter(playerCharacterName);
     this.opponentCharacter = getOpponent(playerCharacterName);
-
-    const centerX = this.cameras.main.width / 2;
-
-    // Title showing who you're playing as
-    this.add
-      .text(centerX, 60, `Playing as: ${this.playerCharacter.name}`, {
-        fontFamily: "Arial, sans-serif",
-        fontSize: "36px",
-        color: "#ffffff",
-        align: "center",
-      })
-      .setOrigin(0.5);
 
     // Initialize stat values
     this.stats = {
@@ -34,16 +34,6 @@ export default class BattleScene extends Phaser.Scene {
       suspicion: 50,
     };
 
-    // Store stat bar references for updating
-    this.statBars = {};
-    this.statTexts = {};
-
-    // Display character portraits
-    this.createPortraits();
-
-    // Create the stat bars
-    this.createStatBars();
-
     // Get both decks
     this.playerDeck = getDeckForCharacter(this.playerCharacter.name);
     this.opponentDeck = getDeckForCharacter(this.opponentCharacter.name);
@@ -51,9 +41,18 @@ export default class BattleScene extends Phaser.Scene {
     // Draw initial hands
     this.hand = drawCards(this.playerDeck, 3);
     this.cardObjects = []; // Track card visual objects
+  }
 
-    // Display the cards
-    this.createCardHand();
+  createTitle() {
+    const centerX = this.cameras.main.width / 2;
+    this.add
+      .text(centerX, 60, `Playing as: ${this.playerCharacter.name}`, {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "36px",
+        color: "#ffffff",
+        align: "center",
+      })
+      .setOrigin(0.5);
   }
 
   createPortraits() {
@@ -108,78 +107,39 @@ export default class BattleScene extends Phaser.Scene {
       .setOrigin(0.5);
   }
 
-  createStatBars() {
-    // L's stats (moved down to avoid portraits)
-    this.createStatBar(
-      80,
-      480,
-      "+ Evidence",
-      this.stats.evidence,
-      0x00ff00,
-      true,
-      "evidence"
-    );
-    this.createStatBar(
-      80,
-      560,
-      "- Morale",
-      this.stats.morale,
-      0xff0000,
-      false,
-      "morale"
-    );
+  createStatBarGroups() {
+    const playerIsL = this.playerCharacter.name === "Detective L";
 
-    // Kira's stats
-    this.createStatBar(
-      80,
-      640,
-      "+ Justice Influence",
-      this.stats.justiceInfluence,
-      0x00ff00,
-      true,
-      "justiceInfluence"
-    );
-    this.createStatBar(
-      80,
-      720,
-      "- Suspicion",
-      this.stats.suspicion,
-      0xff0000,
-      false,
-      "suspicion"
-    );
-  }
+    // Define stat configurations for each character
+    const lStats = [
+      { key: "evidence", label: "Evidence", color: 0x00ff00, isPositive: true },
+      { key: "morale", label: "Morale", color: 0xff4444, isPositive: false },
+    ];
 
-  createStatBar(x, y, label, value, color, isPositive, statKey) {
-    //Label for the Stat (with +/- prefix)
-    this.add
-      .text(x, y, label, {
-        fontFamily: "Arial, sans-serif",
-        fontSize: "32px",
-        color: "#ffffff",
-      })
-      .setOrigin(0, 0.5);
+    const kiraStats = [
+      { key: "justiceInfluence", label: "Justice", color: 0x00ff00, isPositive: true },
+      { key: "suspicion", label: "Suspicion", color: 0xff4444, isPositive: false },
+    ];
 
-    // Background bar (dark gray)
-    this.add.rectangle(x, y + 50, 500, 48, 0x333333).setOrigin(0, 0.5);
+    // Left side (player)
+    const leftStats = playerIsL ? lStats : kiraStats;
+    this.leftStatGroup = new StatBarGroup(this, 30, 480, leftStats, true);
+    this.leftStatGroup.create();
 
-    // Foreground bar (store reference for updating)
-    const bar = this.add
-      .rectangle(x, y + 50, (value / 100) * 500, 48, color)
-      .setOrigin(0, 0.5);
+    // Right side (opponent)
+    const rightStats = playerIsL ? kiraStats : lStats;
+    this.rightStatGroup = new StatBarGroup(this, 410, 480, rightStats, false);
+    this.rightStatGroup.create();
 
-    this.statBars[statKey] = { bar, color, x, y: y + 50 };
-
-    // Value text (store reference for updating)
-    const valueText = this.add
-      .text(x + 520, y + 50, value, {
-        fontFamily: "Arial, sans-serif",
-        fontSize: "32px",
-        color: "#ffffff",
-      })
-      .setOrigin(0, 0.5);
-
-    this.statTexts[statKey] = valueText;
+    // Store references for updates (maintain backward compatibility)
+    this.statBars = {
+      ...this.leftStatGroup.getAllBars(),
+      ...this.rightStatGroup.getAllBars(),
+    };
+    this.statTexts = {
+      ...this.leftStatGroup.getAllTexts(),
+      ...this.rightStatGroup.getAllTexts(),
+    };
   }
 
   createCardHand() {
@@ -342,16 +302,17 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   updateStatBars() {
+    // Use the StatBarGroup's animated update method
     Object.keys(this.stats).forEach((statKey) => {
       const value = this.stats[statKey];
-      const barData = this.statBars[statKey];
-      const textObj = this.statTexts[statKey];
-
-      // Update bar width
-      barData.bar.width = (value / 100) * 500;
-
-      // Update text
-      textObj.setText(Math.round(value));
+      
+      // Update through stat groups for animation
+      if (this.leftStatGroup.bars[statKey]) {
+        this.leftStatGroup.updateStat(statKey, value);
+      }
+      if (this.rightStatGroup.bars[statKey]) {
+        this.rightStatGroup.updateStat(statKey, value);
+      }
     });
   }
 
