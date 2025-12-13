@@ -11,9 +11,9 @@ export default class BattleScene extends Phaser.Scene {
 
     // Title showing who you're playing as
     this.add
-      .text(centerX, 30, `Playing as: ${character}`, {
+      .text(centerX, 60, `Playing as: ${character}`, {
         fontFamily: "Arial, sans-serif",
-        fontSize: "18px",
+        fontSize: "36px",
         color: "#ffffff",
         align: "center",
       })
@@ -34,37 +34,37 @@ export default class BattleScene extends Phaser.Scene {
   createStatBars() {
     // L's stats
     this.createStatBar(
-      40,
       80,
+      160,
       "+ Evidence",
       this.stats.evidence,
-      0x4444ff,
+      0xffffff,
       true
     );
     this.createStatBar(
-      40,
-      150,
+      80,
+      300,
       "- Public Pressure",
       this.stats.publicPressure,
-      0xff4444,
+      0xffffff,
       false
     );
 
     // Kira's stats
     this.createStatBar(
-      40,
-      250,
+      80,
+      500,
       "+ Justice Influence",
       this.stats.justiceInfluence,
-      0x4444ff,
+      0xffffff,
       true
     );
     this.createStatBar(
-      40,
-      320,
+      80,
+      640,
       "- Suspicion",
       this.stats.suspicion,
-      0xff4444,
+      0xffffff,
       false
     );
   }
@@ -74,24 +74,24 @@ export default class BattleScene extends Phaser.Scene {
     this.add
       .text(x, y, label, {
         fontFamily: "Arial, sans-serif",
-        fontSize: "16px",
+        fontSize: "32px",
         color: "#ffffff",
       })
       .setOrigin(0, 0.5);
 
     // Background bar (dark gray)
-    this.add.rectangle(x, y + 25, 250, 24, 0x333333).setOrigin(0, 0.5);
+    this.add.rectangle(x, y + 50, 500, 48, 0x333333).setOrigin(0, 0.5);
 
-    // Foreground bar (colored, shows the value)
+    // Foreground bar (white, Undertale style)
     const bar = this.add
-      .rectangle(x, y + 25, (value / 100) * 250, 24, color)
+      .rectangle(x, y + 50, (value / 100) * 500, 48, color)
       .setOrigin(0, 0.5);
 
     // Value text
     this.add
-      .text(x + 260, y + 25, value, {
+      .text(x + 520, y + 50, value, {
         fontFamily: "Arial, sans-serif",
-        fontSize: "16px",
+        fontSize: "32px",
         color: "#ffffff",
       })
       .setOrigin(0, 0.5);

@@ -10,9 +10,9 @@ export default class MenuScene extends Phaser.Scene {
 
     // Title text (mobile-sized, wrapped for narrow screens with Death Note font)
     this.add
-      .text(centerX, 100, "SHADOWS OF\nJUDGMENT", {
+      .text(centerX, 200, "SHADOWS OF\nJUDGMENT", {
         fontFamily: "DeathNote",
-        fontSize: "36px",
+        fontSize: "72px",
         color: "#ffffff",
         align: "center",
       })
@@ -20,21 +20,21 @@ export default class MenuScene extends Phaser.Scene {
 
     //Choose Character text
     this.add
-      .text(centerX, 220, "Choose Your Character", {
+      .text(centerX, 440, "Choose Your Character", {
         fontFamily: "DeathNote",
-        fontSize: "20px",
+        fontSize: "40px",
         color: "#cccccc",
       })
       .setOrigin(0.5);
 
     // L button (stacked vertically for mobile)
     const lButton = this.add
-      .text(centerX, 320, "Detective L", {
+      .text(centerX, 640, "Detective L", {
         fontFamily: "DeathNote",
-        fontSize: "28px",
+        fontSize: "56px",
         color: "#ffffff",
-        padding: { x: 30, y: 15 },
-        fixedWidth: 250,
+        padding: { x: 60, y: 30 },
+        fixedWidth: 500,
         align: "center",
       })
       .setOrigin(0.5)
@@ -42,12 +42,12 @@ export default class MenuScene extends Phaser.Scene {
 
     // Kira button (below L button for vertical layout)
     const kiraButton = this.add
-      .text(centerX, 420, "Kira", {
+      .text(centerX, 840, "Kira", {
         fontFamily: "DeathNote",
-        fontSize: "28px",
+        fontSize: "56px",
         color: "#ffffff",
-        padding: { x: 30, y: 15 },
-        fixedWidth: 250,
+        padding: { x: 60, y: 30 },
+        fixedWidth: 500,
         align: "center",
       })
       .setOrigin(0.5)
