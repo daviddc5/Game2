@@ -25,7 +25,7 @@ export default class StatBarGroup {
   createStatBar(y, statConfig) {
     const { key, label, color, isPositive } = statConfig;
     const value = this.scene.stats[key];
-    
+
     const barWidth = 300;
     const barHeight = 28;
     const labelWidth = 160;
@@ -60,12 +60,12 @@ export default class StatBarGroup {
       .setOrigin(0, 0.5);
 
     // Store reference
-    this.bars[key] = { 
-      bar, 
-      color, 
-      x: this.x + 2, 
-      y: barY, 
-      maxWidth: barWidth 
+    this.bars[key] = {
+      bar,
+      color,
+      x: this.x + 2,
+      y: barY,
+      maxWidth: barWidth,
     };
 
     // Value text (inside the bar, right aligned)

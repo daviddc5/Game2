@@ -11,7 +11,7 @@ export default class BattleScene extends Phaser.Scene {
   create() {
     // Initialize game state
     this.initializeGameState();
-    
+
     // Create UI elements
     this.createTitle();
     this.createPortraits();
@@ -21,7 +21,7 @@ export default class BattleScene extends Phaser.Scene {
 
   initializeGameState() {
     const playerCharacterName = this.registry.get("playerCharacter");
-    
+
     // Get character data from config
     this.playerCharacter = getCharacter(playerCharacterName);
     this.opponentCharacter = getOpponent(playerCharacterName);
@@ -117,8 +117,18 @@ export default class BattleScene extends Phaser.Scene {
     ];
 
     const kiraStats = [
-      { key: "justiceInfluence", label: "Justice", color: 0x00ff00, isPositive: true },
-      { key: "suspicion", label: "Suspicion", color: 0xff4444, isPositive: false },
+      {
+        key: "justiceInfluence",
+        label: "Justice",
+        color: 0x00ff00,
+        isPositive: true,
+      },
+      {
+        key: "suspicion",
+        label: "Suspicion",
+        color: 0xff4444,
+        isPositive: false,
+      },
     ];
 
     // Left side (player)
@@ -305,7 +315,7 @@ export default class BattleScene extends Phaser.Scene {
     // Use the StatBarGroup's animated update method
     Object.keys(this.stats).forEach((statKey) => {
       const value = this.stats[statKey];
-      
+
       // Update through stat groups for animation
       if (this.leftStatGroup.bars[statKey]) {
         this.leftStatGroup.updateStat(statKey, value);
