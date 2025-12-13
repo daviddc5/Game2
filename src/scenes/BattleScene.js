@@ -72,6 +72,11 @@ export default class BattleScene extends Phaser.Scene {
     leftPortrait.setScale(0.3); // Adjust size
     leftPortrait.setBlendMode(Phaser.BlendModes.SCREEN); // Blend white background with black
 
+    // Flip Kira to face right if player is Kira
+    if (playerPortrait === "kira-portrait") {
+      leftPortrait.setFlipX(true);
+    }
+
     // Add label below player portrait
     this.add
       .text(150, 420, this.playerCharacter.displayName, {
@@ -86,6 +91,11 @@ export default class BattleScene extends Phaser.Scene {
     const rightPortrait = this.add.image(600, 280, opponentPortrait);
     rightPortrait.setScale(0.3); // Adjust size
     rightPortrait.setBlendMode(Phaser.BlendModes.SCREEN); // Blend white background with black
+
+    // Flip Kira to face right
+    if (opponentPortrait === "kira-portrait") {
+      rightPortrait.setFlipX(true);
+    }
 
     // Add label below opponent portrait
     this.add
