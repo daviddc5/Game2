@@ -1,7 +1,7 @@
 import BootScene from "./scenes/BootScene.js";
 import MenuScene from "./scenes/MenuScene.js";
 import BattleScene from "./scenes/BattleScene.js";
-// import GameOverScene from "./scenes/GameOverScene.js";
+import GameOverScene from "./scenes/GameOverScene.js";
 
 const config = {
   //type is the rendering context
@@ -23,7 +23,7 @@ const config = {
     roundPixels: false,
   },
   //sets the scenes to load
-  scene: [BootScene, MenuScene, BattleScene],
+  scene: [BootScene, MenuScene, BattleScene, GameOverScene],
 };
 
 export default config;
