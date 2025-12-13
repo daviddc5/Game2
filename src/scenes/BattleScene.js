@@ -29,7 +29,7 @@ export default class BattleScene extends Phaser.Scene {
     // Initialize stat values
     this.stats = {
       evidence: 50,
-      publicPressure: 50,
+      morale: 50,
       justiceInfluence: 50,
       suspicion: 50,
     };
@@ -67,11 +67,11 @@ export default class BattleScene extends Phaser.Scene {
     this.createStatBar(
       80,
       300,
-      "- Public Pressure",
-      this.stats.publicPressure,
+      "- Morale",
+      this.stats.morale,
       0xff0000,
       false,
-      "publicPressure"
+      "morale"
     );
 
     // Kira's stats
@@ -192,11 +192,9 @@ export default class BattleScene extends Phaser.Scene {
       effectText.push(
         `Evidence: ${effects.evidence > 0 ? "+" : ""}${effects.evidence}`
       );
-    if (effects.publicPressure !== 0)
+    if (effects.morale !== 0)
       effectText.push(
-        `Pressure: ${effects.publicPressure > 0 ? "+" : ""}${
-          effects.publicPressure
-        }`
+        `Morale: ${effects.morale > 0 ? "+" : ""}${effects.morale}`
       );
     if (effects.justiceInfluence !== 0)
       effectText.push(
@@ -271,9 +269,9 @@ export default class BattleScene extends Phaser.Scene {
       0,
       Math.min(100, this.stats.evidence + effects.evidence)
     );
-    this.stats.publicPressure = Math.max(
+    this.stats.morale = Math.max(
       0,
-      Math.min(100, this.stats.publicPressure + effects.publicPressure)
+      Math.min(100, this.stats.morale + effects.morale)
     );
     this.stats.justiceInfluence = Math.max(
       0,
@@ -384,8 +382,8 @@ export default class BattleScene extends Phaser.Scene {
     }
 
     // Check L loss condition
-    if (this.stats.publicPressure >= 100) {
-      console.log("L LOSES - Public Pressure reached 100!");
+    if (this.stats.morale >= 100) {
+      console.log("L LOSES - Morale reached 100!");
       this.gameOver("Kira");
       return true;
     }

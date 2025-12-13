@@ -7,16 +7,16 @@ export const characters = {
     displayName: "L",
     portrait: "l-portrait.png", // Asset path for later
     positiveStats: ["evidence"],
-    negativeStats: ["publicPressure"],
+    negativeStats: ["morale"],
     winCondition: {
       stat: "evidence",
       threshold: 100,
       message: "L exposes Kira with overwhelming evidence!",
     },
     loseCondition: {
-      stat: "publicPressure",
+      stat: "morale",
       threshold: 100,
-      message: "Public panic forces L to step down!",
+      message: "L's team loses all morale and gives up!",
     },
   },
   Kira: {

@@ -8,7 +8,7 @@ export const lCards = [
     description: "Analyze patterns in the data",
     effects: {
       evidence: 10,
-      publicPressure: 0,
+      morale: 0,
       justiceInfluence: 0,
       suspicion: 0,
     },
@@ -19,7 +19,7 @@ export const lCards = [
     description: "Set a clever trap for Kira",
     effects: {
       evidence: 8,
-      publicPressure: 0,
+      morale: 0,
       justiceInfluence: 0,
       suspicion: 4,
     },
@@ -27,10 +27,10 @@ export const lCards = [
   {
     id: "l_press_interview",
     name: "Press Interview",
-    description: "Calm public fears through media",
+    description: "Boost team morale",
     effects: {
       evidence: 0,
-      publicPressure: -10,
+      morale: -10,
       justiceInfluence: 0,
       suspicion: 0,
     },
@@ -41,7 +41,7 @@ export const lCards = [
     description: "Monitor suspects intensively",
     effects: {
       evidence: 6,
-      publicPressure: 0,
+      morale: 0,
       justiceInfluence: 0,
       suspicion: 0,
     },
@@ -52,7 +52,7 @@ export const lCards = [
     description: "Question a key witness",
     effects: {
       evidence: 5,
-      publicPressure: 0,
+      morale: 0,
       justiceInfluence: 0,
       suspicion: 3,
     },
@@ -60,10 +60,10 @@ export const lCards = [
   {
     id: "l_task_force_rally",
     name: "Task Force Rally",
-    description: "Boost team morale",
+    description: "Rally the team together",
     effects: {
       evidence: 4,
-      publicPressure: -6,
+      morale: -6,
       justiceInfluence: 0,
       suspicion: 0,
     },
@@ -71,10 +71,10 @@ export const lCards = [
   {
     id: "l_public_statement",
     name: "Public Statement",
-    description: "Address the public directly",
+    description: "Reassure the team",
     effects: {
       evidence: 0,
-      publicPressure: -8,
+      morale: -8,
       justiceInfluence: 0,
       suspicion: 0,
     },
@@ -88,7 +88,7 @@ export const kiraCards = [
     description: "Execute a major criminal",
     effects: {
       evidence: 0,
-      publicPressure: 0,
+      morale: 0,
       justiceInfluence: 12,
       suspicion: 0,
     },
@@ -99,7 +99,7 @@ export const kiraCards = [
     description: "Remove someone who knows too much",
     effects: {
       evidence: -10,
-      publicPressure: 0,
+      morale: 0,
       justiceInfluence: 0,
       suspicion: 6,
     },
@@ -110,7 +110,7 @@ export const kiraCards = [
     description: "Control the narrative",
     effects: {
       evidence: 0,
-      publicPressure: 0,
+      morale: 0,
       justiceInfluence: 0,
       suspicion: -12,
     },
@@ -121,7 +121,7 @@ export const kiraCards = [
     description: "Threaten those investigating",
     effects: {
       evidence: -6,
-      publicPressure: 0,
+      morale: 0,
       justiceInfluence: 0,
       suspicion: 0,
     },
@@ -132,7 +132,7 @@ export const kiraCards = [
     description: "Make a calculated move",
     effects: {
       evidence: 0,
-      publicPressure: 8,
+      morale: 8,
       justiceInfluence: 6,
       suspicion: 0,
     },
@@ -143,7 +143,7 @@ export const kiraCards = [
     description: "Hide your involvement",
     effects: {
       evidence: 0,
-      publicPressure: 0,
+      morale: 0,
       justiceInfluence: 0,
       suspicion: -8,
     },
@@ -154,7 +154,7 @@ export const kiraCards = [
     description: "Execute multiple criminals at once",
     effects: {
       evidence: 0,
-      publicPressure: 6,
+      morale: 6,
       justiceInfluence: 10,
       suspicion: 4,
     },
