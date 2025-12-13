@@ -6,7 +6,7 @@ export default class CardHand {
     this.scene = scene;
     this.cardObjects = [];
     this.cards = [];
-    
+
     // Card layout constants
     this.CARD_WIDTH = 200;
     this.CARD_HEIGHT = 280;
@@ -24,7 +24,9 @@ export default class CardHand {
     this.cardObjects = [];
 
     const centerX = this.scene.cameras.main.width / 2;
-    const totalWidth = this.CARD_WIDTH * this.cards.length + this.CARD_SPACING * (this.cards.length - 1);
+    const totalWidth =
+      this.CARD_WIDTH * this.cards.length +
+      this.CARD_SPACING * (this.cards.length - 1);
     const startX = centerX - totalWidth / 2;
 
     this.cards.forEach((card, index) => {
@@ -96,18 +98,28 @@ export default class CardHand {
 
   formatEffects(effects) {
     const effectText = [];
-    
+
     if (effects.evidence !== 0) {
-      effectText.push(`Evidence: ${effects.evidence > 0 ? "+" : ""}${effects.evidence}`);
+      effectText.push(
+        `Evidence: ${effects.evidence > 0 ? "+" : ""}${effects.evidence}`
+      );
     }
     if (effects.morale !== 0) {
-      effectText.push(`Morale: ${effects.morale > 0 ? "+" : ""}${effects.morale}`);
+      effectText.push(
+        `Morale: ${effects.morale > 0 ? "+" : ""}${effects.morale}`
+      );
     }
     if (effects.justiceInfluence !== 0) {
-      effectText.push(`Justice: ${effects.justiceInfluence > 0 ? "+" : ""}${effects.justiceInfluence}`);
+      effectText.push(
+        `Justice: ${effects.justiceInfluence > 0 ? "+" : ""}${
+          effects.justiceInfluence
+        }`
+      );
     }
     if (effects.suspicion !== 0) {
-      effectText.push(`Suspicion: ${effects.suspicion > 0 ? "+" : ""}${effects.suspicion}`);
+      effectText.push(
+        `Suspicion: ${effects.suspicion > 0 ? "+" : ""}${effects.suspicion}`
+      );
     }
 
     return effectText;
