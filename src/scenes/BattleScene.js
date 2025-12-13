@@ -43,10 +43,10 @@ export default class BattleScene extends Phaser.Scene {
 
     // Draw initial hands
     this.hand = drawCards(this.playerDeck, 3);
-    
+
     // Initialize AI controller
     this.aiController = new AIController(this.opponentCharacter, this.stats);
-    
+
     // Initialize card hand UI
     this.cardHand = new CardHand(this);
     this.cardHand.onCardPlayed = (card, index) => this.playCard(card, index);
@@ -244,7 +244,7 @@ export default class BattleScene extends Phaser.Scene {
   checkGameOver() {
     // Use GameLogic to check win conditions
     const result = GameLogic.checkWinConditions(this.stats);
-    
+
     if (result.gameOver) {
       console.log(`Game Over! ${result.winner} wins - ${result.reason}`);
       this.gameOver(result.winner);
