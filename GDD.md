@@ -10,9 +10,9 @@
 
 ## **Engine:** Phaser 3
 
-## **Platform:** Web (mobile-first responsive design) → later Mobile App (Capacitor)
+## **Platform:** Mobile App (iOS & Android via Capacitor)
 
-## **Design Philosophy:** Mobile-first, works on all devices (375x667 base, scales up)
+## **Design Philosophy:** Mobile-first native app, optimized for phones and tablets (750x1334 base resolution, scales to all devices)
 
 ---
 
