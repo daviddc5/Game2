@@ -22,8 +22,10 @@ export default class BootScene extends Phaser.Scene {
   }
 
   create() {
-    //start the MenuScene after loading is complete
-    this.scene.start("MenuScene");
+    // Wait for font to load before starting MenuScene
+    document.fonts.ready.then(() => {
+      this.scene.start("MenuScene");
+    });
   }
   Í;
 }

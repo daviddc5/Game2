@@ -54,14 +54,20 @@ export default class MenuScene extends Phaser.Scene {
       .setInteractive();
 
     // Button hover effects - only on hover, blue for L, red for Kira
-    lButton.on("pointerover", () => lButton.setBackgroundColor("#00aaff"));
-    lButton.on("pointerout", () => lButton.setBackgroundColor(null));
+    lButton.on("pointerover", () => {
+      lButton.setBackgroundColor("#00aaff");
+    });
+    lButton.on("pointerout", () => {
+      lButton.setBackgroundColor("transparent");
+    });
     lButton.on("pointerdown", () => this.startGame("L"));
 
-    kiraButton.on("pointerover", () =>
-      kiraButton.setBackgroundColor("#ff0000")
-    );
-    kiraButton.on("pointerout", () => kiraButton.setBackgroundColor(null));
+    kiraButton.on("pointerover", () => {
+      kiraButton.setBackgroundColor("#ff0000");
+    });
+    kiraButton.on("pointerout", () => {
+      kiraButton.setBackgroundColor("transparent");
+    });
     kiraButton.on("pointerdown", () => this.startGame("Kira"));
   }
 

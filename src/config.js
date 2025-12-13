@@ -1,6 +1,6 @@
 import BootScene from "./scenes/BootScene.js";
 import MenuScene from "./scenes/MenuScene.js";
-// import BattleScene from "./scenes/BattleScene.js";
+import BattleScene from "./scenes/BattleScene.js";
 // import GameOverScene from "./scenes/GameOverScene.js";
 
 const config = {
@@ -17,7 +17,7 @@ const config = {
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
   //sets the scenes to load
-  scene: [BootScene, MenuScene],
+  scene: [BootScene, MenuScene, BattleScene],
 };
 
 export default config;
