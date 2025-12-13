@@ -38,7 +38,7 @@ export default class BattleScene extends Phaser.Scene {
       160,
       "+ Evidence",
       this.stats.evidence,
-      0xffffff,
+      0x00ff00,
       true
     );
     this.createStatBar(
@@ -46,7 +46,7 @@ export default class BattleScene extends Phaser.Scene {
       300,
       "- Public Pressure",
       this.stats.publicPressure,
-      0xffffff,
+      0xff0000,
       false
     );
 
@@ -56,7 +56,7 @@ export default class BattleScene extends Phaser.Scene {
       500,
       "+ Justice Influence",
       this.stats.justiceInfluence,
-      0xffffff,
+      0x00ff00,
       true
     );
     this.createStatBar(
@@ -64,7 +64,7 @@ export default class BattleScene extends Phaser.Scene {
       640,
       "- Suspicion",
       this.stats.suspicion,
-      0xffffff,
+      0xff0000,
       false
     );
   }
