@@ -75,38 +75,15 @@ export default class BattleScene extends Phaser.Scene {
         ? "l-portrait"
         : "kira-portrait";
 
-    // Left side - Player portrait (above stat bars)
-    const leftPortrait = this.add.image(150, 280, playerPortrait);
-    leftPortrait.setScale(1.0); // Adjust size (1.0 = original size)
+    // Pokemon-style layout: Player character bottom-left (larger, closer)
+    const playerImage = this.add.image(180, 750, playerPortrait);
+    playerImage.setScale(0.65); // Larger for player (closer to camera)
+    playerImage.setFlipX(true); // Face right toward opponent
 
-    // Always flip the player portrait (left side) to face right toward center
-    leftPortrait.setFlipX(true);
-
-    // Add label below player portrait
-    this.add
-      .text(150, 420, this.playerCharacter.displayName, {
-        fontFamily: "Arial, sans-serif",
-        fontSize: "24px",
-        color: "#ffffff",
-        align: "center",
-      })
-      .setOrigin(0.5);
-
-    // Right side - Opponent portrait (above stat bars)
-    const rightPortrait = this.add.image(600, 280, opponentPortrait);
-    rightPortrait.setScale(1.0); // Adjust size (1.0 = original size)
-
-    // Don't flip the right portrait - leave it as is
-
-    // Add label below opponent portrait
-    this.add
-      .text(600, 420, this.opponentCharacter.displayName, {
-        fontFamily: "Arial, sans-serif",
-        fontSize: "24px",
-        color: "#ffffff",
-        align: "center",
-      })
-      .setOrigin(0.5);
+    // Enemy character top-right (smaller, further away)
+    const opponentImage = this.add.image(480, 380, opponentPortrait);
+    opponentImage.setScale(0.45); // Bigger for enemy
+    // Don't flip - enemy faces left toward player
   }
 
   createStatBarGroups() {
@@ -133,15 +110,41 @@ export default class BattleScene extends Phaser.Scene {
       },
     ];
 
-    // Left side (player)
-    const leftStats = playerIsL ? lStats : kiraStats;
-    this.leftStatGroup = new StatBarGroup(this, 30, 480, leftStats, true);
+    // Pokemon-style: Enemy stats at top-right (above enemy)
+    const opponentStats = playerIsL ? kiraStats : lStats;
+    this.rightStatGroup = new StatBarGroup(
+      this,
+      400,
+      150,
+      opponentStats,
+      false
+    );
+    this.rightStatGroup.create();
+
+    // Add opponent name above their stats
+    this.add
+      .text(560, 130, this.opponentCharacter.displayName, {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "18px",
+        color: "#ffffff",
+        align: "center",
+      })
+      .setOrigin(0.5);
+
+    // Pokemon-style: Player stats at middle-right (next to player)
+    const playerStats = playerIsL ? lStats : kiraStats;
+    this.leftStatGroup = new StatBarGroup(this, 400, 700, playerStats, true);
     this.leftStatGroup.create();
 
-    // Right side (opponent)
-    const rightStats = playerIsL ? kiraStats : lStats;
-    this.rightStatGroup = new StatBarGroup(this, 410, 480, rightStats, false);
-    this.rightStatGroup.create();
+    // Add player name above their stats
+    this.add
+      .text(560, 680, this.playerCharacter.displayName, {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "18px",
+        color: "#ffffff",
+        align: "center",
+      })
+      .setOrigin(0.5);
 
     // Store references for updates (maintain backward compatibility)
     this.statBars = {
