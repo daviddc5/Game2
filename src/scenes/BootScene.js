@@ -21,8 +21,14 @@ export default class BootScene extends Phaser.Scene {
     document.head.appendChild(style);
 
     // Load character portraits
-    this.load.image("l-portrait", "assets/images/DetectiveL.png");
-    this.load.image("kira-portrait", "assets/images/K.png");
+    this.load.image(
+      "l-portrait",
+      "assets/images/LSpriteSheet/detectiveLNeutral.png"
+    );
+    this.load.image(
+      "kira-portrait",
+      "assets/images/KiraSpriteSheet/kiraNeutral.png"
+    );
   }
 
   create() {

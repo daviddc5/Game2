@@ -77,8 +77,7 @@ export default class BattleScene extends Phaser.Scene {
 
     // Left side - Player portrait (above stat bars)
     const leftPortrait = this.add.image(150, 280, playerPortrait);
-    leftPortrait.setScale(0.3); // Adjust size
-    leftPortrait.setBlendMode(Phaser.BlendModes.SCREEN); // Blend white background with black
+    leftPortrait.setScale(1.0); // Adjust size (1.0 = original size)
 
     // Always flip the player portrait (left side) to face right toward center
     leftPortrait.setFlipX(true);
@@ -95,8 +94,7 @@ export default class BattleScene extends Phaser.Scene {
 
     // Right side - Opponent portrait (above stat bars)
     const rightPortrait = this.add.image(600, 280, opponentPortrait);
-    rightPortrait.setScale(0.3); // Adjust size
-    rightPortrait.setBlendMode(Phaser.BlendModes.SCREEN); // Blend white background with black
+    rightPortrait.setScale(1.0); // Adjust size (1.0 = original size)
 
     // Don't flip the right portrait - leave it as is
 
