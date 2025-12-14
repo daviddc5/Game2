@@ -28,37 +28,40 @@ export default class CardHand {
 
     const centerX = this.scene.cameras.main.width / 2;
     const numCards = this.cards.length;
-    
+
     // Calculate spacing for poker-style fan
     const totalSpacing = (this.CARD_WIDTH + this.CARD_SPACING) * (numCards - 1);
     const startX = centerX - totalSpacing / 2;
 
     this.cards.forEach((card, index) => {
       const x = startX + (this.CARD_WIDTH + this.CARD_SPACING) * index;
-      
+
       // Create arc effect - middle cards lower, edge cards higher
       const normalizedPos = (index - (numCards - 1) / 2) / (numCards - 1);
       const arcOffset = Math.abs(normalizedPos) * this.ARC_AMOUNT;
       const y = this.CARD_Y + arcOffset;
-      
+
       // Slight rotation for fan effect
       const rotation = normalizedPos * 0.1;
-      
+
       this.createCard(x, y, card, index, rotation);
     });
   }
 
   createCard(x, y, cardData, cardIndex, rotation = 0) {
     // Container for card (allows grouped transformations)
-    const cardContainer = this.scene.add.container(x + this.CARD_WIDTH / 2, y + this.CARD_HEIGHT / 2);
+    const cardContainer = this.scene.add.container(
+      x + this.CARD_WIDTH / 2,
+      y + this.CARD_HEIGHT / 2
+    );
     cardContainer.setRotation(rotation);
     cardContainer.setDepth(cardIndex); // Lower index cards behind higher ones
-    
+
     // Card shadow for depth
     const shadow = this.scene.add
       .rectangle(3, 3, this.CARD_WIDTH, this.CARD_HEIGHT, 0x000000, 0.4)
       .setOrigin(0.5);
-    
+
     // Card background with rounded appearance
     const cardBg = this.scene.add
       .rectangle(0, 0, this.CARD_WIDTH, this.CARD_HEIGHT, 0x2a2a2a)
@@ -113,7 +116,15 @@ export default class CardHand {
       .setOrigin(0.5);
 
     // Add all elements to container
-    cardContainer.add([shadow, cardBg, cardBorder, innerBorder, nameText, descText, effectsDisplay]);
+    cardContainer.add([
+      shadow,
+      cardBg,
+      cardBorder,
+      innerBorder,
+      nameText,
+      descText,
+      effectsDisplay,
+    ]);
 
     // Poker-style hover animations
     cardBg.on("pointerover", () => {

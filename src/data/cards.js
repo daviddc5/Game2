@@ -79,6 +79,28 @@ export const lCards = [
       suspicion: 0,
     },
   },
+  {
+    id: "l_discredit_kira",
+    name: "Discredit Kira",
+    description: "Expose flaws in Kira's justice",
+    effects: {
+      evidence: 3,
+      morale: 0,
+      justiceInfluence: -8,
+      suspicion: 0,
+    },
+  },
+  {
+    id: "l_counter_propaganda",
+    name: "Counter Propaganda",
+    description: "Challenge Kira's public support",
+    effects: {
+      evidence: 0,
+      morale: 0,
+      justiceInfluence: -10,
+      suspicion: 0,
+    },
+  },
 ];
 
 export const kiraCards = [
@@ -157,6 +179,28 @@ export const kiraCards = [
       morale: 6,
       justiceInfluence: 10,
       suspicion: 4,
+    },
+  },
+  {
+    id: "kira_destroy_evidence",
+    name: "Destroy Evidence",
+    description: "Eliminate critical proof against you",
+    effects: {
+      evidence: -12,
+      morale: 0,
+      justiceInfluence: 0,
+      suspicion: 5,
+    },
+  },
+  {
+    id: "kira_plant_false_leads",
+    name: "Plant False Leads",
+    description: "Mislead the investigation",
+    effects: {
+      evidence: -8,
+      morale: 0,
+      justiceInfluence: 4,
+      suspicion: 0,
     },
   },
 ];
