@@ -60,7 +60,7 @@ export default class MenuScene extends Phaser.Scene {
     lButton.on("pointerout", () => {
       lButton.setBackgroundColor("transparent");
     });
-    lButton.on("pointerdown", () => this.startGame("L"));
+    lButton.on("pointerdown", () => this.startGame("Detective L"));
 
     kiraButton.on("pointerover", () => {
       kiraButton.setBackgroundColor("#ff0000");
