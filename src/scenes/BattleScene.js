@@ -76,12 +76,12 @@ export default class BattleScene extends Phaser.Scene {
         : "kira-portrait";
 
     // Pokemon-style layout: Player character bottom-left (larger, closer)
-    const playerImage = this.add.image(180, 750, playerPortrait);
+    const playerImage = this.add.image(180, 700, playerPortrait);
     playerImage.setScale(0.65); // Larger for player (closer to camera)
     playerImage.setFlipX(true); // Face right toward opponent
 
     // Enemy character top-right (smaller, further away)
-    const opponentImage = this.add.image(480, 380, opponentPortrait);
+    const opponentImage = this.add.image(500, 400, opponentPortrait);
     opponentImage.setScale(0.45); // Bigger for enemy
     // Don't flip - enemy faces left toward player
   }
