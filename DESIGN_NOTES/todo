@@ -1,0 +1,25 @@
+
+HIGH (MVP)
+CARDS
+- Improve card logic 
+- improve Card UI to look like actual poker cards
+CHARACTERS
+- add two positive and two negative stats
+- Add text to explain characters moves, specially important for enemy
+- make the current characters hide the cut outs. Make enemy character slightly bigger
+User Experience
+- Make exit game screen
+
+
+MEDIUM
+- character selection screen
+-add music
+-storyMode
+-game Duration
+-cutscenes
+-LLM created storyline
+
+
+LOW
+- sprites are cool but really I should make some original sprites
+-multiplayer mode
