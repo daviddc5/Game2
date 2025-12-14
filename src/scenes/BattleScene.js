@@ -25,7 +25,7 @@ export default class BattleScene extends Phaser.Scene {
     const playerCharacterName = this.registry.get("playerCharacter");
 
     //initially set to true as player starts first. Maybe can toss a coin in the future
-    this.turnInprogress = false;
+    this.turnInProgress = false; // Fixed typo: was "turnInprogress"
     // Prevent multiple plays at once
     this.isPlayerTurn = true;
     this.turnNumber = 1;
@@ -59,12 +59,15 @@ export default class BattleScene extends Phaser.Scene {
 
   createTitle() {
     const centerX = this.cameras.main.width / 2;
-    this.add
-      .text(centerX, 60, `Playing as: ${this.playerCharacter.name}`, {
+
+    // ADD THIS - Turn indicator:
+    this.turnText = this.add
+      .text(centerX, 1200, "YOUR TURN", {
         fontFamily: "Arial, sans-serif",
-        fontSize: "36px",
-        color: "#ffffff",
+        fontSize: "28px",
+        color: "#00ff00",
         align: "center",
+        fontStyle: "bold",
       })
       .setOrigin(0.5);
   }
@@ -170,6 +173,18 @@ export default class BattleScene extends Phaser.Scene {
   playCard(card, cardIndex) {
     console.log("Playing card:", card.name);
 
+    //block if not player's turn
+    if (!this.isPlayerTurn) {
+      return;
+    }
+    //block if turn already in progress (prevents rapidClicking)
+    if (this.turnInProgress) {
+      return;
+    }
+
+    //Lock the turn so no other plays can happen until AI turn is over
+    this.turnInProgress = true;
+
     // Apply card effects to stats
     this.applyCardEffects(card.effects);
 
@@ -190,7 +205,21 @@ export default class BattleScene extends Phaser.Scene {
       return; // Game ended
     }
 
-    // AI turn after short delay
+    //END PLAYER TURN
+    this.endPlayerTurn();
+  }
+
+  endPlayerTurn() {
+    //switch turn to AI
+    this.isPlayerTurn = false;
+
+    // Update UI
+    if (this.turnText) {
+      this.turnText.setText("ENEMY TURN");
+      this.turnText.setColor("#ff4444");
+    }
+
+    // Start AI turn after delay
     this.time.delayedCall(1000, () => {
       this.aiTurn();
     });
@@ -219,6 +248,21 @@ export default class BattleScene extends Phaser.Scene {
     });
   }
 
+  endAITurn() {
+    console.log("--- AI turn ended ---");
+    this.turnNumber++;
+    this.isPlayerTurn = true;
+    this.turnInProgress = false;
+
+    // Update UI
+    if (this.turnText) {
+      this.turnText.setText("YOUR TURN");
+      this.turnText.setColor("#00ff00");
+    }
+
+    console.log(`=== Turn ${this.turnNumber} - Player's turn ===`);
+  }
+
   aiTurn() {
     console.log("AI turn...");
 
@@ -233,8 +277,13 @@ export default class BattleScene extends Phaser.Scene {
     // Apply AI card effects
     this.applyCardEffects(bestCard.effects);
 
-    // Check win/loss
-    this.checkGameOver();
+    // Check win/loss before ending turn
+    if (this.checkGameOver()) {
+      return; // Game ended, don't continue turn
+    }
+
+    // End AI turn
+    this.endAITurn();
   }
 
   chooseBestAICard(cards) {
