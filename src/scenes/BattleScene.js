@@ -60,16 +60,17 @@ export default class BattleScene extends Phaser.Scene {
   createTitle() {
     const centerX = this.cameras.main.width / 2;
 
-    // ADD THIS - Turn indicator:
+    // Turn indicator - positioned above cards
     this.turnText = this.add
-      .text(centerX, 1200, "YOUR TURN", {
+      .text(centerX, 650, "YOUR TURN", {
         fontFamily: "Arial, sans-serif",
-        fontSize: "28px",
-        color: "#00ff00",
+        fontSize: "32px",
+        color: "#ffffff",
         align: "center",
         fontStyle: "bold",
       })
-      .setOrigin(0.5);
+      .setOrigin(0.5)
+      .setDepth(1000); // High depth to stay above cards
   }
 
   createPortraits() {
