@@ -5,7 +5,6 @@ import StatBarGroup from "../ui/StatBarGroup.js";
 import CardHand from "../ui/CardHand.js";
 import GameLogic from "../logic/GameLogic.js";
 import AIController from "../logic/AIController.js";
-
 export default class BattleScene extends Phaser.Scene {
   constructor() {
     super({ key: "BattleScene" });
@@ -24,6 +23,12 @@ export default class BattleScene extends Phaser.Scene {
 
   initializeGameState() {
     const playerCharacterName = this.registry.get("playerCharacter");
+
+    //initially set to true as player starts first. Maybe can toss a coin in the future
+    this.turnInprogress = false;
+    // Prevent multiple plays at once
+    this.isPlayerTurn = true;
+    this.turnNumber = 1;
 
     // Get character data from config
     this.playerCharacter = getCharacter(playerCharacterName);
@@ -110,7 +115,7 @@ export default class BattleScene extends Phaser.Scene {
       },
     ];
 
-    // Pokemon-style: Enemy stats at top-right (above enemy)
+    //  Enemy stats at top-right (above enemy)
     const opponentStats = playerIsL ? kiraStats : lStats;
     this.rightStatGroup = new StatBarGroup(
       this,
@@ -131,7 +136,7 @@ export default class BattleScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
-    // Pokemon-style: Player stats at middle-right (next to player)
+    // Player stats at middle-right (next to player)
     const playerStats = playerIsL ? lStats : kiraStats;
     this.leftStatGroup = new StatBarGroup(this, 400, 700, playerStats, true);
     this.leftStatGroup.create();

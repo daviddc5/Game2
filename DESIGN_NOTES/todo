@@ -1,26 +1,77 @@
 
 HIGH (MVP)
 CARDS
+- turn limitation
+-make it harder to play cards right now just mouseup. Maybe a confirm button
+-replace full card when card played
+- stat change numbers
+- add a deck and animation to pickup cards
 - improve Card UI to look like actual poker cards
 - Improve card logic 
+-discard Pile
+-prevent duplicate cards
+
+LOG
+add explanations for:
+- whose turn it is
+- effects of your turn and other persons card they played
+
 CHARACTERS
 - add two positive and two negative stats
 - Add text to explain characters moves, specially important for enemy
 - make the current characters hide the cut outs. Make enemy character slightly bigger
 User Experience
 - Make exit game screen
+ART
+-winning change image
+-losing change image
+
+IN PROGRESS
+
+Phase 1: Make it Actually Playable (2-3 hours)
+✅ Fix turn system - Player → AI → repeat
+✅ Card draw mechanics - Refill to 3 cards each turn
+✅ Turn indicator UI - Show whose turn it is
+✅ Deck empty handling - Reshuffle or end game
+Phase 2: Make it Feel Good (2-3 hours)
+✅ Visual feedback - Stat change popups, card animations
+✅ Character expressions - Use winning/losing sprites
+✅ Sound effects - Card play, stat change, win/lose
+Phase 3: Polish & Balance (2-4 hours)
+✅ Add more cards (20-30 total per character)
+✅ Better AI - Strategic depth
+✅ Tutorial/Help
+✅ Settings menu
+
+DONE
+
 
 
 MEDIUM
+
+AI
+improve AI inteligence
+
+CHARACTERS
 - character selection screen
+MUSIC
 -add music
+
+CONTENT
 -storyMode
--game Duration
--cutscenes
 -LLM created storyline
+-cutscenes
+
+GAME MEACHANICS
+-game Duration
+
+ART
 - different background themes
 
-
 LOW
+ART
 - sprites are cool but really I should make some original sprites
+- better win animations
+GAME MECHANICS
 -multiplayer mode
+-add deck visualizer
