@@ -237,12 +237,38 @@ export default class BattleScene extends Phaser.Scene {
     });
   }
 
-  applyCardEffects(effects) {
+  applyCardEffects(effects, logEffects = false) {
+    // Store old values for logging
+    const oldStats = { ...this.stats };
+
     // Use GameLogic to apply effects with clamping
     this.stats = GameLogic.applyEffects(this.stats, effects);
 
+    // Log stat changes if requested
+    if (logEffects) {
+      Object.keys(effects).forEach((stat) => {
+        const change = this.stats[stat] - oldStats[stat];
+        if (change !== 0) {
+          const statLabel = this.getStatLabel(stat);
+          const color = change > 0 ? "#00ff00" : "#ff4444";
+          const prefix = change > 0 ? "+" : "";
+          this.battleLog.addMessage(`  ${prefix}${change} ${statLabel}`, color);
+        }
+      });
+    }
+
     // Update visual bars
     this.updateStatBars();
+  }
+
+  getStatLabel(statKey) {
+    const labels = {
+      evidence: "Evidence",
+      morale: "Morale",
+      justiceInfluence: "Justice",
+      suspicion: "Suspicion",
+    };
+    return labels[statKey] || statKey;
   }
 
   updateStatBars() {
@@ -251,11 +277,11 @@ export default class BattleScene extends Phaser.Scene {
       const value = this.stats[statKey];
 
       // Update through stat groups for animation
-      if (this.leftStatGroup.bars[statKey]) {
-        this.leftStatGroup.updateStat(statKey, value);
+      if (this.playerStatGroup.bars[statKey]) {
+        this.playerStatGroup.updateStat(statKey, value);
       }
-      if (this.rightStatGroup.bars[statKey]) {
-        this.rightStatGroup.updateStat(statKey, value);
+      if (this.opponentStatGroup.bars[statKey]) {
+        this.opponentStatGroup.updateStat(statKey, value);
       }
     });
   }
@@ -266,11 +292,8 @@ export default class BattleScene extends Phaser.Scene {
     this.isPlayerTurn = true;
     this.turnInProgress = false;
 
-    // Update UI
-    if (this.turnText) {
-      this.turnText.setText("YOUR TURN");
-      this.turnText.setColor("#00ff00");
-    }
+    // Log turn change
+    this.battleLog.addMessage("► YOUR TURN", "#00ff00");
 
     console.log(`=== Turn ${this.turnNumber} - Player's turn ===`);
   }
@@ -286,8 +309,11 @@ export default class BattleScene extends Phaser.Scene {
     const bestCard = this.chooseBestAICard(aiCards);
     console.log("AI plays:", bestCard.name);
 
+    // Log AI action
+    this.battleLog.addMessage(`Enemy played: ${bestCard.name}`, "#ff8800");
+
     // Apply AI card effects
-    this.applyCardEffects(bestCard.effects);
+    this.applyCardEffects(bestCard.effects, true);
 
     // Check win/loss before ending turn
     if (this.checkGameOver()) {
