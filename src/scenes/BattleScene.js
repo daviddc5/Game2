@@ -52,7 +52,29 @@ export default class BattleScene extends Phaser.Scene {
     // Initialize AI controller
     this.aiController = new AIController(this.opponentCharacter, this.stats);
 
-    // Initialize card hand UI
+    // Initialize card hand UI    pixel art character portrait, young vigilante mastermind age 25,
+    
+    SHORT neat styled reddish-brown hair swept back, mature face,
+    
+    smooth fair skin, sharp intense PURPLE eyes, arrogant gaze,
+    
+    dark formal BLACK suit jacket with RED tie, professional style,
+    
+    TRIUMPHANT COCKY EXPRESSION: wide confident smirk, shining dominant eyes,
+    
+    head tilted back smugly, superiority complex, slim athletic build,
+    
+    side profile facing left (opposite direction from detective),
+    
+    BACKGROUND: luxury MODERN penthouse office at night,
+    
+    bright city lights through TALL window, rain streaks on glass,
+    
+    LEATHER desk with CLOSED notebook and GOLD pen, warm lamp lighting,
+    
+    32-bit retro game style, noir cinematic lighting,
+    
+    clean detailed pixels, indie game art
     this.cardHand = new CardHand(this);
     this.cardHand.onCardPlayed = (card, index) => this.playCard(card, index);
   }
