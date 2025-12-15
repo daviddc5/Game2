@@ -3,6 +3,7 @@ import { getDeckForCharacter, drawCards } from "../data/cards.js";
 import { getCharacter, getOpponent } from "../data/characters.js";
 import StatBarGroup from "../ui/StatBarGroup.js";
 import CardHand from "../ui/CardHand.js";
+import BattleLog from "../ui/BattleLog.js";
 import GameLogic from "../logic/GameLogic.js";
 import AIController from "../logic/AIController.js";
 export default class BattleScene extends Phaser.Scene {
@@ -14,10 +15,10 @@ export default class BattleScene extends Phaser.Scene {
     // Initialize game state
     this.initializeGameState();
 
-    // Create UI elements
-    this.createTitle();
+    // Create UI elements in order (top to bottom)
     this.createPortraits();
-    this.createStatBarGroups();
+    this.createStatBars();
+    this.createBattleLog();
     this.createCardHand();
   }
 
@@ -57,20 +58,6 @@ export default class BattleScene extends Phaser.Scene {
     this.cardHand.onCardPlayed = (card, index) => this.playCard(card, index);
   }
 
-  createTitle() {
-    // Turn indicator - positioned above cards
-    this.turnText = this.add
-      .text(400, 650, "YOUR TURN", {
-        fontFamily: "Arial, sans-serif",
-        fontSize: "32px",
-        color: "#ffffff",
-        align: "center",
-        fontStyle: "bold",
-      })
-      .setOrigin(0.5)
-      .setDepth(1000); // High depth to stay above cards
-  }
-
   createPortraits() {
     // Determine which portraits to show based on player character
     const playerPortrait =
@@ -82,18 +69,52 @@ export default class BattleScene extends Phaser.Scene {
         ? "detective-neutral"
         : "killer-neutral";
 
-    // Pokemon-style layout: Player character bottom-left (larger, closer)
-    const playerImage = this.add.image(180, 700, playerPortrait);
-    playerImage.setScale(0.65); // Larger for player (closer to camera)
-    playerImage.setFlipX(true); // Face right toward opponent
+    // Side-by-side layout at top
+    // Player character on left
+    this.playerPortrait = this.add.image(200, 150, playerPortrait);
+    this.playerPortrait.setScale(0.3);
+    this.playerPortrait.setFlipX(false); // Face right
 
-    // Enemy character top-right (smaller, further away)
-    const opponentImage = this.add.image(500, 400, opponentPortrait);
-    opponentImage.setScale(0.45); // Bigger for enemy
-    // Don't flip - enemy faces left toward player
+    // Player name under portrait
+    this.add
+      .text(200, 250, this.playerCharacter.displayName, {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "20px",
+        color: "#ffffff",
+        align: "center",
+        fontStyle: "bold",
+      })
+      .setOrigin(0.5);
+
+    // VS text in middle
+    this.add
+      .text(375, 150, "VS", {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "32px",
+        color: "#ffaa00",
+        align: "center",
+        fontStyle: "bold",
+      })
+      .setOrigin(0.5);
+
+    // Opponent character on right
+    this.opponentPortrait = this.add.image(550, 150, opponentPortrait);
+    this.opponentPortrait.setScale(0.3);
+    this.opponentPortrait.setFlipX(true); // Face left
+
+    // Opponent name under portrait
+    this.add
+      .text(550, 250, this.opponentCharacter.displayName, {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "20px",
+        color: "#ffffff",
+        align: "center",
+        fontStyle: "bold",
+      })
+      .setOrigin(0.5);
   }
 
-  createStatBarGroups() {
+  createStatBars() {
     const playerIsL = this.playerCharacter.name === "Detective L";
 
     // Define stat configurations for each character
@@ -117,51 +138,42 @@ export default class BattleScene extends Phaser.Scene {
       },
     ];
 
-    //  Enemy stats at top-right (above enemy)
+    // All stats centralized in the middle area
+    // Player stats (left side of center)
+    const playerStats = playerIsL ? lStats : kiraStats;
+    this.playerStatGroup = new StatBarGroup(this, 200, 320, playerStats, true);
+    this.playerStatGroup.create();
+
+    // Opponent stats (right side of center)
     const opponentStats = playerIsL ? kiraStats : lStats;
-    this.rightStatGroup = new StatBarGroup(
+    this.opponentStatGroup = new StatBarGroup(
       this,
-      400,
-      150,
+      550,
+      320,
       opponentStats,
       false
     );
-    this.rightStatGroup.create();
-
-    // Add opponent name above their stats
-    this.add
-      .text(560, 130, this.opponentCharacter.displayName, {
-        fontFamily: "Arial, sans-serif",
-        fontSize: "18px",
-        color: "#ffffff",
-        align: "center",
-      })
-      .setOrigin(0.5);
-
-    // Player stats at middle-right (next to player)
-    const playerStats = playerIsL ? lStats : kiraStats;
-    this.leftStatGroup = new StatBarGroup(this, 400, 700, playerStats, true);
-    this.leftStatGroup.create();
-
-    // Add player name above their stats
-    this.add
-      .text(560, 680, this.playerCharacter.displayName, {
-        fontFamily: "Arial, sans-serif",
-        fontSize: "18px",
-        color: "#ffffff",
-        align: "center",
-      })
-      .setOrigin(0.5);
+    this.opponentStatGroup.create();
 
     // Store references for updates (maintain backward compatibility)
     this.statBars = {
-      ...this.leftStatGroup.getAllBars(),
-      ...this.rightStatGroup.getAllBars(),
+      ...this.playerStatGroup.getAllBars(),
+      ...this.opponentStatGroup.getAllBars(),
     };
     this.statTexts = {
-      ...this.leftStatGroup.getAllTexts(),
-      ...this.rightStatGroup.getAllTexts(),
+      ...this.playerStatGroup.getAllTexts(),
+      ...this.opponentStatGroup.getAllTexts(),
     };
+  }
+
+  createBattleLog() {
+    // Create battle log in the center
+    this.battleLog = new BattleLog(this, 375, 550, 700, 180);
+    this.battleLog.create();
+
+    // Add initial message
+    this.battleLog.addMessage("⚔️ Battle Start!", "#ffaa00");
+    this.battleLog.addMessage("► YOUR TURN", "#00ff00");
   }
 
   createCardHand() {
@@ -174,6 +186,7 @@ export default class BattleScene extends Phaser.Scene {
 
     //block if not player's turn
     if (!this.isPlayerTurn) {
+      this.battleLog.addMessage("⚠️ Wait for your turn!", "#ff4444");
       return;
     }
     //block if turn already in progress (prevents rapidClicking)
@@ -184,8 +197,11 @@ export default class BattleScene extends Phaser.Scene {
     //Lock the turn so no other plays can happen until AI turn is over
     this.turnInProgress = true;
 
-    // Apply card effects to stats
-    this.applyCardEffects(card.effects);
+    // Log player action
+    this.battleLog.addMessage(`You played: ${card.name}`, "#00ff00");
+
+    // Apply card effects to stats and log them
+    this.applyCardEffects(card.effects, true);
 
     // Remove card from hand
     this.hand.splice(cardIndex, 1);
@@ -212,11 +228,8 @@ export default class BattleScene extends Phaser.Scene {
     //switch turn to AI
     this.isPlayerTurn = false;
 
-    // Update UI
-    if (this.turnText) {
-      this.turnText.setText("ENEMY TURN");
-      this.turnText.setColor("#ff4444");
-    }
+    // Log turn change
+    this.battleLog.addMessage("► ENEMY TURN", "#ff4444");
 
     // Start AI turn after delay
     this.time.delayedCall(1000, () => {
