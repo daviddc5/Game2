@@ -58,11 +58,9 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   createTitle() {
-    const centerX = this.cameras.main.width / 2;
-
     // Turn indicator - positioned above cards
     this.turnText = this.add
-      .text(centerX, 650, "YOUR TURN", {
+      .text(400, 650, "YOUR TURN", {
         fontFamily: "Arial, sans-serif",
         fontSize: "32px",
         color: "#ffffff",
