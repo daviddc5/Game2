@@ -52,29 +52,7 @@ export default class BattleScene extends Phaser.Scene {
     // Initialize AI controller
     this.aiController = new AIController(this.opponentCharacter, this.stats);
 
-    // Initialize card hand UI    pixel art character portrait, young vigilante mastermind age 25,
-    
-    SHORT neat styled reddish-brown hair swept back, mature face,
-    
-    smooth fair skin, sharp intense PURPLE eyes, arrogant gaze,
-    
-    dark formal BLACK suit jacket with RED tie, professional style,
-    
-    TRIUMPHANT COCKY EXPRESSION: wide confident smirk, shining dominant eyes,
-    
-    head tilted back smugly, superiority complex, slim athletic build,
-    
-    side profile facing left (opposite direction from detective),
-    
-    BACKGROUND: luxury MODERN penthouse office at night,
-    
-    bright city lights through TALL window, rain streaks on glass,
-    
-    LEATHER desk with CLOSED notebook and GOLD pen, warm lamp lighting,
-    
-    32-bit retro game style, noir cinematic lighting,
-    
-    clean detailed pixels, indie game art
+    // Initialize card hand UI
     this.cardHand = new CardHand(this);
     this.cardHand.onCardPlayed = (card, index) => this.playCard(card, index);
   }
@@ -97,12 +75,12 @@ export default class BattleScene extends Phaser.Scene {
     // Determine which portraits to show based on player character
     const playerPortrait =
       this.playerCharacter.name === "Detective L"
-        ? "l-portrait"
-        : "kira-portrait";
+        ? "detective-neutral"
+        : "killer-neutral";
     const opponentPortrait =
       this.opponentCharacter.name === "Detective L"
-        ? "l-portrait"
-        : "kira-portrait";
+        ? "detective-neutral"
+        : "killer-neutral";
 
     // Pokemon-style layout: Player character bottom-left (larger, closer)
     const playerImage = this.add.image(180, 700, playerPortrait);

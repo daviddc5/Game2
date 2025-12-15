@@ -5,7 +5,7 @@ export const characters = {
     id: "detective_l",
     name: "Detective L",
     displayName: "L",
-    portrait: "l-portrait.png", // Asset path for later
+    portrait: "detective-neutral.png",
     positiveStats: ["evidence"],
     negativeStats: ["morale"],
     winCondition: {
@@ -23,7 +23,7 @@ export const characters = {
     id: "kira",
     name: "Kira",
     displayName: "Kira",
-    portrait: "kira-portrait.png", // Asset path for later
+    portrait: "killer-neutral.png",
     positiveStats: ["justiceInfluence"],
     negativeStats: ["suspicion"],
     winCondition: {

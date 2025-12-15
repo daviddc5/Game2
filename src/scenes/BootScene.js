@@ -20,14 +20,32 @@ export default class BootScene extends Phaser.Scene {
     `;
     document.head.appendChild(style);
 
-    // Load character portraits
+    // Load character portraits - Detective
     this.load.image(
-      "l-portrait",
-      "assets/images/LSpriteSheet/detectiveLNeutral.png"
+      "detective-neutral",
+      "assets/images/DetectivePortraits/detective-neutral.png"
     );
     this.load.image(
-      "kira-portrait",
-      "assets/images/KiraSpriteSheet/kiraNeutral.png"
+      "detective-winning",
+      "assets/images/DetectivePortraits/detective-winning.png"
+    );
+    this.load.image(
+      "detective-losing",
+      "assets/images/DetectivePortraits/detective-losing.png"
+    );
+
+    // Load character portraits - Killer
+    this.load.image(
+      "killer-neutral",
+      "assets/images/KillerPortraits/killer-neutral.png"
+    );
+    this.load.image(
+      "killer-winning",
+      "assets/images/KillerPortraits/killer-winning.png"
+    );
+    this.load.image(
+      "killer-losing",
+      "assets/images/KillerPortraits/killer-losing.png"
     );
   }
 
