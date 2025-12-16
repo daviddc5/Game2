@@ -1,74 +1,151 @@
 
-HIGH (MVP)
-CARDS
-- turn limitation
--make it harder to play cards right now just mouseup. Maybe a confirm button
--replace full card when card played
-- stat change numbers
-- add a deck and animation to pickup cards
-- improve Card UI to look like actual poker cards
-- Improve card logic 
--discard Pile
--prevent duplicate cards
+HIGH (MVP) - CORE GAMEPLAY OVERHAUL
 
-LOG
-add explanations for:
-- whose turn it is
-- effects of your turn and other persons card they played
+=== PHASE 1: SIMULTANEOUS CARD SYSTEM (30 min) ===
+[ ] Implement card selection (click = select, not play)
+[ ] Add "CONFIRM PLAY" button
+[ ] Lock in player card face-down
+[ ] AI auto-selects card face-down
+[ ] Both cards reveal simultaneously
 
-CHARACTERS
-- add two positive and two negative stats
-- Add text to explain characters moves, specially important for enemy
-- make the current characters hide the cut outs. Make enemy character slightly bigger
-User Experience
-- Make exit game screen
-ART
--winning change image
--losing change image
+=== PHASE 2: CARD TYPES & PRIORITY (1 hour) ===
+Card Types (priority order):
+[ ] COUNTER cards - Speed 10, can cancel opponent (Red border)
+[ ] QUICK cards - Speed 7-9, fast but weak (Blue border)
+[ ] NORMAL cards - Speed 4-6, balanced (Green border)
+[ ] POWER cards - Speed 1-3, slow but devastating (Gold border)
+
+[ ] Add cardType property to all cards
+[ ] Add speed property to all cards
+[ ] Implement priority resolution system
+[ ] Update card visuals with color-coded borders
+[ ] Show speed value on cards
+
+=== PHASE 3: ENERGY SYSTEM (45 min) ===
+[ ] Add energy counter UI (display above portraits)
+[ ] Start at 1 energy, +1 per turn, max 10
+[ ] Add energyCost to all cards:
+    - Counter: 2-3 energy
+    - Quick: 3-4 energy
+    - Normal: 4-5 energy
+    - Power: 6-10 energy
+[ ] Disable cards if not enough energy
+[ ] Gray out unplayable cards
+[ ] Show energy cost on cards
+
+=== PHASE 4: VISUAL FEEDBACK (30 min) ===
+[ ] Show both cards face-down in center area
+[ ] Flip animation for reveal
+[ ] Highlight which card resolves first
+[ ] Apply effects in priority order with delay
+[ ] Show cancellation effects (if counter cancels card)
+[ ] Floating stat change numbers
+
+=== PHASE 5: IMPROVED HAND & DRAW (30 min) ===
+[ ] Start with 5 cards instead of 3
+[ ] Draw 2 cards per turn (instead of 1)
+[ ] Max hand size: 10 cards
+[ ] Show "discard" phase if over max
+[ ] Deck counter UI
+[ ] Reshuffle discard pile when deck empty
 
 IN PROGRESS
-
-Phase 1: Make it Actually Playable (2-3 hours)
-✅ Fix turn system - Player → AI → repeat
-✅ Card draw mechanics - Refill to 3 cards each turn
-✅ Turn indicator UI - Show whose turn it is
-✅ Deck empty handling - Reshuffle or end game
-Phase 2: Make it Feel Good (2-3 hours)
-✅ Visual feedback - Stat change popups, card animations
-✅ Character expressions - Use winning/losing sprites
-✅ Sound effects - Card play, stat change, win/lose
-Phase 3: Polish & Balance (2-4 hours)
-✅ Add more cards (20-30 total per character)
-✅ Better AI - Strategic depth
-✅ Tutorial/Help
-✅ Settings menu
-
+[ ] Fix: Cards clickable during opponent turn (DONE - waiting for test)
 DONE
+✅ Fix turn system - Player → AI → repeat
+✅ Battle log system
+✅ Side-by-side portrait layout
+✅ Character name changes (copyright-safe)
+✅ Cards blocked during opponent turn
 
+POLISH (After Core Gameplay Works)
 
+CARDS
+[ ] Stat change floating numbers with animations
+[ ] Add deck visual and pickup animation
+[ ] Improve Card UI to look more like trading cards
+[ ] Discard pile visualization
+[ ] Prevent duplicate cards in hand
+[ ] Card hover effects showing detailed info
 
-MEDIUM
-
-AI
-improve AI inteligence
+LOG
+[ ] Better formatting (bigger text, icons)
+[ ] Color-code different message types
+[ ] Show combo chains in log
 
 CHARACTERS
-- character selection screen
-MUSIC
--add music
+[ ] Character passive skills (hover portrait to see)
+[ ] Winning expression switch (when stats >75)
+[ ] Losing expression switch (when stats <25)
+[ ] Make enemy character slightly bigger
+[ ] Add character skill descriptions
 
-CONTENT
--storyMode
--LLM created storyline
--cutscenes
-
-GAME MEACHANICS
--game Duration
+USER EXPERIENCE
+[ ] Exit game screen/menu
+[ ] Settings menu
+[ ] Tutorial/help screen
 
 ART
-- different background themes
+[ ] Better background themes
+[ ] Particle effects for card plays
+[ ] Screen shake for big moves
 
-LOW
+MEDIUM PRIORITY (Post-Launch Features)
+
+AI
+[ ] Improve AI intelligence for card type selection
+[ ] AI energy management strategy
+[ ] AI learns player patterns
+
+CONTENT
+[ ] Create 20-30 cards per character (currently 9)
+[ ] Design character-specific field cards
+[ ] Add card combo synergies
+[ ] Card rarity system (common, rare, ultra rare)
+[ ] Story mode with progression
+[ ] Cutscenes between battles
+
+CHARACTERS
+[ ] Character selection screen improvements
+[ ] More character choices (4+ characters)
+[ ] Character unlock system
+
+AUDIO
+[ ] Background music
+[ ] Card play sound effects
+[ ] Stat change sounds
+[ ] Win/lose music
+
+GAME MODES
+[ ] Ranked mode
+[ ] Time limit per turn option
+[ ] Best of 3 matches
+
+LOW PRIORITY (Future Expansion)
+
+ADVANCED FEATURES
+[ ] Deck builder - custom 30-card decks
+[ ] Collection system
+[ ] Card unlocks/rewards
+[ ] Multiple win conditions
+[ ] Tournament mode
+
+MULTIPLAYER
+[ ] Online multiplayer
+[ ] Friend battles
+[ ] Leaderboard
+
+ART
+[ ] Original sprite art (replace AI-generated)
+[ ] Better win/lose animations
+[ ] Card art for each card
+[ ] Animated backgrounds
+
+TECHNICAL
+[ ] Mobile optimization
+[ ] iOS/Android build with Capacitor
+[ ] Save/load system
+[ ] Cloud sync
 ART
 - sprites are cool but really I should make some original sprites
 - better win animations
