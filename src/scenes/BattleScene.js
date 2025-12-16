@@ -61,11 +61,11 @@ export default class BattleScene extends Phaser.Scene {
   createPortraits() {
     // Determine which portraits to show based on player character
     const playerPortrait =
-      this.playerCharacter.name === "Detective L"
+      this.playerCharacter.name === "Independent Detective"
         ? "detective-neutral"
         : "killer-neutral";
     const opponentPortrait =
-      this.opponentCharacter.name === "Detective L"
+      this.opponentCharacter.name === "Independent Detective"
         ? "detective-neutral"
         : "killer-neutral";
 
@@ -115,15 +115,16 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   createStatBars() {
-    const playerIsL = this.playerCharacter.name === "Detective L";
+    const playerIsDetective =
+      this.playerCharacter.name === "Independent Detective";
 
     // Define stat configurations for each character
-    const lStats = [
+    const detectiveStats = [
       { key: "evidence", label: "Evidence", color: 0x00ff00, isPositive: true },
       { key: "morale", label: "Morale", color: 0xff4444, isPositive: false },
     ];
 
-    const kiraStats = [
+    const vigilanteStats = [
       {
         key: "justiceInfluence",
         label: "Justice",
@@ -140,12 +141,12 @@ export default class BattleScene extends Phaser.Scene {
 
     // All stats centralized in the middle area
     // Player stats (left side - below player portrait at x:200)
-    const playerStats = playerIsL ? lStats : kiraStats;
+    const playerStats = playerIsDetective ? detectiveStats : vigilanteStats;
     this.playerStatGroup = new StatBarGroup(this, 50, 350, playerStats, true);
     this.playerStatGroup.create();
 
     // Opponent stats (right side - below opponent portrait at x:550)
-    const opponentStats = playerIsL ? kiraStats : lStats;
+    const opponentStats = playerIsDetective ? vigilanteStats : detectiveStats;
     this.opponentStatGroup = new StatBarGroup(
       this,
       400,

@@ -27,9 +27,22 @@ export default class MenuScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
-    // L button (stacked vertically for mobile)
-    const lButton = this.add
-      .text(centerX, 640, "Detective L", {
+    // Detective button (stacked vertically for mobile)
+    const detectiveButton = this.add
+      .text(centerX, 640, "Independent Detective", {
+        fontFamily: "DeathNote",
+        fontSize: "48px",
+        color: "#ffffff",
+        padding: { x: 60, y: 30 },
+        fixedWidth: 600,
+        align: "center",
+      })
+      .setOrigin(0.5)
+      .setInteractive();
+
+    // Vigilante button (below Detective button for vertical layout)
+    const vigilanteButton = this.add
+      .text(centerX, 840, "Vigilante", {
         fontFamily: "DeathNote",
         fontSize: "56px",
         color: "#ffffff",
@@ -40,35 +53,24 @@ export default class MenuScene extends Phaser.Scene {
       .setOrigin(0.5)
       .setInteractive();
 
-    // Kira button (below L button for vertical layout)
-    const kiraButton = this.add
-      .text(centerX, 840, "Kira", {
-        fontFamily: "DeathNote",
-        fontSize: "56px",
-        color: "#ffffff",
-        padding: { x: 60, y: 30 },
-        fixedWidth: 500,
-        align: "center",
-      })
-      .setOrigin(0.5)
-      .setInteractive();
+    // Button hover effects - blue for Detective, red for Vigilante
+    detectiveButton.on("pointerover", () => {
+      detectiveButton.setBackgroundColor("#00aaff");
+    });
+    detectiveButton.on("pointerout", () => {
+      detectiveButton.setBackgroundColor("transparent");
+    });
+    detectiveButton.on("pointerdown", () =>
+      this.startGame("Independent Detective")
+    );
 
-    // Button hover effects - only on hover, blue for L, red for Kira
-    lButton.on("pointerover", () => {
-      lButton.setBackgroundColor("#00aaff");
+    vigilanteButton.on("pointerover", () => {
+      vigilanteButton.setBackgroundColor("#ff0000");
     });
-    lButton.on("pointerout", () => {
-      lButton.setBackgroundColor("transparent");
+    vigilanteButton.on("pointerout", () => {
+      vigilanteButton.setBackgroundColor("transparent");
     });
-    lButton.on("pointerdown", () => this.startGame("Detective L"));
-
-    kiraButton.on("pointerover", () => {
-      kiraButton.setBackgroundColor("#ff0000");
-    });
-    kiraButton.on("pointerout", () => {
-      kiraButton.setBackgroundColor("transparent");
-    });
-    kiraButton.on("pointerdown", () => this.startGame("Kira"));
+    vigilanteButton.on("pointerdown", () => this.startGame("Vigilante"));
   }
 
   startGame(character) {

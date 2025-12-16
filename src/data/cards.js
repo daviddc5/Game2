@@ -16,7 +16,7 @@ export const lCards = [
   {
     id: "l_logical_trap",
     name: "Logical Trap",
-    description: "Set a clever trap for Kira",
+    description: "Set a clever trap for the vigilante",
     effects: {
       evidence: 8,
       morale: 0,
@@ -80,9 +80,9 @@ export const lCards = [
     },
   },
   {
-    id: "l_discredit_kira",
-    name: "Discredit Kira",
-    description: "Expose flaws in Kira's justice",
+    id: "l_discredit_vigilante",
+    name: "Discredit Vigilante",
+    description: "Expose flaws in vigilante justice",
     effects: {
       evidence: 3,
       morale: 0,
@@ -93,7 +93,7 @@ export const lCards = [
   {
     id: "l_counter_propaganda",
     name: "Counter Propaganda",
-    description: "Challenge Kira's public support",
+    description: "Challenge the vigilante's public support",
     effects: {
       evidence: 0,
       morale: 0,
@@ -207,9 +207,9 @@ export const kiraCards = [
 
 // Helper function to get the correct deck for a character
 export function getDeckForCharacter(character) {
-  if (character === "Detective L") {
+  if (character === "Independent Detective") {
     return lCards;
-  } else if (character === "Kira") {
+  } else if (character === "Vigilante") {
     return kiraCards;
   }
   return [];

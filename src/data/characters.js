@@ -1,40 +1,40 @@
 // Character definitions for Shadows of Judgment
 
 export const characters = {
-  "Detective L": {
-    id: "detective_l",
-    name: "Detective L",
-    displayName: "L",
+  "Independent Detective": {
+    id: "detective",
+    name: "Independent Detective",
+    displayName: "Detective",
     portrait: "detective-neutral.png",
     positiveStats: ["evidence"],
     negativeStats: ["morale"],
     winCondition: {
       stat: "evidence",
       threshold: 100,
-      message: "L exposes Kira with overwhelming evidence!",
+      message: "The detective exposes the truth with overwhelming evidence!",
     },
     loseCondition: {
       stat: "morale",
       threshold: 100,
-      message: "L's team loses all morale and gives up!",
+      message: "The detective's team loses all morale and gives up!",
     },
   },
-  Kira: {
-    id: "kira",
-    name: "Kira",
-    displayName: "Kira",
+  Vigilante: {
+    id: "vigilante",
+    name: "Vigilante",
+    displayName: "Vigilante",
     portrait: "killer-neutral.png",
     positiveStats: ["justiceInfluence"],
     negativeStats: ["suspicion"],
     winCondition: {
       stat: "justiceInfluence",
       threshold: 100,
-      message: "Kira's new world order is complete!",
+      message: "The vigilante's new world order is complete!",
     },
     loseCondition: {
       stat: "suspicion",
       threshold: 100,
-      message: "Kira's identity is exposed!",
+      message: "The vigilante's identity is exposed!",
     },
   },
 };
@@ -46,7 +46,7 @@ export function getCharacter(characterName) {
 
 // Helper to get opponent character
 export function getOpponent(characterName) {
-  if (characterName === "Detective L") return characters["Kira"];
-  if (characterName === "Kira") return characters["Detective L"];
+  if (characterName === "Independent Detective") return characters["Vigilante"];
+  if (characterName === "Vigilante") return characters["Independent Detective"];
   return null;
 }
