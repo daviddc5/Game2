@@ -156,7 +156,15 @@ export default class CardHand {
     // Click to play card with animation
     cardBg.on("pointerdown", () => {
       if (this.onCardPlayed) {
-        // Play card animation
+        // Check if it's player's turn BEFORE playing animation
+        if (!this.scene.isPlayerTurn) {
+          return; // Don't even animate if it's not player's turn
+        }
+        if (this.scene.turnInProgress) {
+          return; // Don't animate if turn is in progress
+        }
+
+        // Play card animation only if turn is valid
         this.scene.tweens.add({
           targets: cardContainer,
           y: y - 200,
