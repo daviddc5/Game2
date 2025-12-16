@@ -11,7 +11,7 @@ export default class CardHand {
     this.CARD_WIDTH = 180;
     this.CARD_HEIGHT = 260;
     this.CARD_SPACING = -40; // Negative for overlapping poker style
-    this.CARD_Y = 1100; // Base Y position (moved down to make room for battle log)
+    this.CARD_Y = 950; // Base Y position (moved up for better spacing)
     this.HOVER_LIFT = 80; // How much card lifts on hover
     this.HOVER_SCALE = 1.15; // Scale multiplier on hover
     this.ARC_AMOUNT = 15; // Arc curvature for fan effect

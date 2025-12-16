@@ -87,15 +87,15 @@ export default class BattleScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     // VS text in middle
-    this.add
-      .text(375, 150, "VS", {
-        fontFamily: "Arial, sans-serif",
-        fontSize: "32px",
-        color: "#ffaa00",
-        align: "center",
-        fontStyle: "bold",
-      })
-      .setOrigin(0.5);
+    // this.add
+    //   .text(375, 150, "VS", {
+    //     fontFamily: "Arial, sans-serif",
+    //     fontSize: "32px",
+    //     color: "#ffaa00",
+    //     align: "center",
+    //     fontStyle: "bold",
+    //   })
+    //   .setOrigin(0.5);
 
     // Opponent character on right
     this.opponentPortrait = this.add.image(550, 150, opponentPortrait);
@@ -139,17 +139,17 @@ export default class BattleScene extends Phaser.Scene {
     ];
 
     // All stats centralized in the middle area
-    // Player stats (left side of center)
+    // Player stats (left side - below player portrait at x:200)
     const playerStats = playerIsL ? lStats : kiraStats;
-    this.playerStatGroup = new StatBarGroup(this, 200, 320, playerStats, true);
+    this.playerStatGroup = new StatBarGroup(this, 50, 350, playerStats, true);
     this.playerStatGroup.create();
 
-    // Opponent stats (right side of center)
+    // Opponent stats (right side - below opponent portrait at x:550)
     const opponentStats = playerIsL ? kiraStats : lStats;
     this.opponentStatGroup = new StatBarGroup(
       this,
-      550,
-      320,
+      400,
+      350,
       opponentStats,
       false
     );
@@ -167,8 +167,8 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   createBattleLog() {
-    // Create battle log in the center
-    this.battleLog = new BattleLog(this, 375, 550, 700, 180);
+    // Create battle log in the center (more separation from stats)
+    this.battleLog = new BattleLog(this, 375, 600, 700, 180);
     this.battleLog.create();
 
     // Add initial message
