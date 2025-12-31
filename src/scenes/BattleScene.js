@@ -73,7 +73,7 @@ export default class BattleScene extends Phaser.Scene {
     // Player character on left
     this.playerPortrait = this.add.image(200, 150, playerPortrait);
     this.playerPortrait.setScale(0.3);
-    this.playerPortrait.setFlipX(false); // Face right
+    this.playerPortrait.setFlipX(true); // Face right (flipped)
 
     // Player name under portrait
     this.add
