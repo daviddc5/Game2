@@ -2,15 +2,15 @@
 
 ## **Title:** *Shadows of Judgment* (working title)
 
-## **Genre:** Turn-based card strategy (1v1)
+## **Genre:** Simultaneous turn-based card strategy (1v1)
 
-## **Inspired by:** Death Note (L vs Kira mind games)
+## **Unique Hook:** Both players select cards simultaneously - predict your opponent's move and counter it!
 
 ## **Art Style:** Pixel art, dark minimal UI
 
 ## **Engine:** Phaser 3
 
-## **Platform:** Mobile App (iOS & Android via Capacitor)
+## **Platform:** Mobile App (iOS & Android via Capacitor), Web
 
 ## **Design Philosophy:** Mobile-first native app, optimized for phones and tablets (750x1334 base resolution, scales to all devices)
 
@@ -18,163 +18,323 @@
 
 # 1. **High-Level Concept**
 
-A tense, minimalist duel between **L** and **Kira**.
+A tense, strategic duel between **Independent Detective** and **Vigilante**.
 
-Each side controls **two stats (positive)** and is threatened by **two stats (negative)**.
-You and the AI alternate playing cards that affect these stats.
-The first character who reaches a critical level in any bar **wins or loses**.
+**Core Innovation:** Unlike traditional turn-based card games, both players **select their cards simultaneously**, then reveal and resolve them based on card speed/priority. This creates mind games - will they play aggressive? Defensive? Can you predict and counter?
 
-It is intentionally simple so you can finish it.
+Players manage **energy resources** (like mana) to play cards, forcing strategic decisions each turn.
+
+The first player to max out their winning stat OR reduce opponent's morale to 0 **wins**.
 
 ---
 
 # 2. **Player Roles**
 
-### **Play as L (Detective)**
+### **Play as Independent Detective**
 
-Goal: expose Kira through evidence.
+Goal: Build evidence to expose the vigilante.
 
 Stats:
-
 * **Evidence (positive):** reach 100 to win
-* **Public Pressure (negative):** reach 100 and L loses
+* **Morale (negative):** reach 0 and Detective loses
 
-### **Play as Kira (Judge of the New World)**
+### **Play as Vigilante**
 
-Goal: gain control while avoiding suspicion.
+Goal: Gain public support while avoiding capture.
 
 Stats:
-
 * **Justice Influence (positive):** reach 100 to win
-* **Suspicion (negative):** reach 100 and Kira loses
+* **Suspicion (negative):** reach 100 and Vigilante loses
 
 ---
 
-# 3. **Stats Overview (The "Mind Grid")**
+# 3. **Stats Overview**
 
-Each character has:
+Each character has 4 stats (0-100 range):
 
-### **L**
+### **Detective**
 
-| Bar             | Type     | Win/Loss       |
-| --------------- | -------- | -------------- |
-| Evidence        | Positive | L wins at 100  |
-| Public Pressure | Negative | L loses at 100 |
+| Stat     | Type     | Win/Loss Condition        |
+| -------- | -------- | ------------------------- |
+| Evidence | Positive | Win at 100                |
+| Morale   | Shared   | Lose if reduced to 0      |
 
-### **Kira**
+### **Vigilante**
 
-| Bar               | Type     | Win/Loss          |
-| ----------------- | -------- | ----------------- |
-| Justice Influence | Positive | Kira wins at 100  |
-| Suspicion         | Negative | Kira loses at 100 |
-
-Each bar ranges **0 → 100**.
+| Stat              | Type     | Win/Loss Condition        |
+| ----------------- | -------- | ------------------------- |
+| Justice Influence | Positive | Win at 100                |
+| Suspicion         | Negative | Lose at 100               |
 
 ---
 
-# 4. **Core Loop (MVP)**
+# 4. **Core Loop (MVP) - SIMULTANEOUS TURN SYSTEM**
 
-1. **Player chooses character**
-2. Both L and Kira sprites and bars appear
-3. Player draws 3 cards
-4. **Player plays 1 card** → bars change
-5. **AI plays 1 card** → bars change
-6. Check if any bar hits 100
-7. Repeat until win/loss condition is met
+### **Turn Flow:**
 
-That's the entire game loop. No movement, no map, no physics.
+1. **Start of Turn**
+   - Both players gain +1 energy (max 10)
+   - Both draw 2 cards (max hand size: 10)
+
+2. **Selection Phase**
+   - Player selects 1 card from hand (highlights selected card)
+   - Must have enough energy to play card
+   - Click "CONFIRM" button to lock in choice
+   - AI simultaneously selects card (hidden)
+
+3. **Reveal Phase**
+   - Both cards flip face-up in center of screen
+   - Cards resolve in **priority order** (see Card Types below)
+
+4. **Resolution Phase**
+   - Higher priority card resolves first
+   - Energy costs are deducted
+   - Stat changes applied
+   - Battle log updates with effects
+
+5. **Check Win Conditions**
+   - Any stat at 100 or 0? → Game ends
+   - Otherwise, next turn begins
 
 ---
 
-# 5. **Cards**
+# 5. **Energy System**
+
+**Core Resource Management:**
+
+- Players start each game with **1 energy**
+- Gain **+1 energy per turn** (max 10)
+- Cards cost energy to play (1-10 energy)
+- Can only play cards you can afford
+- Cards you can't afford are grayed out in hand
+
+**Strategic Depth:**
+- Save energy for powerful late-game cards?
+- Play multiple weak cards early?
+- Predict opponent's energy and counter their big move?
+
+---
+
+# 6. **Card Types & Priority System**
+
+Cards resolve in **priority order** (highest priority goes first):
+
+### **COUNTER Cards (Priority 10)** 🔴
+- **Speed:** 10
+- **Energy Cost:** 2-3
+- **Effect:** Can cancel opponent's card
+- **Visual:** Red border
+- **Example:** "Interrupt Evidence" - Cancel opponent's card if Speed ≤ 6
+
+### **QUICK Cards (Priority 7-9)** 🔵
+- **Speed:** 7-9
+- **Energy Cost:** 3-4
+- **Effect:** Fast but weak stat changes (+10 to +20)
+- **Visual:** Blue border
+- **Example:** "Quick Investigation" - +15 Evidence
+
+### **NORMAL Cards (Priority 4-6)** 🟢
+- **Speed:** 4-6
+- **Energy Cost:** 4-5
+- **Effect:** Balanced stat changes (+20 to +30)
+- **Visual:** Green border
+- **Example:** "Gather Evidence" - +25 Evidence, -5 Morale
+
+### **POWER Cards (Priority 1-3)** 🟡
+- **Speed:** 1-3
+- **Energy Cost:** 6-10
+- **Effect:** Devastating stat changes (+40 to +60)
+- **Visual:** Gold border
+- **Example:** "Ultimate Case" - +50 Evidence, but costs 8 energy
+
+**Rock-Paper-Scissors Dynamic:**
+- COUNTER beats POWER (cancels slow cards)
+- QUICK beats COUNTER (resolves first, can't be countered after)
+- POWER beats QUICK (massive damage vs chip damage)
+- Creates mind games and prediction gameplay
+
+---
+
+# 7. **Sample Cards**
 
 Each card has:
-
 * **name**
+* **cardType** (counter/quick/normal/power)
+* **speed** (1-10)
+* **energyCost** (1-10)
 * **description**
-* **icon**
-* **stat effects** (usually 1–2 bars)
+* **stat effects**
 
-### **Sample L Cards**
+### **Detective Cards**
 
-| Name               | Effect                    |
-| ------------------ | ------------------------- |
-| Data Cross-Match   | +10 Evidence              |
-| Logical Trap       | +8 Evidence, +4 Suspicion |
-| Press Interview    | -10 Public Pressure       |
-| Surveillance Sweep | +6 Evidence               |
+| Name               | Type    | Speed | Cost | Effect                          |
+| ------------------ | ------- | ----- | ---- | ------------------------------- |
+| Data Cross-Match   | NORMAL  | 5     | 4    | +25 Evidence                    |
+| Logical Trap       | QUICK   | 8     | 3    | +15 Evidence, +10 Suspicion     |
+| Counter Evidence   | COUNTER | 10    | 3    | Cancel opponent if Speed ≤ 6    |
+| Ultimate Case      | POWER   | 2     | 8    | +50 Evidence                    |
+| Press Interview    | NORMAL  | 6     | 4    | +20 Evidence, -10 Suspicion     |
 
-### **Sample Kira Cards**
+### **Vigilante Cards**
 
-| Name               | Effect                     |
-| ------------------ | -------------------------- |
-| Righteous Act      | +12 Justice                |
-| Eliminate Witness  | -10 Evidence, +6 Suspicion |
-| Media Manipulation | -12 Suspicion              |
-| Intimidation       | -6 Evidence                |
+| Name               | Type    | Speed | Cost | Effect                          |
+| ------------------ | ------- | ----- | ---- | ------------------------------- |
+| Righteous Act      | NORMAL  | 5     | 5    | +30 Justice Influence           |
+| Quick Strike       | QUICK   | 9     | 3    | +15 Justice, +10 Evidence       |
+| Block Investigation| COUNTER | 10    | 2    | Cancel opponent if Speed ≤ 5    |
+| Divine Judgment    | POWER   | 1     | 9    | +60 Justice Influence           |
+| Media Manipulation | NORMAL  | 4     | 4    | -20 Suspicion                   |
 
-MVP total: **10–14 cards**.
+**MVP Target:** 15-20 cards per character
 
 ---
 
-# 6. **AI Design**
+# 8. **AI Design**
 
 ### **MVP AI**
-
-* AI chooses a random playable card
-* Weighted to pick "helpful" cards more often
-
-### **Improved AI (optional)**
-
-* Chooses best card to:
-
-  * increase its positive stat
-  * reduce opponent's positive stat
-  * avoid its negative bar reaching 100
-
-Very doable.
+* Considers available energy
+* Picks card it can afford
+* Attempts to predict player's likely move based on their energy
+* Prioritizes cards that advance win condition
 
 ---
 
-# 7. **Visual Design**
+# 9. **Visual Design**
+
+### **Layout (750x1334 mobile)**
+
+```
+┌─────────────────────────────────────────┐
+│  [Player Portrait]  [Energy: 5/10]      │
+│   Y: 150                                 │
+│                                          │
+│  [Player Stats] [Opponent Stats]        │
+│   Y: 350                                 │
+│                                          │
+│  ┌──────────┐      ┌──────────┐        │
+│  │ SELECTED │      │ SELECTED │        │
+│  │  CARD    │  VS  │   CARD   │        │  ← Cards appear here during reveal
+│  │ (yours)  │      │ (enemy)  │        │
+│  └──────────┘      └──────────┘        │
+│   Y: 500                                 │
+│                                          │
+│  [Battle Log]                            │
+│   Y: 600                                 │
+│                                          │
+│  [Your Hand - 5 cards]                   │
+│   Y: 950                                 │
+│  [CONFIRM PLAY] button when card picked  │
+└─────────────────────────────────────────┘
+```
 
 ### **Pixel Art**
+* Character portraits: 200x200+ (AI-generated pixel art)
+* 3 expressions per character: neutral, winning, losing
+* Cards: Poker-style with colored borders by type
 
-* Character portraits: 32×32 or 64×64
-* Static for MVP
-* No animation required initially
-
-### **UI**
-
-* Bars are simple rectangles
-* Cards appear at bottom
-* Dark background (abstract "mind grid" or a room silhouette)
+### **Color Coding**
+* 🔴 Red border = COUNTER cards
+* 🔵 Blue border = QUICK cards  
+* 🟢 Green border = NORMAL cards
+* 🟡 Gold border = POWER cards
 
 ### **Tone**
-
-* Calm, eerie, strategic
-* Inspired by Death Note's mind-battle scenes
+* Dark, strategic, tense
+* Mind games aesthetic
+* Minimal but polished
 
 ---
 
-# 8. **Screens**
+# 10. **Screens**
 
-### **Start Screen**
+### **Title Screen**
+* Game logo
+* "Start Game" button
+* Settings button (future)
 
-* Choose L or Kira
-* Simple pixel portrait
+### **Character Select**
+* Choose Detective or Vigilante
+* Shows character portrait and brief description
+* Explains win conditions
 
-### **Battle Screen** (main screen)
-
-* L portrait (left)
-* Kira portrait (right)
-* 4 bars in middle
-* Hand of 3 cards
-* "End Turn" action happens automatically after playing card
+### **Battle Screen** (main gameplay)
+* Both character portraits face each other (Y: 150)
+* Stat bars below each character (Y: 350)
+* Energy counter above player portrait
+* Battle log in middle (Y: 600)
+* Player's hand at bottom (Y: 950)
+* "CONFIRM PLAY" button appears when card selected
+* Selected cards appear face-down in center during reveal phase
 
 ### **Win/Lose Screen**
+* Character portrait (winning or losing expression)
+* Victory/defeat message
+* Stats summary
+* "Play Again" / "Main Menu" buttons
 
-* Character portrait + message
+---
+
+# 11. **MVP Scope Summary**
+
+### **Core Features (Must Have):**
+✅ Simultaneous card selection with CONFIRM button
+✅ Energy system (1-10, +1 per turn)
+✅ Card types with priority (Counter/Quick/Normal/Power)
+✅ 2 playable characters (Detective, Vigilante)
+✅ 15 cards per character
+✅ Smart AI that considers energy and predictions
+✅ Visual reveal phase showing both cards
+✅ Battle log tracking all actions
+✅ Win/loss conditions
+
+### **Polish Features (Nice to Have):**
+- Floating stat change numbers
+- Card draw animations
+- Portrait expression changes
+- Screen shake on big moves
+- Sound effects
+
+### **Post-MVP:**
+- More characters (4-6 total)
+- Deck building (30-card custom decks)
+- Local multiplayer (pass-and-play)
+- Online multiplayer
+- Story mode
+- Card collection system
+
+---
+
+# 12. **What Makes This Unique**
+
+1. **Simultaneous Play** - Not turn-based like Hearthstone, both players act at once
+2. **Priority System** - Speed-based resolution creates rock-paper-scissors dynamics
+3. **Energy Management** - Forces strategic planning and prediction
+4. **Mind Games** - Success depends on reading opponent's likely move
+5. **No RNG in gameplay** - Card draws are random, but execution is pure strategy
+
+**Closest comparisons:** 
+- Yu-Gi-Oh (card types and priority chains)
+- Hearthstone (energy/mana system)  
+- Rock-Paper-Scissors (prediction mechanics)
+
+**But unique in combination** - no other card game has simultaneous energy-based priority resolution.
+
+---
+
+# 13. **Monetization (Future)**
+
+### **Kickstarter Tiers:**
+- $5: Supporter (name in credits)
+- $25: Design a card
+- $150: Your character becomes playable (limited slots)
+- $500: Design a boss character
+- $1000: Full story chapter featuring your character
+
+### **Post-Launch:**
+- Free base game (2 characters, 30 cards each)
+- $5 per additional character DLC
+- $10 "Full Collection" unlock
+- Cosmetic card backs/portraits
 * "Play Again" button
 
 ---
