@@ -1,12 +1,74 @@
 
 HIGH (MVP) - CORE GAMEPLAY OVERHAUL
 
+=== LAYOUT REDESIGN (Duel Links Style) ===
+
+```
+┌─────────────────────────────────────────────────┐
+│ [Enemy Portrait] [Enemy Stats]  Energy: ■■■□□  │  Y: 50-100 (compact)
+│      (small)        (compact)         7/10     │
+│                                                 │
+│              ┌──────────┐                       │
+│              │ 🂠 ENEMY │  Enemy staging area   │  Y: 300
+│              │   CARD   │  (face-down)          │
+│              └──────────┘                       │
+│                   VS                            │  Y: 450 (center)
+│              ┌──────────┐                       │
+│              │ 🂠 YOUR  │  Your staging area    │  Y: 600
+│              │   CARD   │  (face-down)          │
+│              └──────────┘                       │
+│                                                 │
+│ [Your Portrait] [Your Stats]   Energy: ■■■■□   │  Y: 750-800 (compact)
+│     (small)       (compact)          4/10      │
+│                                                 │
+│  [Hand: 5 cards spread horizontally]           │  Y: 900-1100
+│  [Card][Card][Card][Card][Card]                │
+│           [CONFIRM PLAY]  ← appears on select  │  Y: 1150
+└─────────────────────────────────────────────────┘
+```
+
+**Key UI Changes:**
+- Portraits: 100x100px (was 200x200), positioned left side
+- Stats: Horizontal bars next to portraits (was below)
+- Energy: Top-right corner, visual dots (■■■□□)
+- Battle log: REMOVED from main view (can be toggle/overlay)
+- Staging area: Central focus, larger cards
+- Hand: Bottom, slightly overlapping cards
+
+**Components to Create:**
+1. CompactPlayerInfo.js - Portrait + stats + energy in one component
+2. StagingArea.js - Manages both face-down card slots
+3. EnergyDisplay.js - Visual energy counter
+
+**Benefits:**
+✅ More space for important info (cards, staging)
+✅ Cleaner, less cluttered
+✅ Mobile-friendly layout
+✅ Familiar to card game players
+
 === PHASE 1: SIMULTANEOUS CARD SYSTEM (30 min) ===
 [ ] Implement card selection (click = select, not play)
+    - Card highlights when clicked
+    - Doesn't remove from hand yet
+    - Can click different card to change selection
 [ ] Add "CONFIRM PLAY" button
+    - Appears when card is selected
+    - Positioned below hand
+[ ] Create face-down card staging area
+    - Position: Center of screen (Y: ~500)
+    - Two card placeholders: "YOUR CARD" (left) and "ENEMY CARD" (right)
+    - Show card back image when locked in
 [ ] Lock in player card face-down
+    - When CONFIRM clicked, card appears face-down in staging area
+    - Remove card from hand
+    - CONFIRM button disappears
 [ ] AI auto-selects card face-down
+    - AI picks card immediately after player confirms
+    - AI's card appears face-down in staging area
 [ ] Both cards reveal simultaneously
+    - 1-2 second delay
+    - Flip animation (card back → card front)
+    - Then resolve effects
 
 === PHASE 2: CARD TYPES & PRIORITY (1 hour) ===
 Card Types (priority order):
