@@ -153,29 +153,19 @@ export default class CardHand {
       cardBg.setFillStyle(0x2a2a2a);
     });
 
-    // Click to play card with animation
+    // Click to select card (no animation, just select)
     cardBg.on("pointerdown", () => {
       if (this.onCardPlayed) {
-        // Check if it's player's turn BEFORE playing animation
+        // Check if it's player's turn
         if (!this.scene.isPlayerTurn) {
-          return; // Don't even animate if it's not player's turn
+          return;
         }
         if (this.scene.turnInProgress) {
-          return; // Don't animate if turn is in progress
+          return;
         }
 
-        // Play card animation only if turn is valid
-        this.scene.tweens.add({
-          targets: cardContainer,
-          y: y - 200,
-          alpha: 0,
-          scale: 0.8,
-          duration: 300,
-          ease: "Power2",
-          onComplete: () => {
-            this.onCardPlayed(cardData, cardIndex);
-          },
-        });
+        // Just call the callback directly (selectCard)
+        this.onCardPlayed(cardData, cardIndex);
       }
     });
 
@@ -210,6 +200,21 @@ export default class CardHand {
     }
 
     return effectText;
+  }
+
+  highlightCard(index) {
+    // Highlight the selected card with green border
+    this.cardObjects.forEach((cardContainer, i) => {
+      // Get the border element (3rd child: shadow, bg, border)
+      const border = cardContainer.list[2];
+      if (i === index) {
+        // Highlight selected card
+        border.setStrokeStyle(4, 0x00ff00);
+      } else {
+        // Reset others to gold
+        border.setStrokeStyle(3, 0xd4af37);
+      }
+    });
   }
 
   destroy() {

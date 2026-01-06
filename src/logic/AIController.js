@@ -65,4 +65,14 @@ export default class AIController {
 
     return score;
   }
+
+  selectCard(deck, stats, isPlayerTurn) {
+    // Draw 3 cards and pick the best one
+    const cards = [];
+    for (let i = 0; i < Math.min(3, deck.length); i++) {
+      const randomIndex = Math.floor(Math.random() * deck.length);
+      cards.push(deck[randomIndex]);
+    }
+    return this.chooseBestCard(cards);
+  }
 }

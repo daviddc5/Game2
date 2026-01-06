@@ -20,6 +20,7 @@ export default class BattleScene extends Phaser.Scene {
     this.createStatBars();
     this.createBattleLog();
     this.createCardHand();
+    this.createStagingArea();
     this.selectedCard = null; // track which card is selected
     this.isSelectingCard = false; // track if player is in card selection mode
   }
@@ -57,7 +58,7 @@ export default class BattleScene extends Phaser.Scene {
 
     // Initialize card hand UI
     this.cardHand = new CardHand(this);
-    this.cardHand.onCardPlayed = (card, index) => this.playCard(card, index);
+    this.cardHand.onCardPlayed = (card, index) => this.selectCard(card, index);
   }
 
   createPortraits() {
@@ -71,49 +72,41 @@ export default class BattleScene extends Phaser.Scene {
         ? "detective-neutral"
         : "killer-neutral";
 
-    // Side-by-side layout at top
-    // Player character on left
-    this.playerPortrait = this.add.image(200, 150, playerPortrait);
-    this.playerPortrait.setScale(0.3);
-    this.playerPortrait.setFlipX(true); // Face right (flipped)
+    // ENEMY at top (compact)
+    this.opponentPortrait = this.add.image(100, 80, opponentPortrait);
+    this.opponentPortrait.setScale(0.15); // Smaller
+    this.opponentPortrait.setFlipX(false);
 
-    // Player name under portrait
     this.add
-      .text(200, 250, this.playerCharacter.displayName, {
-        fontFamily: "Arial, sans-serif",
-        fontSize: "20px",
-        color: "#ffffff",
-        align: "center",
+      .text(180, 80, this.opponentCharacter.displayName, {
+        fontSize: "16px",
+        color: "#ff4444",
         fontStyle: "bold",
       })
-      .setOrigin(0.5);
+      .setOrigin(0, 0.5);
 
-    // VS text in middle
-    // this.add
-    //   .text(375, 150, "VS", {
-    //     fontFamily: "Arial, sans-serif",
-    //     fontSize: "32px",
-    //     color: "#ffaa00",
-    //     align: "center",
-    //     fontStyle: "bold",
-    //   })
-    //   .setOrigin(0.5);
-
-    // Opponent character on right
-    this.opponentPortrait = this.add.image(550, 150, opponentPortrait);
-    this.opponentPortrait.setScale(0.3);
-    this.opponentPortrait.setFlipX(true); // Face left
-
-    // Opponent name under portrait
+    // VS text in center
     this.add
-      .text(550, 250, this.opponentCharacter.displayName, {
-        fontFamily: "Arial, sans-serif",
-        fontSize: "20px",
-        color: "#ffffff",
-        align: "center",
+      .text(375, 450, "VS", {
+        fontSize: "48px",
+        color: "#ffaa00",
         fontStyle: "bold",
       })
-      .setOrigin(0.5);
+      .setOrigin(0.5)
+      .setDepth(50);
+
+    // PLAYER at bottom (compact)
+    this.playerPortrait = this.add.image(100, 780, playerPortrait);
+    this.playerPortrait.setScale(0.15); // Smaller
+    this.playerPortrait.setFlipX(true);
+
+    this.add
+      .text(180, 780, this.playerCharacter.displayName, {
+        fontSize: "16px",
+        color: "#00aaff",
+        fontStyle: "bold",
+      })
+      .setOrigin(0, 0.5);
   }
 
   createStatBars() {
@@ -141,22 +134,21 @@ export default class BattleScene extends Phaser.Scene {
       },
     ];
 
-    // All stats centralized in the middle area
-    // Player stats (left side - below player portrait at x:200)
-    const playerStats = playerIsDetective ? detectiveStats : vigilanteStats;
-    this.playerStatGroup = new StatBarGroup(this, 50, 350, playerStats, true);
-    this.playerStatGroup.create();
-
-    // Opponent stats (right side - below opponent portrait at x:550)
+    // Opponent stats (compact, next to portrait at top)
     const opponentStats = playerIsDetective ? vigilanteStats : detectiveStats;
     this.opponentStatGroup = new StatBarGroup(
       this,
-      400,
-      350,
+      320,
+      50,
       opponentStats,
       false
     );
     this.opponentStatGroup.create();
+
+    // Player stats (compact, next to portrait at bottom)
+    const playerStats = playerIsDetective ? detectiveStats : vigilanteStats;
+    this.playerStatGroup = new StatBarGroup(this, 320, 750, playerStats, true);
+    this.playerStatGroup.create();
 
     // Store references for updates (maintain backward compatibility)
     this.statBars = {
@@ -170,9 +162,14 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   createBattleLog() {
-    // Create battle log in the center (more separation from stats)
-    this.battleLog = new BattleLog(this, 375, 600, 700, 180);
+    // Battle log hidden for now (can toggle later)
+    this.battleLog = new BattleLog(this, 375, 1400, 700, 180);
     this.battleLog.create();
+    
+    // Hide all battle log elements
+    this.battleLog.background.setVisible(false);
+    this.battleLog.titleText.setVisible(false);
+    this.battleLog.textObjects.forEach(obj => obj.setVisible(false));
 
     // Add initial message
     this.battleLog.addMessage("⚔️ Battle Start!", "#ffaa00");
@@ -256,6 +253,182 @@ export default class BattleScene extends Phaser.Scene {
       this.createConfirmButton();
     }
     this.confirmButton.setVisible(true);
+  }
+
+  createConfirmButton() {
+    // Create confirm button below the hand
+    this.confirmButton = this.add
+      .text(375, 1150, "CONFIRM PLAY", {
+        fontSize: "32px",
+        color: "#ffffff",
+        backgroundColor: "#00aa00",
+        padding: { x: 30, y: 15 },
+      })
+      .setOrigin(0.5)
+      .setInteractive()
+      .setVisible(false); // Hidden until card selected
+
+    this.confirmButton.on("pointerdown", () => this.confirmCardPlay());
+
+    // Hover effect
+    this.confirmButton.on("pointerover", () => {
+      this.confirmButton.setBackgroundColor("#00ff00");
+    });
+    this.confirmButton.on("pointerout", () => {
+      this.confirmButton.setBackgroundColor("#00aa00");
+    });
+  }
+
+  createStagingArea() {
+    // Enemy staging at top
+    this.add
+      .text(375, 250, "ENEMY CARD", {
+        fontSize: "20px",
+        color: "#ff4444",
+      })
+      .setOrigin(0.5)
+      .setDepth(100);
+
+    // Player staging at bottom
+    this.add
+      .text(375, 650, "YOUR CARD", {
+        fontSize: "20px",
+        color: "#00aaff",
+      })
+      .setOrigin(0.5)
+      .setDepth(100);
+
+    // Placeholders for face-down cards (will show later)
+    this.playerStagedCard = null;
+    this.opponentStagedCard = null;
+  }
+
+  confirmCardPlay() {
+    if (!this.selectedCard) return;
+
+    // Hide confirm button
+    this.confirmButton.setVisible(false);
+
+    // Lock the turn
+    this.turnInProgress = true;
+
+    // Show player's card face-down in staging area
+    this.playerStagedCard = this.add
+      .rectangle(375, 700, 120, 160, 0x333333)
+      .setStrokeStyle(3, 0x00aaff)
+      .setDepth(100);
+
+    this.playerStagedCardBack = this.add
+      .text(375, 700, "🂠", {
+        fontSize: "100px",
+      })
+      .setOrigin(0.5)
+      .setDepth(101);
+
+    // Remove card from hand visually
+    this.hand.splice(this.selectedCard.cardIndex, 1);
+    this.cardHand.setCards(this.hand);
+    this.cardHand.render();
+
+    // Now trigger AI turn
+    this.time.delayedCall(500, () => this.aiSelectCard());
+  }
+
+  aiSelectCard() {
+    // AI picks a random card
+    const aiCard = this.aiController.selectCard(
+      this.opponentDeck,
+      this.stats,
+      this.isPlayerTurn
+    );
+
+    // Show AI's card face-down
+    this.opponentStagedCard = this.add
+      .rectangle(375, 300, 120, 160, 0x333333)
+      .setStrokeStyle(3, 0xff4444)
+      .setDepth(100);
+
+    this.opponentStagedCardBack = this.add
+      .text(375, 300, "🂠", {
+        fontSize: "100px",
+      })
+      .setOrigin(0.5)
+      .setDepth(101);
+
+    // Now reveal both cards
+    this.time.delayedCall(1000, () => this.revealBothCards(aiCard));
+  }
+
+  revealBothCards(aiCard) {
+    // Clear face-down placeholders
+    if (this.playerStagedCard) this.playerStagedCard.destroy();
+    if (this.playerStagedCardBack) this.playerStagedCardBack.destroy();
+    if (this.opponentStagedCard) this.opponentStagedCard.destroy();
+    if (this.opponentStagedCardBack) this.opponentStagedCardBack.destroy();
+
+    // Show actual card names
+    this.add
+      .text(375, 700, this.selectedCard.card.name, {
+        fontSize: "20px",
+        color: "#ffffff",
+        backgroundColor: "#0066cc",
+        padding: { x: 15, y: 15 },
+        wordWrap: { width: 110 },
+        align: "center",
+      })
+      .setOrigin(0.5)
+      .setDepth(100);
+
+    this.add
+      .text(375, 300, aiCard.name, {
+        fontSize: "20px",
+        color: "#ffffff",
+        backgroundColor: "#cc0000",
+        padding: { x: 15, y: 15 },
+        wordWrap: { width: 110 },
+        align: "center",
+      })
+      .setOrigin(0.5)
+      .setDepth(100);
+
+    // Apply card effects
+    this.time.delayedCall(1500, () => {
+      this.applyBothCardEffects(this.selectedCard.card, aiCard);
+    });
+  }
+
+  applyBothCardEffects(playerCard, aiCard) {
+    // Apply player card
+    this.battleLog.addMessage(`► You played: ${playerCard.name}`, "#00aaff");
+    this.stats = GameLogic.applyEffects(this.stats, playerCard.effects);
+
+    // Apply AI card
+    this.battleLog.addMessage(`► Enemy played: ${aiCard.name}`, "#ff4444");
+    this.stats = GameLogic.applyEffects(this.stats, aiCard.effects);
+
+    // Update UI
+    this.updateStatBars();
+
+    // Check win/loss
+    if (this.checkGameOver()) {
+      return;
+    }
+
+    // Reset for next turn
+    this.selectedCard = null;
+    this.isSelectingCard = false;
+    this.turnInProgress = false;
+    this.turnNumber++;
+
+    // Draw new card
+    const newCard = drawCards(this.playerDeck, 1)[0];
+    if (newCard) {
+      this.hand.push(newCard);
+      this.cardHand.setCards(this.hand);
+      this.cardHand.render();
+    }
+
+    this.battleLog.addMessage("► YOUR TURN", "#00ff00");
   }
 
   endPlayerTurn() {
