@@ -20,6 +20,8 @@ export default class BattleScene extends Phaser.Scene {
     this.createStatBars();
     this.createBattleLog();
     this.createCardHand();
+    this.selectedCard = null; // track which card is selected
+    this.isSelectingCard = false; // track if player is in card selection mode
   }
 
   initializeGameState() {
@@ -182,47 +184,78 @@ export default class BattleScene extends Phaser.Scene {
     this.cardHand.render();
   }
 
-  playCard(card, cardIndex) {
-    console.log("Playing card:", card.name);
+  // legacy version of playcard
+  // playCard(card, cardIndex) {
+  //   console.log("Playing card:", card.name);
 
-    //block if not player's turn
+  //   //block if not player's turn
+  //   if (!this.isPlayerTurn) {
+  //     this.battleLog.addMessage("⚠️ Wait for your turn!", "#ff4444");
+  //     return;
+  //   }
+  //   //block if turn already in progress (prevents rapidClicking)
+  //   if (this.turnInProgress) {
+  //     return;
+  //   }
+  //   // Set selected card
+
+  //   //Lock the turn so no other plays can happen until AI turn is over
+  //   this.turnInProgress = true;
+
+  //   // Log player action
+  //   this.battleLog.addMessage(`You played: ${card.name}`, "#00ff00");
+
+  //   // Apply card effects to stats and log them
+  //   this.applyCardEffects(card.effects, true);
+
+  //   // Remove card from hand
+  //   this.hand.splice(cardIndex, 1);
+
+  //   // Draw a new card if deck has cards left
+  //   const newCards = drawCards(this.playerDeck, 1);
+  //   if (newCards.length > 0) {
+  //     this.hand.push(newCards[0]);
+  //   }
+
+  //   // Redraw hand
+  //   this.createCardHand();
+
+  //   // Check win/loss
+  //   if (this.checkGameOver()) {
+  //     return; // Game ended
+  //   }
+
+  //   //END PLAYER TURN
+  //   this.endPlayerTurn();
+  // }
+
+  // sets selected cards and shows confirm button
+  selectCard(card, cardIndex) {
+    console.log("Selecting card:", card.name);
+
+    // Block if not player's turn
     if (!this.isPlayerTurn) {
       this.battleLog.addMessage("⚠️ Wait for your turn!", "#ff4444");
       return;
     }
-    //block if turn already in progress (prevents rapidClicking)
+
+    // Block if turn already in progress
     if (this.turnInProgress) {
       return;
     }
 
-    //Lock the turn so no other plays can happen until AI turn is over
-    this.turnInProgress = true;
+    //select card without playing it
+    this.selectedCard = { card, cardIndex };
+    this.isSelectingCard = true;
 
-    // Log player action
-    this.battleLog.addMessage(`You played: ${card.name}`, "#00ff00");
+    //Highlighting the selected card
+    this.cardHand.highlightCard(cardIndex);
 
-    // Apply card effects to stats and log them
-    this.applyCardEffects(card.effects, true);
-
-    // Remove card from hand
-    this.hand.splice(cardIndex, 1);
-
-    // Draw a new card if deck has cards left
-    const newCards = drawCards(this.playerDeck, 1);
-    if (newCards.length > 0) {
-      this.hand.push(newCards[0]);
+    //Show the confirm button
+    if (!this.confirmButton) {
+      this.createConfirmButton();
     }
-
-    // Redraw hand
-    this.createCardHand();
-
-    // Check win/loss
-    if (this.checkGameOver()) {
-      return; // Game ended
-    }
-
-    //END PLAYER TURN
-    this.endPlayerTurn();
+    this.confirmButton.setVisible(true);
   }
 
   endPlayerTurn() {

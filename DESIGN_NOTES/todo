@@ -214,3 +214,6 @@ ART
 GAME MECHANICS
 -multiplayer mode
 -add deck visualizer
+
+NOTES NOT AI GENERATED TO GENERATE
+make everything that can be abstracted such as the battle log a modal that can be opened and closed
