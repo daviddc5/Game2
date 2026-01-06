@@ -165,11 +165,11 @@ export default class BattleScene extends Phaser.Scene {
     // Battle log hidden for now (can toggle later)
     this.battleLog = new BattleLog(this, 375, 1400, 700, 180);
     this.battleLog.create();
-    
+
     // Hide all battle log elements
     this.battleLog.background.setVisible(false);
     this.battleLog.titleText.setVisible(false);
-    this.battleLog.textObjects.forEach(obj => obj.setVisible(false));
+    this.battleLog.textObjects.forEach((obj) => obj.setVisible(false));
 
     // Add initial message
     this.battleLog.addMessage("⚔️ Battle Start!", "#ffaa00");
