@@ -139,7 +139,7 @@ export default class BattleScene extends Phaser.Scene {
     this.opponentStatGroup = new StatBarGroup(
       this,
       20,
-      145,
+      180,
       opponentStats,
       false
     );
@@ -281,18 +281,18 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   createStagingArea() {
-    // Enemy staging at top left
+    // Enemy staging at top center
     this.add
-      .text(220, 260, "ENEMY CARD", {
+      .text(375, 260, "ENEMY CARD", {
         fontSize: "18px",
         color: "#ff4444",
       })
       .setOrigin(0.5)
       .setDepth(100);
 
-    // Player staging at bottom right
+    // Player staging at bottom center
     this.add
-      .text(530, 550, "YOUR CARD", {
+      .text(375, 550, "YOUR CARD", {
         fontSize: "18px",
         color: "#00aaff",
       })
@@ -313,14 +313,14 @@ export default class BattleScene extends Phaser.Scene {
     // Lock the turn
     this.turnInProgress = true;
 
-    // Show player's card face-down in staging area (up and right)
+    // Show player's card face-down in staging area (centered)
     this.playerStagedCard = this.add
-      .rectangle(530, 600, 120, 160, 0x333333)
+      .rectangle(375, 600, 120, 160, 0x333333)
       .setStrokeStyle(3, 0x00aaff)
       .setDepth(100);
 
     this.playerStagedCardBack = this.add
-      .text(530, 600, "🂠", {
+      .text(375, 600, "🂠", {
         fontSize: "100px",
       })
       .setOrigin(0.5)
@@ -343,14 +343,14 @@ export default class BattleScene extends Phaser.Scene {
       this.isPlayerTurn
     );
 
-    // Show AI's card face-down (down and left)
+    // Show AI's card face-down (centered)
     this.opponentStagedCard = this.add
-      .rectangle(220, 310, 120, 160, 0x333333)
+      .rectangle(375, 310, 120, 160, 0x333333)
       .setStrokeStyle(3, 0xff4444)
       .setDepth(100);
 
     this.opponentStagedCardBack = this.add
-      .text(220, 310, "🂠", {
+      .text(375, 310, "🂠", {
         fontSize: "100px",
       })
       .setOrigin(0.5)
