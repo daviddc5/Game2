@@ -18,21 +18,23 @@ HIGH (MVP) - CORE GAMEPLAY OVERHAUL
 │              │   CARD   │  (face-down)          │
 │              └──────────┘                       │
 │                                                 │
-│ [Your Portrait] [Your Stats]   Energy: ■■■■□   │  Y: 750-800 (compact)
-│     (small)       (compact)          4/10      │
+│ [Your Stats]   Energy: ■■■■□   [Your Portrait] │  Y: 750-800 (compact)
+│   (compact)        4/10            (small)     │
 │                                                 │
+│           [CONFIRM PLAY]  ← appears on select  │  Y: 850
 │  [Hand: 5 cards spread horizontally]           │  Y: 900-1100
 │  [Card][Card][Card][Card][Card]                │
-│           [CONFIRM PLAY]  ← appears on select  │  Y: 1150
 └─────────────────────────────────────────────────┘
 ```
 
 **Key UI Changes:**
-- Portraits: 100x100px (was 200x200), positioned left side
+- Enemy portrait: Left side at top
+- Player portrait: Right side at bottom
 - Stats: Horizontal bars next to portraits (was below)
 - Energy: Top-right corner, visual dots (■■■□□)
 - Battle log: REMOVED from main view (can be toggle/overlay)
 - Staging area: Central focus, larger cards
+- Confirm button: Above hand (Y: 850) with high depth
 - Hand: Bottom, slightly overlapping cards
 
 **Components to Create:**
@@ -110,6 +112,12 @@ Card Types (priority order):
 [ ] Show "discard" phase if over max
 [ ] Deck counter UI
 [ ] Reshuffle discard pile when deck empty
+
+=== Music ===
+Allow user to select between multiple background tracks during gameplay
+[ ] Implement music selection menu
+[ ] Add at least 2 background tracks
+
 
 IN PROGRESS
 [ ] Fix: Cards clickable during opponent turn (DONE - waiting for test)

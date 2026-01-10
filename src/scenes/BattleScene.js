@@ -73,12 +73,12 @@ export default class BattleScene extends Phaser.Scene {
         : "killer-neutral";
 
     // ENEMY at top (compact)
-    this.opponentPortrait = this.add.image(100, 80, opponentPortrait);
+    this.opponentPortrait = this.add.image(80, 75, opponentPortrait);
     this.opponentPortrait.setScale(0.15); // Smaller
     this.opponentPortrait.setFlipX(false);
 
     this.add
-      .text(180, 80, this.opponentCharacter.displayName, {
+      .text(160, 75, this.opponentCharacter.displayName, {
         fontSize: "16px",
         color: "#ff4444",
         fontStyle: "bold",
@@ -95,18 +95,18 @@ export default class BattleScene extends Phaser.Scene {
       .setOrigin(0.5)
       .setDepth(50);
 
-    // PLAYER at bottom (compact)
-    this.playerPortrait = this.add.image(100, 780, playerPortrait);
+    // PLAYER at bottom right (compact)
+    this.playerPortrait = this.add.image(600, 780, playerPortrait);
     this.playerPortrait.setScale(0.15); // Smaller
     this.playerPortrait.setFlipX(true);
 
     this.add
-      .text(180, 780, this.playerCharacter.displayName, {
+      .text(520, 780, this.playerCharacter.displayName, {
         fontSize: "16px",
         color: "#00aaff",
         fontStyle: "bold",
       })
-      .setOrigin(0, 0.5);
+      .setOrigin(1, 0.5);
   }
 
   createStatBars() {
@@ -134,20 +134,20 @@ export default class BattleScene extends Phaser.Scene {
       },
     ];
 
-    // Opponent stats (compact, next to portrait at top)
+    // Opponent stats (below portrait at top)
     const opponentStats = playerIsDetective ? vigilanteStats : detectiveStats;
     this.opponentStatGroup = new StatBarGroup(
       this,
-      320,
-      50,
+      20,
+      145,
       opponentStats,
       false
     );
     this.opponentStatGroup.create();
 
-    // Player stats (compact, next to portrait at bottom)
+    // Player stats (above portrait at bottom right)
     const playerStats = playerIsDetective ? detectiveStats : vigilanteStats;
-    this.playerStatGroup = new StatBarGroup(this, 320, 750, playerStats, true);
+    this.playerStatGroup = new StatBarGroup(this, 400, 650, playerStats, true);
     this.playerStatGroup.create();
 
     // Store references for updates (maintain backward compatibility)
@@ -258,7 +258,7 @@ export default class BattleScene extends Phaser.Scene {
   createConfirmButton() {
     // Create confirm button below the hand
     this.confirmButton = this.add
-      .text(375, 1150, "CONFIRM PLAY", {
+      .text(375, 850, "CONFIRM PLAY", {
         fontSize: "32px",
         color: "#ffffff",
         backgroundColor: "#00aa00",
@@ -266,6 +266,7 @@ export default class BattleScene extends Phaser.Scene {
       })
       .setOrigin(0.5)
       .setInteractive()
+      .setDepth(1000)
       .setVisible(false); // Hidden until card selected
 
     this.confirmButton.on("pointerdown", () => this.confirmCardPlay());
@@ -280,19 +281,19 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   createStagingArea() {
-    // Enemy staging at top
+    // Enemy staging at top left
     this.add
-      .text(375, 250, "ENEMY CARD", {
-        fontSize: "20px",
+      .text(220, 260, "ENEMY CARD", {
+        fontSize: "18px",
         color: "#ff4444",
       })
       .setOrigin(0.5)
       .setDepth(100);
 
-    // Player staging at bottom
+    // Player staging at bottom right
     this.add
-      .text(375, 650, "YOUR CARD", {
-        fontSize: "20px",
+      .text(530, 550, "YOUR CARD", {
+        fontSize: "18px",
         color: "#00aaff",
       })
       .setOrigin(0.5)
@@ -312,14 +313,14 @@ export default class BattleScene extends Phaser.Scene {
     // Lock the turn
     this.turnInProgress = true;
 
-    // Show player's card face-down in staging area
+    // Show player's card face-down in staging area (up and right)
     this.playerStagedCard = this.add
-      .rectangle(375, 700, 120, 160, 0x333333)
+      .rectangle(530, 600, 120, 160, 0x333333)
       .setStrokeStyle(3, 0x00aaff)
       .setDepth(100);
 
     this.playerStagedCardBack = this.add
-      .text(375, 700, "🂠", {
+      .text(530, 600, "🂠", {
         fontSize: "100px",
       })
       .setOrigin(0.5)
@@ -342,14 +343,14 @@ export default class BattleScene extends Phaser.Scene {
       this.isPlayerTurn
     );
 
-    // Show AI's card face-down
+    // Show AI's card face-down (down and left)
     this.opponentStagedCard = this.add
-      .rectangle(375, 300, 120, 160, 0x333333)
+      .rectangle(220, 310, 120, 160, 0x333333)
       .setStrokeStyle(3, 0xff4444)
       .setDepth(100);
 
     this.opponentStagedCardBack = this.add
-      .text(375, 300, "🂠", {
+      .text(220, 310, "🂠", {
         fontSize: "100px",
       })
       .setOrigin(0.5)

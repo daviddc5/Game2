@@ -13,7 +13,7 @@ export default class StatBarGroup {
   }
 
   create() {
-    const spacing = 70;
+    const spacing = 55;
     let currentY = this.y;
 
     this.stats.forEach((stat, index) => {
@@ -26,8 +26,8 @@ export default class StatBarGroup {
     const { key, label, color, isPositive } = statConfig;
     const value = this.scene.stats[key];
 
-    const barWidth = 300;
-    const barHeight = 28;
+    const barWidth = 200;
+    const barHeight = 24;
     const labelWidth = 160;
 
     // Label with prefix
@@ -35,14 +35,14 @@ export default class StatBarGroup {
     const labelText = this.scene.add
       .text(this.x, y, prefix + label, {
         fontFamily: "Arial, sans-serif",
-        fontSize: "18px",
+        fontSize: "15px",
         color: isPositive ? "#00ff00" : "#ff4444",
         fontStyle: "bold",
       })
       .setOrigin(0, 0.5);
 
     // Container for bar and border
-    const barY = y + 28;
+    const barY = y + 22;
 
     // Border (slightly larger than bar)
     this.scene.add
@@ -72,7 +72,7 @@ export default class StatBarGroup {
     const valueText = this.scene.add
       .text(this.x + barWidth - 10, barY, value, {
         fontFamily: "Arial, sans-serif",
-        fontSize: "20px",
+        fontSize: "16px",
         color: "#ffffff",
         fontStyle: "bold",
       })
