@@ -56,12 +56,10 @@ HIGH (MVP) - CORE GAMEPLAY OVERHAUL
 [ ] Card zoom/enlarge on selection - Make selected card bigger for easier reading
     - "VIEW" button: Circular button to the left, opens enlarged card view
     - "CONFIRM" button: Circular button (smaller than current), positioned to right of VIEW button
+    - Both buttons positioned on top of the selected card (preferred)
+    - If positioning on card is difficult, position above hand area (like current CONFIRM PLAY)
     - Enlarged view shows full card details without committing to play
     - Add cancel/back button mechanism to return from enlarged view to main screen
-[ ] Add "CONFIRM PLAY" button
-    - Appears when card is selected
-    - Positioned below hand
-    - Should be circular and smaller
 [ ] Create face-down card staging area
     - Position: Center of screen (Y: ~500)
     - Two card placeholders: "YOUR CARD" (left) and "ENEMY CARD" (right)
