@@ -53,9 +53,15 @@ HIGH (MVP) - CORE GAMEPLAY OVERHAUL
     - Card highlights when clicked
     - Doesn't remove from hand yet
     - Can click different card to change selection
+[ ] Card zoom/enlarge on selection - Make selected card bigger for easier reading
+    - "VIEW" button: Circular button to the left, opens enlarged card view
+    - "CONFIRM" button: Circular button (smaller than current), positioned to right of VIEW button
+    - Enlarged view shows full card details without committing to play
+    - Add cancel/back button mechanism to return from enlarged view to main screen
 [ ] Add "CONFIRM PLAY" button
     - Appears when card is selected
     - Positioned below hand
+    - Should be circular and smaller
 [ ] Create face-down card staging area
     - Position: Center of screen (Y: ~500)
     - Two card placeholders: "YOUR CARD" (left) and "ENEMY CARD" (right)
@@ -71,7 +77,7 @@ HIGH (MVP) - CORE GAMEPLAY OVERHAUL
     - 1-2 second delay
     - Flip animation (card back → card front)
     - Then resolve effects
-
+test
 === PHASE 2: CARD TYPES & PRIORITY (1 hour) ===
 Card Types (priority order):
 [ ] COUNTER cards - Speed 10, can cancel opponent (Red border)
