@@ -256,28 +256,67 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   createConfirmButton() {
-    // Create confirm button below the hand
-    this.confirmButton = this.add
-      .text(375, 850, "CONFIRM PLAY", {
-        fontSize: "32px",
+    // Create container for both buttons
+    this.cardActionButtons = this.add.container(375, 850);
+    this.cardActionButtons.setDepth(1000);
+    this.cardActionButtons.setVisible(false);
+
+    // VIEW button (left) - Circular
+    const viewButtonBg = this.add.circle(-60, 0, 35, 0x4444ff);
+    const viewButtonText = this.add
+      .text(-60, 0, "VIEW", {
+        fontSize: "16px",
         color: "#ffffff",
-        backgroundColor: "#00aa00",
-        padding: { x: 30, y: 15 },
+        fontStyle: "bold",
       })
-      .setOrigin(0.5)
-      .setInteractive()
-      .setDepth(1000)
-      .setVisible(false); // Hidden until card selected
+      .setOrigin(0.5);
 
-    this.confirmButton.on("pointerdown", () => this.confirmCardPlay());
+    viewButtonBg.setInteractive({ useHandCursor: true });
+    viewButtonBg.on("pointerdown", () => this.showEnlargedCardView());
+    viewButtonBg.on("pointerover", () => {
+      viewButtonBg.setFillStyle(0x6666ff);
+      viewButtonBg.setScale(1.1);
+      viewButtonText.setScale(1.1);
+    });
+    viewButtonBg.on("pointerout", () => {
+      viewButtonBg.setFillStyle(0x4444ff);
+      viewButtonBg.setScale(1);
+      viewButtonText.setScale(1);
+    });
 
-    // Hover effect
-    this.confirmButton.on("pointerover", () => {
-      this.confirmButton.setBackgroundColor("#00ff00");
+    // CONFIRM button (right) - Circular
+    const confirmButtonBg = this.add.circle(60, 0, 35, 0x00aa00);
+    const confirmButtonText = this.add
+      .text(60, 0, "PLAY", {
+        fontSize: "16px",
+        color: "#ffffff",
+        fontStyle: "bold",
+      })
+      .setOrigin(0.5);
+
+    confirmButtonBg.setInteractive({ useHandCursor: true });
+    confirmButtonBg.on("pointerdown", () => this.confirmCardPlay());
+    confirmButtonBg.on("pointerover", () => {
+      confirmButtonBg.setFillStyle(0x00ff00);
+      confirmButtonBg.setScale(1.1);
+      confirmButtonText.setScale(1.1);
     });
-    this.confirmButton.on("pointerout", () => {
-      this.confirmButton.setBackgroundColor("#00aa00");
+    confirmButtonBg.on("pointerout", () => {
+      confirmButtonBg.setFillStyle(0x00aa00);
+      confirmButtonBg.setScale(1);
+      confirmButtonText.setScale(1);
     });
+
+    // Add buttons to container
+    this.cardActionButtons.add([
+      viewButtonBg,
+      viewButtonText,
+      confirmButtonBg,
+      confirmButtonText,
+    ]);
+
+    // Store references for later use
+    this.confirmButton = this.cardActionButtons; // Keep reference for compatibility
   }
 
   createStagingArea() {
@@ -304,8 +343,161 @@ export default class BattleScene extends Phaser.Scene {
     this.opponentStagedCard = null;
   }
 
+  showEnlargedCardView() {
+    if (!this.selectedCard) return;
+
+    const card = this.selectedCard.card;
+
+    // Create dark overlay background
+    this.enlargedViewOverlay = this.add
+      .rectangle(375, 540, 750, 1080, 0x000000, 0.9)
+      .setOrigin(0.5)
+      .setDepth(2000)
+      .setInteractive(); // Block clicks behind it
+
+    // Create enlarged card container
+    const cardWidth = 400;
+    const cardHeight = 580;
+    const cardX = 375;
+    const cardY = 450;
+
+    // Card background
+    const cardBg = this.add
+      .rectangle(cardX, cardY, cardWidth, cardHeight, 0x2a2a2a)
+      .setOrigin(0.5)
+      .setDepth(2001);
+
+    // Card border
+    const cardBorder = this.add
+      .rectangle(cardX, cardY, cardWidth, cardHeight)
+      .setOrigin(0.5)
+      .setStrokeStyle(4, 0xd4af37)
+      .setDepth(2001);
+
+    // Card name
+    const nameText = this.add
+      .text(cardX, cardY - 220, card.name, {
+        fontFamily: "Georgia, serif",
+        fontSize: "32px",
+        color: "#ffffff",
+        align: "center",
+        wordWrap: { width: cardWidth - 40 },
+        fontStyle: "bold",
+      })
+      .setOrigin(0.5)
+      .setDepth(2002);
+
+    // Card description
+    const descText = this.add
+      .text(cardX, cardY - 100, card.description, {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "22px",
+        color: "#cccccc",
+        align: "center",
+        wordWrap: { width: cardWidth - 60 },
+        lineSpacing: 8,
+      })
+      .setOrigin(0.5)
+      .setDepth(2002);
+
+    // Format and display effects
+    const effectLines = [];
+    if (card.effects.evidence !== 0) {
+      effectLines.push(
+        `Evidence: ${card.effects.evidence > 0 ? "+" : ""}${
+          card.effects.evidence
+        }`
+      );
+    }
+    if (card.effects.morale !== 0) {
+      effectLines.push(
+        `Morale: ${card.effects.morale > 0 ? "+" : ""}${card.effects.morale}`
+      );
+    }
+    if (card.effects.justiceInfluence !== 0) {
+      effectLines.push(
+        `Justice: ${card.effects.justiceInfluence > 0 ? "+" : ""}${
+          card.effects.justiceInfluence
+        }`
+      );
+    }
+    if (card.effects.suspicion !== 0) {
+      effectLines.push(
+        `Suspicion: ${card.effects.suspicion > 0 ? "+" : ""}${
+          card.effects.suspicion
+        }`
+      );
+    }
+
+    const effectsText = this.add
+      .text(cardX, cardY + 100, effectLines.join("\n"), {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "26px",
+        color: "#ffd700",
+        align: "center",
+        fontStyle: "bold",
+        lineSpacing: 12,
+      })
+      .setOrigin(0.5)
+      .setDepth(2002);
+
+    // Close/Back button (X button in top-right corner)
+    const closeButtonBg = this.add
+      .circle(650, 150, 40, 0xff4444)
+      .setDepth(2003)
+      .setInteractive({ useHandCursor: true });
+
+    const closeButtonText = this.add
+      .text(650, 150, "✕", {
+        fontSize: "36px",
+        color: "#ffffff",
+        fontStyle: "bold",
+      })
+      .setOrigin(0.5)
+      .setDepth(2004);
+
+    // Close button interactions
+    closeButtonBg.on("pointerdown", () => this.closeEnlargedCardView());
+    closeButtonBg.on("pointerover", () => {
+      closeButtonBg.setFillStyle(0xff6666);
+      closeButtonBg.setScale(1.1);
+      closeButtonText.setScale(1.1);
+    });
+    closeButtonBg.on("pointerout", () => {
+      closeButtonBg.setFillStyle(0xff4444);
+      closeButtonBg.setScale(1);
+      closeButtonText.setScale(1);
+    });
+
+    // Store all enlarged view elements for cleanup
+    this.enlargedViewElements = [
+      this.enlargedViewOverlay,
+      cardBg,
+      cardBorder,
+      nameText,
+      descText,
+      effectsText,
+      closeButtonBg,
+      closeButtonText,
+    ];
+  }
+
+  closeEnlargedCardView() {
+    // Destroy all enlarged view elements
+    if (this.enlargedViewElements) {
+      this.enlargedViewElements.forEach((element) => element.destroy());
+      this.enlargedViewElements = null;
+    }
+    if (this.enlargedViewOverlay) {
+      this.enlargedViewOverlay = null;
+    }
+  }
+
   confirmCardPlay() {
     if (!this.selectedCard) return;
+
+    // Close enlarged view if open
+    this.closeEnlargedCardView();
 
     // Hide confirm button
     this.confirmButton.setVisible(false);
