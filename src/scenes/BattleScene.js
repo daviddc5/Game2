@@ -147,7 +147,7 @@ export default class BattleScene extends Phaser.Scene {
 
     // Player stats (above portrait at bottom right)
     const playerStats = playerIsDetective ? detectiveStats : vigilanteStats;
-    this.playerStatGroup = new StatBarGroup(this, 400, 650, playerStats, true);
+    this.playerStatGroup = new StatBarGroup(this, 520, 580, playerStats, true);
     this.playerStatGroup.create();
 
     // Store references for updates (maintain backward compatibility)
