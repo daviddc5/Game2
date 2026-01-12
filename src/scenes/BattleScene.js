@@ -85,16 +85,6 @@ export default class BattleScene extends Phaser.Scene {
       })
       .setOrigin(0, 0.5);
 
-    // VS text in center
-    this.add
-      .text(375, 450, "VS", {
-        fontSize: "48px",
-        color: "#ffaa00",
-        fontStyle: "bold",
-      })
-      .setOrigin(0.5)
-      .setDepth(50);
-
     // PLAYER at bottom right (compact)
     this.playerPortrait = this.add.image(600, 780, playerPortrait);
     this.playerPortrait.setScale(0.15); // Smaller
@@ -356,23 +346,19 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   createStagingArea() {
-    // Enemy staging at top center
+    // Enemy card placeholder at top center
     this.add
-      .text(375, 260, "ENEMY CARD", {
-        fontSize: "18px",
-        color: "#ff4444",
-      })
+      .rectangle(375, 310, 120, 160, 0x1a1a1a)
+      .setStrokeStyle(2, 0xff4444, 0.5)
       .setOrigin(0.5)
-      .setDepth(100);
+      .setDepth(50);
 
-    // Player staging at bottom center
+    // Player card placeholder at bottom center
     this.add
-      .text(375, 550, "YOUR CARD", {
-        fontSize: "18px",
-        color: "#00aaff",
-      })
+      .rectangle(375, 600, 120, 160, 0x1a1a1a)
+      .setStrokeStyle(2, 0x00aaff, 0.5)
       .setOrigin(0.5)
-      .setDepth(100);
+      .setDepth(50);
 
     // Placeholders for face-down cards (will show later)
     this.playerStagedCard = null;
@@ -517,7 +503,7 @@ export default class BattleScene extends Phaser.Scene {
       .setInteractive({ useHandCursor: true });
 
     const confirmButtonText = this.add
-      .text(500, 1200, "Confirm ✓", {
+      .text(500, 1200, "Play ▶", {
         fontSize: "24px",
         color: "#ffffff",
         fontStyle: "bold",
@@ -644,30 +630,119 @@ export default class BattleScene extends Phaser.Scene {
     if (this.opponentStagedCard) this.opponentStagedCard.destroy();
     if (this.opponentStagedCardBack) this.opponentStagedCardBack.destroy();
 
-    // Show actual card names
-    this.add
-      .text(375, 700, this.selectedCard.card.name, {
-        fontSize: "20px",
-        color: "#ffffff",
-        backgroundColor: "#0066cc",
-        padding: { x: 15, y: 15 },
-        wordWrap: { width: 110 },
-        align: "center",
-      })
+    // Show actual player card (full card design)
+    const playerCardBg = this.add
+      .rectangle(375, 600, 140, 200, 0x2a2a2a)
       .setOrigin(0.5)
+      .setDepth(100);
+    
+    const playerCardBorder = this.add
+      .rectangle(375, 600, 140, 200)
+      .setOrigin(0.5)
+      .setStrokeStyle(3, 0x00aaff)
       .setDepth(100);
 
-    this.add
-      .text(375, 300, aiCard.name, {
-        fontSize: "20px",
+    const playerCardName = this.add
+      .text(375, 530, this.selectedCard.card.name, {
+        fontSize: "14px",
         color: "#ffffff",
-        backgroundColor: "#cc0000",
-        padding: { x: 15, y: 15 },
-        wordWrap: { width: 110 },
         align: "center",
+        wordWrap: { width: 130 },
+        fontStyle: "bold",
       })
       .setOrigin(0.5)
+      .setDepth(101);
+
+    const playerCardDesc = this.add
+      .text(375, 590, this.selectedCard.card.description, {
+        fontSize: "10px",
+        color: "#cccccc",
+        align: "center",
+        wordWrap: { width: 130 },
+      })
+      .setOrigin(0.5)
+      .setDepth(101);
+
+    const playerEffectLines = [];
+    if (this.selectedCard.card.effects.evidence !== 0) {
+      playerEffectLines.push(`Ev: ${this.selectedCard.card.effects.evidence > 0 ? "+" : ""}${this.selectedCard.card.effects.evidence}`);
+    }
+    if (this.selectedCard.card.effects.morale !== 0) {
+      playerEffectLines.push(`Mo: ${this.selectedCard.card.effects.morale > 0 ? "+" : ""}${this.selectedCard.card.effects.morale}`);
+    }
+    if (this.selectedCard.card.effects.justiceInfluence !== 0) {
+      playerEffectLines.push(`Ju: ${this.selectedCard.card.effects.justiceInfluence > 0 ? "+" : ""}${this.selectedCard.card.effects.justiceInfluence}`);
+    }
+    if (this.selectedCard.card.effects.suspicion !== 0) {
+      playerEffectLines.push(`Su: ${this.selectedCard.card.effects.suspicion > 0 ? "+" : ""}${this.selectedCard.card.effects.suspicion}`);
+    }
+
+    const playerCardEffects = this.add
+      .text(375, 660, playerEffectLines.join("\n"), {
+        fontSize: "11px",
+        color: "#ffd700",
+        align: "center",
+        fontStyle: "bold",
+      })
+      .setOrigin(0.5)
+      .setDepth(101);
+
+    // Show actual AI card (full card design)
+    const aiCardBg = this.add
+      .rectangle(375, 310, 140, 200, 0x2a2a2a)
+      .setOrigin(0.5)
       .setDepth(100);
+    
+    const aiCardBorder = this.add
+      .rectangle(375, 310, 140, 200)
+      .setOrigin(0.5)
+      .setStrokeStyle(3, 0xff4444)
+      .setDepth(100);
+
+    const aiCardName = this.add
+      .text(375, 240, aiCard.name, {
+        fontSize: "14px",
+        color: "#ffffff",
+        align: "center",
+        wordWrap: { width: 130 },
+        fontStyle: "bold",
+      })
+      .setOrigin(0.5)
+      .setDepth(101);
+
+    const aiCardDesc = this.add
+      .text(375, 300, aiCard.description, {
+        fontSize: "10px",
+        color: "#cccccc",
+        align: "center",
+        wordWrap: { width: 130 },
+      })
+      .setOrigin(0.5)
+      .setDepth(101);
+
+    const aiEffectLines = [];
+    if (aiCard.effects.evidence !== 0) {
+      aiEffectLines.push(`Ev: ${aiCard.effects.evidence > 0 ? "+" : ""}${aiCard.effects.evidence}`);
+    }
+    if (aiCard.effects.morale !== 0) {
+      aiEffectLines.push(`Mo: ${aiCard.effects.morale > 0 ? "+" : ""}${aiCard.effects.morale}`);
+    }
+    if (aiCard.effects.justiceInfluence !== 0) {
+      aiEffectLines.push(`Ju: ${aiCard.effects.justiceInfluence > 0 ? "+" : ""}${aiCard.effects.justiceInfluence}`);
+    }
+    if (aiCard.effects.suspicion !== 0) {
+      aiEffectLines.push(`Su: ${aiCard.effects.suspicion > 0 ? "+" : ""}${aiCard.effects.suspicion}`);
+    }
+
+    const aiCardEffects = this.add
+      .text(375, 370, aiEffectLines.join("\n"), {
+        fontSize: "11px",
+        color: "#ffd700",
+        align: "center",
+        fontStyle: "bold",
+      })
+      .setOrigin(0.5)
+      .setDepth(101);
 
     // Apply card effects
     this.time.delayedCall(1500, () => {
