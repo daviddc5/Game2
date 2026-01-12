@@ -393,16 +393,16 @@ export default class BattleScene extends Phaser.Scene {
 
     // Create dark overlay background (fullscreen)
     this.enlargedViewOverlay = this.add
-      .rectangle(375, 540, 750, 1080, 0x000000, 0.95)
+      .rectangle(375, 667, 750, 1334, 0x000000, 0.95)
       .setOrigin(0.5)
       .setDepth(2000)
       .setInteractive(); // Block clicks behind it
 
-    // Create enlarged card container (fullscreen)
-    const cardWidth = 650;
-    const cardHeight = 900;
+    // Create enlarged card container (fullscreen, centered)
+    const cardWidth = 700;
+    const cardHeight = 1000;
     const cardX = 375;
-    const cardY = 450;
+    const cardY = 600; // Centered vertically in 1334px height screen
 
     // Card background
     const cardBg = this.add
@@ -486,12 +486,12 @@ export default class BattleScene extends Phaser.Scene {
 
     // Go Back button (left, at bottom)
     const backButtonBg = this.add
-      .rectangle(250, 950, 180, 60, 0x666666)
+      .rectangle(250, 1200, 180, 60, 0x666666)
       .setDepth(2003)
       .setInteractive({ useHandCursor: true });
 
     const backButtonText = this.add
-      .text(250, 950, "← Go Back", {
+      .text(250, 1200, "← Go Back", {
         fontSize: "24px",
         color: "#ffffff",
         fontStyle: "bold",
@@ -512,12 +512,12 @@ export default class BattleScene extends Phaser.Scene {
 
     // Confirm button (right, at bottom)
     const confirmButtonBg = this.add
-      .rectangle(500, 950, 180, 60, 0x00aa00)
+      .rectangle(500, 1200, 180, 60, 0x00aa00)
       .setDepth(2003)
       .setInteractive({ useHandCursor: true });
 
     const confirmButtonText = this.add
-      .text(500, 950, "Confirm ✓", {
+      .text(500, 1200, "Confirm ✓", {
         fontSize: "24px",
         color: "#ffffff",
         fontStyle: "bold",
@@ -582,8 +582,10 @@ export default class BattleScene extends Phaser.Scene {
     // Close enlarged view if open
     this.closeEnlargedCardView();
 
-    // Keep buttons visible (don't hide them)
-    // They will be hidden when another card is pressed
+    // Hide buttons after confirming
+    if (this.confirmButton) {
+      this.confirmButton.setVisible(false);
+    }
     
     // Lock the turn
     this.turnInProgress = true;
