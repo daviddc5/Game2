@@ -348,7 +348,7 @@ export default class BattleScene extends Phaser.Scene {
     
     // Position above the elevated card (HOVER_LIFT = 80px)
     const elevatedY = center.y - 80; // Card moves up 80px when elevated
-    const buttonY = elevatedY - (this.cardHand.CARD_HEIGHT * this.cardHand.HOVER_SCALE / 2) - 60; // Above the scaled card
+    const buttonY = elevatedY - (this.cardHand.CARD_HEIGHT * this.cardHand.HOVER_SCALE / 2) - 10; // Above the scaled card, very close
     
     this.cardActionButtons.setPosition(center.x, buttonY);
     this.cardActionButtons.setDepth(1500);
