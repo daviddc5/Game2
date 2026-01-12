@@ -128,6 +128,11 @@ export default class CardHand {
 
     // Poker-style hover animations
     cardBg.on("pointerover", () => {
+      // Don't animate if this card is locked in elevated state
+      if (this.scene.lockedCardIndex === cardIndex) {
+        return;
+      }
+      
       this.scene.tweens.add({
         targets: cardContainer,
         y: y + this.CARD_HEIGHT / 2 - this.HOVER_LIFT,
@@ -141,6 +146,11 @@ export default class CardHand {
     });
 
     cardBg.on("pointerout", () => {
+      // Don't animate if this card is locked in elevated state
+      if (this.scene.lockedCardIndex === cardIndex) {
+        return;
+      }
+      
       this.scene.tweens.add({
         targets: cardContainer,
         y: y + this.CARD_HEIGHT / 2,
@@ -153,7 +163,7 @@ export default class CardHand {
       cardBg.setFillStyle(0x2a2a2a);
     });
 
-    // Click to select card (no animation, just select)
+    // Click to select and lock card in elevated state
     cardBg.on("pointerdown", () => {
       if (this.onCardPlayed) {
         // Check if it's player's turn
@@ -164,13 +174,63 @@ export default class CardHand {
           return;
         }
 
-        // Just call the callback directly (selectCard)
+        // Unlock previous card if any
+        if (this.scene.lockedCardIndex !== null && this.scene.lockedCardIndex !== cardIndex) {
+          this.unlockCard(this.scene.lockedCardIndex);
+        }
+
+        // Lock this card in elevated state
+        this.scene.lockedCardIndex = cardIndex;
+        
+        // Ensure card is elevated and green
+        cardContainer.setY(y + this.CARD_HEIGHT / 2 - this.HOVER_LIFT);
+        cardContainer.setScale(this.HOVER_SCALE);
+        cardContainer.setRotation(0);
+        cardContainer.setDepth(100);
+        cardBg.setFillStyle(0x2a5a2a); // Green tint
+        cardBorder.setStrokeStyle(3, 0x00ff00); // Green border
+
+        // Call the callback directly (selectCard) which will reposition buttons
         this.onCardPlayed(cardData, cardIndex);
       }
     });
 
     // Store card container for cleanup
     this.cardObjects.push(cardContainer);
+  }
+
+  unlockCard(cardIndex) {
+    if (cardIndex < this.cardObjects.length) {
+      const cardContainer = this.cardObjects[cardIndex];
+      const cardBg = cardContainer.list[1]; // Background is second element after shadow
+      const cardBorder = cardContainer.list[2]; // Border is third element
+      
+      // Calculate original position
+      const numCards = this.cards.length;
+      const centerX = this.scene.cameras.main.width / 2;
+      const totalSpacing = (this.CARD_WIDTH + this.CARD_SPACING) * (numCards - 1);
+      const startX = centerX - totalSpacing / 2;
+      const x = startX + (this.CARD_WIDTH + this.CARD_SPACING) * cardIndex;
+      const normalizedPos = (cardIndex - (numCards - 1) / 2) / (numCards - 1);
+      const arcOffset = Math.abs(normalizedPos) * this.ARC_AMOUNT;
+      const y = this.CARD_Y + arcOffset;
+      const rotation = normalizedPos * 0.1;
+      
+      // Animate back to original position
+      this.scene.tweens.add({
+        targets: cardContainer,
+        y: y + this.CARD_HEIGHT / 2,
+        scale: 1,
+        rotation: rotation,
+        duration: 200,
+        ease: "Power2",
+      });
+      cardContainer.setDepth(cardIndex);
+      cardBg.setFillStyle(0x2a2a2a);
+      cardBorder.setStrokeStyle(3, 0xd4af37); // Reset to gold
+    }
+    
+    this.scene.lockedCardIndex = null;
   }
 
   formatEffects(effects) {
@@ -220,5 +280,12 @@ export default class CardHand {
   destroy() {
     this.cardObjects.forEach((obj) => obj.destroy());
     this.cardObjects = [];
+  }
+
+  // Returns the center position of a card container in scene coordinates
+  getCardCenter(index) {
+    const container = this.cardObjects[index];
+    if (!container) return null;
+    return { x: container.x, y: container.y };
   }
 }

@@ -245,78 +245,114 @@ export default class BattleScene extends Phaser.Scene {
     this.selectedCard = { card, cardIndex };
     this.isSelectingCard = true;
 
-    //Highlighting the selected card
-    this.cardHand.highlightCard(cardIndex);
-
     //Show the confirm button
     if (!this.confirmButton) {
       this.createConfirmButton();
     }
+    // Position the buttons above the selected card (which is now locked elevated)
+    this.positionActionButtonsAtCard(cardIndex);
     this.confirmButton.setVisible(true);
   }
 
   createConfirmButton() {
-    // Create container for both buttons
+    // Create container for both buttons (no backdrop)
     this.cardActionButtons = this.add.container(375, 850);
     this.cardActionButtons.setDepth(1000);
     this.cardActionButtons.setVisible(false);
 
-    // VIEW button (left) - Circular
-    const viewButtonBg = this.add.circle(-60, 0, 35, 0x4444ff);
+    // VIEW button (left) - Circular with glow
+    const viewButtonGlow = this.add.circle(-60, 0, 45, 0x4444ff, 0.6);
+    const viewButtonBg = this.add.circle(-60, 0, 38, 0x4444ff);
     const viewButtonText = this.add
-      .text(-60, 0, "VIEW", {
-        fontSize: "16px",
+      .text(-60, 0, "👁", {
+        fontSize: "28px",
+        color: "#ffffff",
+        fontStyle: "bold",
+      })
+      .setOrigin(0.5);
+    const viewLabel = this.add
+      .text(-60, 28, "VIEW", {
+        fontSize: "11px",
         color: "#ffffff",
         fontStyle: "bold",
       })
       .setOrigin(0.5);
 
     viewButtonBg.setInteractive({ useHandCursor: true });
-    viewButtonBg.on("pointerdown", () => this.showEnlargedCardView());
+    viewButtonBg.on("pointerdown", () => {
+      this.showEnlargedCardView();
+    });
     viewButtonBg.on("pointerover", () => {
       viewButtonBg.setFillStyle(0x6666ff);
-      viewButtonBg.setScale(1.1);
-      viewButtonText.setScale(1.1);
+      viewButtonGlow.setFillStyle(0x6666ff, 0.8);
     });
     viewButtonBg.on("pointerout", () => {
       viewButtonBg.setFillStyle(0x4444ff);
-      viewButtonBg.setScale(1);
-      viewButtonText.setScale(1);
+      viewButtonGlow.setFillStyle(0x4444ff, 0.6);
     });
 
-    // CONFIRM button (right) - Circular
-    const confirmButtonBg = this.add.circle(60, 0, 35, 0x00aa00);
+    // CONFIRM button (right) - Circular with glow
+    const confirmButtonGlow = this.add.circle(60, 0, 45, 0x00aa00, 0.6);
+    const confirmButtonBg = this.add.circle(60, 0, 38, 0x00aa00);
     const confirmButtonText = this.add
-      .text(60, 0, "PLAY", {
-        fontSize: "16px",
+      .text(60, 0, "▶", {
+        fontSize: "26px",
+        color: "#ffffff",
+        fontStyle: "bold",
+      })
+      .setOrigin(0.5);
+    const confirmLabel = this.add
+      .text(60, 28, "PLAY", {
+        fontSize: "11px",
         color: "#ffffff",
         fontStyle: "bold",
       })
       .setOrigin(0.5);
 
     confirmButtonBg.setInteractive({ useHandCursor: true });
-    confirmButtonBg.on("pointerdown", () => this.confirmCardPlay());
+    confirmButtonBg.on("pointerdown", () => {
+      this.confirmCardPlay();
+    });
     confirmButtonBg.on("pointerover", () => {
       confirmButtonBg.setFillStyle(0x00ff00);
-      confirmButtonBg.setScale(1.1);
-      confirmButtonText.setScale(1.1);
+      confirmButtonGlow.setFillStyle(0x00ff00, 0.8);
     });
     confirmButtonBg.on("pointerout", () => {
       confirmButtonBg.setFillStyle(0x00aa00);
-      confirmButtonBg.setScale(1);
-      confirmButtonText.setScale(1);
+      confirmButtonGlow.setFillStyle(0x00aa00, 0.6);
     });
 
-    // Add buttons to container
+    // Add buttons to container (no backdrop)
     this.cardActionButtons.add([
+      viewButtonGlow,
       viewButtonBg,
       viewButtonText,
+      viewLabel,
+      confirmButtonGlow,
       confirmButtonBg,
       confirmButtonText,
+      confirmLabel,
     ]);
 
     // Store references for later use
     this.confirmButton = this.cardActionButtons; // Keep reference for compatibility
+  }
+
+  // Position the action buttons above the elevated card
+  positionActionButtonsAtCard(cardIndex) {
+    if (!this.cardHand || !this.cardActionButtons) return;
+    const center = this.cardHand.getCardCenter
+      ? this.cardHand.getCardCenter(cardIndex)
+      : null;
+    if (!center) return;
+    
+    // Position above the elevated card (HOVER_LIFT = 80px)
+    const elevatedY = center.y - 80; // Card moves up 80px when elevated
+    const buttonY = elevatedY - (this.cardHand.CARD_HEIGHT * this.cardHand.HOVER_SCALE / 2) - 60; // Above the scaled card
+    
+    this.cardActionButtons.setPosition(center.x, buttonY);
+    this.cardActionButtons.setDepth(1500);
+    this.cardActionButtons.setAlpha(1);
   }
 
   createStagingArea() {
@@ -344,20 +380,27 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   showEnlargedCardView() {
-    if (!this.selectedCard) return;
+    // Use hovered card if available, otherwise use selected card
+    const cardData = this.hoveredCard || (this.selectedCard ? this.selectedCard.card : null);
+    if (!cardData) return;
 
-    const card = this.selectedCard.card;
+    // Hide action buttons while viewing enlarged card
+    if (this.cardActionButtons) {
+      this.cardActionButtons.setVisible(false);
+    }
 
-    // Create dark overlay background
+    const card = cardData;
+
+    // Create dark overlay background (fullscreen)
     this.enlargedViewOverlay = this.add
-      .rectangle(375, 540, 750, 1080, 0x000000, 0.9)
+      .rectangle(375, 540, 750, 1080, 0x000000, 0.95)
       .setOrigin(0.5)
       .setDepth(2000)
       .setInteractive(); // Block clicks behind it
 
-    // Create enlarged card container
-    const cardWidth = 400;
-    const cardHeight = 580;
+    // Create enlarged card container (fullscreen)
+    const cardWidth = 650;
+    const cardHeight = 900;
     const cardX = 375;
     const cardY = 450;
 
@@ -441,32 +484,56 @@ export default class BattleScene extends Phaser.Scene {
       .setOrigin(0.5)
       .setDepth(2002);
 
-    // Close/Back button (X button in top-right corner)
-    const closeButtonBg = this.add
-      .circle(650, 150, 40, 0xff4444)
+    // Go Back button (left, at bottom)
+    const backButtonBg = this.add
+      .rectangle(250, 950, 180, 60, 0x666666)
       .setDepth(2003)
       .setInteractive({ useHandCursor: true });
 
-    const closeButtonText = this.add
-      .text(650, 150, "✕", {
-        fontSize: "36px",
+    const backButtonText = this.add
+      .text(250, 950, "← Go Back", {
+        fontSize: "24px",
         color: "#ffffff",
         fontStyle: "bold",
       })
       .setOrigin(0.5)
       .setDepth(2004);
 
-    // Close button interactions
-    closeButtonBg.on("pointerdown", () => this.closeEnlargedCardView());
-    closeButtonBg.on("pointerover", () => {
-      closeButtonBg.setFillStyle(0xff6666);
-      closeButtonBg.setScale(1.1);
-      closeButtonText.setScale(1.1);
+    // Back button interactions
+    backButtonBg.on("pointerdown", () => {
+      this.closeEnlargedCardView();
     });
-    closeButtonBg.on("pointerout", () => {
-      closeButtonBg.setFillStyle(0xff4444);
-      closeButtonBg.setScale(1);
-      closeButtonText.setScale(1);
+    backButtonBg.on("pointerover", () => {
+      backButtonBg.setFillStyle(0x888888);
+    });
+    backButtonBg.on("pointerout", () => {
+      backButtonBg.setFillStyle(0x666666);
+    });
+
+    // Confirm button (right, at bottom)
+    const confirmButtonBg = this.add
+      .rectangle(500, 950, 180, 60, 0x00aa00)
+      .setDepth(2003)
+      .setInteractive({ useHandCursor: true });
+
+    const confirmButtonText = this.add
+      .text(500, 950, "Confirm ✓", {
+        fontSize: "24px",
+        color: "#ffffff",
+        fontStyle: "bold",
+      })
+      .setOrigin(0.5)
+      .setDepth(2004);
+
+    // Confirm button interactions
+    confirmButtonBg.on("pointerdown", () => {
+      this.confirmCardPlay();
+    });
+    confirmButtonBg.on("pointerover", () => {
+      confirmButtonBg.setFillStyle(0x00ff00);
+    });
+    confirmButtonBg.on("pointerout", () => {
+      confirmButtonBg.setFillStyle(0x00aa00);
     });
 
     // Store all enlarged view elements for cleanup
@@ -477,8 +544,10 @@ export default class BattleScene extends Phaser.Scene {
       nameText,
       descText,
       effectsText,
-      closeButtonBg,
-      closeButtonText,
+      backButtonBg,
+      backButtonText,
+      confirmButtonBg,
+      confirmButtonText,
     ];
   }
 
@@ -491,17 +560,31 @@ export default class BattleScene extends Phaser.Scene {
     if (this.enlargedViewOverlay) {
       this.enlargedViewOverlay = null;
     }
+
+    // Restore action buttons if still selecting a card
+    if (this.isSelectingCard && this.cardActionButtons && this.selectedCard) {
+      this.positionActionButtonsAtCard(this.selectedCard.cardIndex);
+      this.cardActionButtons.setVisible(true);
+    }
   }
 
   confirmCardPlay() {
+    // Use hovered card info if available, otherwise use selected card
+    if (!this.hoveredCard && !this.selectedCard) return;
+    
+    if (this.hoveredCard && this.hoveredCardIndex !== undefined) {
+      // Set as selected card from hover
+      this.selectedCard = { card: this.hoveredCard, cardIndex: this.hoveredCardIndex };
+    }
+    
     if (!this.selectedCard) return;
 
     // Close enlarged view if open
     this.closeEnlargedCardView();
 
-    // Hide confirm button
-    this.confirmButton.setVisible(false);
-
+    // Keep buttons visible (don't hide them)
+    // They will be hidden when another card is pressed
+    
     // Lock the turn
     this.turnInProgress = true;
 
