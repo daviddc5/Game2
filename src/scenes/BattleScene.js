@@ -3,7 +3,6 @@ import { getDeckForCharacter, drawCards } from "../data/cards.js";
 import { getCharacter, getOpponent } from "../data/characters.js";
 import StatBarGroup from "../ui/StatBarGroup.js";
 import CardHand from "../ui/CardHand.js";
-import BattleLog from "../ui/BattleLog.js";
 import StatsModal from "../ui/StatsModal.js";
 import GameLogic from "../logic/GameLogic.js";
 import AIController from "../logic/AIController.js";
@@ -19,7 +18,6 @@ export default class BattleScene extends Phaser.Scene {
     // Create UI elements in order (top to bottom)
     this.createPortraits();
     this.createStatBars();
-    this.createBattleLog();
     this.createCardHand();
     this.createStagingArea();
     this.selectedCard = null; // track which card is selected
@@ -215,20 +213,7 @@ export default class BattleScene extends Phaser.Scene {
     };
   }
 
-  createBattleLog() {
-    // Battle log hidden for now (can toggle later)
-    this.battleLog = new BattleLog(this, 375, 1400, 700, 180);
-    this.battleLog.create();
 
-    // Hide all battle log elements
-    this.battleLog.background.setVisible(false);
-    this.battleLog.titleText.setVisible(false);
-    this.battleLog.textObjects.forEach((obj) => obj.setVisible(false));
-
-    // Add initial message
-    this.battleLog.addMessage("⚔️ Battle Start!", "#ffaa00");
-    this.battleLog.addMessage("► YOUR TURN", "#00ff00");
-  }
 
   createCardHand() {
     this.cardHand.setCards(this.hand);
@@ -286,7 +271,6 @@ export default class BattleScene extends Phaser.Scene {
 
     // Block if not player's turn
     if (!this.isPlayerTurn) {
-      this.battleLog.addMessage("⚠️ Wait for your turn!", "#ff4444");
       return;
     }
 
@@ -897,12 +881,10 @@ export default class BattleScene extends Phaser.Scene {
 
   applyBothCardEffects(playerCard, aiCard) {
     // Apply player card - affects both player and opponent
-    this.battleLog.addMessage(`► You played: ${playerCard.name}`, "#00aaff");
     this.playerStats = GameLogic.applyEffects(this.playerStats, playerCard.selfEffects);
     this.opponentStats = GameLogic.applyEffects(this.opponentStats, playerCard.opponentEffects);
 
     // Apply AI card - affects both opponent and player
-    this.battleLog.addMessage(`► Enemy played: ${aiCard.name}`, "#ff4444");
     this.opponentStats = GameLogic.applyEffects(this.opponentStats, aiCard.selfEffects);
     this.playerStats = GameLogic.applyEffects(this.playerStats, aiCard.opponentEffects);
 
@@ -931,15 +913,11 @@ export default class BattleScene extends Phaser.Scene {
       this.cardHand.render();
     }
 
-    this.battleLog.addMessage("► YOUR TURN", "#00ff00");
   }
 
   endPlayerTurn() {
     //switch turn to AI
     this.isPlayerTurn = false;
-
-    // Log turn change
-    this.battleLog.addMessage("► ENEMY TURN", "#ff4444");
 
     // Start AI turn after delay
     this.time.delayedCall(1000, () => {
@@ -954,18 +932,7 @@ export default class BattleScene extends Phaser.Scene {
     // Use GameLogic to apply effects with clamping
     this.stats = GameLogic.applyEffects(this.stats, effects);
 
-    // Log stat changes if requested
-    if (logEffects) {
-      Object.keys(effects).forEach((stat) => {
-        const change = this.stats[stat] - oldStats[stat];
-        if (change !== 0) {
-          const statLabel = this.getStatLabel(stat);
-          const color = change > 0 ? "#00ff00" : "#ff4444";
-          const prefix = change > 0 ? "+" : "";
-          this.battleLog.addMessage(`  ${prefix}${change} ${statLabel}`, color);
-        }
-      });
-    }
+    // Log stat changes if requested (removed battle log display)
 
     // Update visual bars
     this.updateStatBars();
@@ -1002,9 +969,6 @@ export default class BattleScene extends Phaser.Scene {
     this.isPlayerTurn = true;
     this.turnInProgress = false;
 
-    // Log turn change
-    this.battleLog.addMessage("► YOUR TURN", "#00ff00");
-
     console.log(`=== Turn ${this.turnNumber} - Player's turn ===`);
   }
 
@@ -1018,9 +982,6 @@ export default class BattleScene extends Phaser.Scene {
     // Choose the best card based on AI logic
     const bestCard = this.chooseBestAICard(aiCards);
     console.log("AI plays:", bestCard.name);
-
-    // Log AI action
-    this.battleLog.addMessage(`Enemy played: ${bestCard.name}`, "#ff8800");
 
     // Apply AI card effects
     this.applyCardEffects(bestCard.effects, true);
