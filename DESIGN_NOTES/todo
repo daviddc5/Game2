@@ -48,34 +48,14 @@ HIGH (MVP) - CORE GAMEPLAY OVERHAUL
 ✅ Mobile-friendly layout
 ✅ Familiar to card game players
 
-=== PHASE 1: SIMULTANEOUS CARD SYSTEM (30 min) ===
-[ ] Implement card selection (click = select, not play)
-    - Card highlights when clicked
-    - Doesn't remove from hand yet
-    - Can click different card to change selection
-[ ] Card zoom/enlarge on selection - Make selected card bigger for easier reading
-    - "VIEW" button: Circular button to the left, opens enlarged card view
-    - "CONFIRM" button: Circular button (smaller than current), positioned to right of VIEW button
-    - Both buttons positioned on top of the selected card (preferred)
-    - If positioning on card is difficult, position above hand area (like current CONFIRM PLAY)
-    - Enlarged view shows full card details without committing to play
-    - Add cancel/back button mechanism to return from enlarged view to main screen
-[ ] Create face-down card staging area
-    - Position: Center of screen (Y: ~500)
-    - Two card placeholders: "YOUR CARD" (left) and "ENEMY CARD" (right)
-    - Show card back image when locked in
-[ ] Lock in player card face-down
-    - When CONFIRM clicked, card appears face-down in staging area
-    - Remove card from hand
-    - CONFIRM button disappears
-[ ] AI auto-selects card face-down
-    - AI picks card immediately after player confirms
-    - AI's card appears face-down in staging area
-[ ] Both cards reveal simultaneously
-    - 1-2 second delay
-    - Flip animation (card back → card front)
-    - Then resolve effects
-test
+=== PHASE 1: SIMULTANEOUS CARD SYSTEM ===
+✅ Implement card selection (click = select, not play)
+✅ Card zoom/enlarge on selection with VIEW and CONFIRM buttons
+✅ Create face-down card staging area (center screen)
+✅ Lock in player card face-down
+✅ AI auto-selects card face-down
+✅ Both cards reveal simultaneously with delay
+✅ Fixed: Cards stacking/blur issue (proper cleanup)
 === PHASE 2: CARD TYPES & PRIORITY (1 hour) ===
 Card Types (priority order):
 [ ] COUNTER cards - Speed 10, can cancel opponent (Red border)
@@ -121,6 +101,52 @@ Card Types (priority order):
 Allow user to select between multiple background tracks during gameplay
 [ ] Implement music selection menu
 [ ] Add at least 2 background tracks
+
+=== PHASE 6: ONLINE MULTIPLAYER (2-4 weeks) ===
+Backend (Node.js + Express + Socket.io):
+[ ] Set up Node.js + Express server locally
+[ ] Implement WebSocket server (Socket.io)
+[ ] Create matchmaking queue system (simple FIFO queue)
+[ ] Game room management (pair players, track game state)
+[ ] Basic user authentication (username only for MVP, no passwords)
+[ ] Server-side validation:
+    - Validate it's player's turn before accepting card play
+    - Verify card is in player's hand
+    - Check energy cost (when energy system added)
+    - Prevent duplicate actions
+[ ] Handle disconnection/reconnection (simple: other player wins if opponent DC)
+
+Frontend:
+[ ] Create multiplayer lobby/menu scene
+[ ] Add "Find Match" button and waiting UI
+[ ] Network layer for sending/receiving game actions
+[ ] Refactor BattleScene to work with remote opponent
+[ ] Handle network latency and delays (show "waiting for opponent")
+[ ] Show connection status indicator
+[ ] Timeout handling for inactive players (30s timeout)
+[ ] Friend code/room system (optional, for private matches)
+
+Google Cloud Deployment (GCP Learning):
+[ ] Create Google Cloud project
+[ ] Choose hosting option:
+    - Cloud Run (recommended - auto-scaling, pay-per-use)
+    - App Engine (easier, but less flexible)
+    - Compute Engine (full control, more setup)
+[ ] Set up Firestore (NoSQL) or Cloud SQL (PostgreSQL) for game data
+[ ] Configure environment variables in GCP
+[ ] Set up Cloud Build for CI/CD (optional)
+[ ] Deploy backend to GCP
+[ ] Configure custom domain (optional)
+[ ] Monitor with Cloud Logging and Cloud Monitoring
+[ ] Set up billing alerts (stay within free tier initially)
+
+Testing:
+[ ] Test locally with ngrok or localhost
+[ ] Test on GCP with real network conditions
+[ ] Load test with multiple concurrent games
+
+Alternative (Quicker for immediate demo):
+[ ] Hot-seat local multiplayer (2 players, same device) - 2-4 hours
 
 
 IN PROGRESS
@@ -203,11 +229,6 @@ ADVANCED FEATURES
 [ ] Card unlocks/rewards
 [ ] Multiple win conditions
 [ ] Tournament mode
-
-MULTIPLAYER
-[ ] Online multiplayer
-[ ] Friend battles
-[ ] Leaderboard
 
 ART
 [ ] Original sprite art (replace AI-generated)
