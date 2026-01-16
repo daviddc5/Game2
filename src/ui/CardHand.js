@@ -103,8 +103,8 @@ export default class CardHand {
       })
       .setOrigin(0.5);
 
-    // Display effects with icons/colors
-    const effectText = this.formatEffects(cardData.effects);
+    // Display effects with icons/colors (combine self and opponent effects)
+    const effectText = this.formatEffects(cardData.selfEffects, cardData.opponentEffects);
     const effectsDisplay = this.scene.add
       .text(0, 50, effectText.join("\n"), {
         fontFamily: "Arial, sans-serif",
@@ -233,29 +233,50 @@ export default class CardHand {
     this.scene.lockedCardIndex = null;
   }
 
-  formatEffects(effects) {
+  formatEffects(selfEffects, opponentEffects) {
     const effectText = [];
 
-    if (effects.evidence !== 0) {
+    // Show self effects (what it does to YOU)
+    if (selfEffects.evidence !== 0) {
       effectText.push(
-        `Evidence: ${effects.evidence > 0 ? "+" : ""}${effects.evidence}`
+        `You: ${selfEffects.evidence > 0 ? "+" : ""}${selfEffects.evidence} Ev`
       );
     }
-    if (effects.morale !== 0) {
+    if (selfEffects.morale !== 0) {
       effectText.push(
-        `Morale: ${effects.morale > 0 ? "+" : ""}${effects.morale}`
+        `You: ${selfEffects.morale > 0 ? "+" : ""}${selfEffects.morale} Mo`
       );
     }
-    if (effects.justiceInfluence !== 0) {
+    if (selfEffects.justiceInfluence !== 0) {
       effectText.push(
-        `Justice: ${effects.justiceInfluence > 0 ? "+" : ""}${
-          effects.justiceInfluence
-        }`
+        `You: ${selfEffects.justiceInfluence > 0 ? "+" : ""}${selfEffects.justiceInfluence} Ju`
       );
     }
-    if (effects.suspicion !== 0) {
+    if (selfEffects.suspicion !== 0) {
       effectText.push(
-        `Suspicion: ${effects.suspicion > 0 ? "+" : ""}${effects.suspicion}`
+        `You: ${selfEffects.suspicion > 0 ? "+" : ""}${selfEffects.suspicion} Su`
+      );
+    }
+
+    // Show opponent effects (what it does to THEM)
+    if (opponentEffects.evidence !== 0) {
+      effectText.push(
+        `Foe: ${opponentEffects.evidence > 0 ? "+" : ""}${opponentEffects.evidence} Ev`
+      );
+    }
+    if (opponentEffects.morale !== 0) {
+      effectText.push(
+        `Foe: ${opponentEffects.morale > 0 ? "+" : ""}${opponentEffects.morale} Mo`
+      );
+    }
+    if (opponentEffects.justiceInfluence !== 0) {
+      effectText.push(
+        `Foe: ${opponentEffects.justiceInfluence > 0 ? "+" : ""}${opponentEffects.justiceInfluence} Ju`
+      );
+    }
+    if (opponentEffects.suspicion !== 0) {
+      effectText.push(
+        `Foe: ${opponentEffects.suspicion > 0 ? "+" : ""}${opponentEffects.suspicion} Su`
       );
     }
 

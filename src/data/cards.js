@@ -6,8 +6,14 @@ export const lCards = [
     id: "l_data_cross_match",
     name: "Data Cross-Match",
     description: "Analyze patterns in the data",
-    effects: {
-      evidence: 10,
+    selfEffects: {
+      evidence: 8,      // Boost your investigation
+      morale: 0,
+      justiceInfluence: 0,
+      suspicion: 0,
+    },
+    opponentEffects: {
+      evidence: 5,      // Gather evidence against them
       morale: 0,
       justiceInfluence: 0,
       suspicion: 0,
@@ -17,21 +23,33 @@ export const lCards = [
     id: "l_logical_trap",
     name: "Logical Trap",
     description: "Set a clever trap for the vigilante",
-    effects: {
-      evidence: 8,
+    selfEffects: {
+      evidence: 6,
       morale: 0,
       justiceInfluence: 0,
-      suspicion: 4,
+      suspicion: 0,
+    },
+    opponentEffects: {
+      evidence: 0,
+      morale: -4,     // Shake their confidence
+      justiceInfluence: 0,
+      suspicion: 4,   // Increase heat on them
     },
   },
   {
     id: "l_press_interview",
     name: "Press Interview",
-    description: "Boost team morale",
-    effects: {
+    description: "Boost team morale publicly",
+    selfEffects: {
       evidence: 0,
-      morale: -10,
+      morale: 10,     // Boost your team morale
       justiceInfluence: 0,
+      suspicion: 0,
+    },
+    opponentEffects: {
+      evidence: 0,
+      morale: 0,
+      justiceInfluence: -5,  // Reduce vigilante public support
       suspicion: 0,
     },
   },
@@ -39,19 +57,31 @@ export const lCards = [
     id: "l_surveillance_sweep",
     name: "Surveillance Sweep",
     description: "Monitor suspects intensively",
-    effects: {
+    selfEffects: {
       evidence: 6,
       morale: 0,
       justiceInfluence: 0,
       suspicion: 0,
+    },
+    opponentEffects: {
+      evidence: 3,
+      morale: 0,
+      justiceInfluence: 0,
+      suspicion: 3,   // Put pressure on them
     },
   },
   {
     id: "l_interrogation",
     name: "Interrogation",
     description: "Question a key witness",
-    effects: {
+    selfEffects: {
       evidence: 5,
+      morale: 0,
+      justiceInfluence: 0,
+      suspicion: 0,
+    },
+    opponentEffects: {
+      evidence: 2,
       morale: 0,
       justiceInfluence: 0,
       suspicion: 3,
@@ -61,9 +91,15 @@ export const lCards = [
     id: "l_task_force_rally",
     name: "Task Force Rally",
     description: "Rally the team together",
-    effects: {
-      evidence: 4,
-      morale: -6,
+    selfEffects: {
+      evidence: 3,
+      morale: 8,
+      justiceInfluence: 0,
+      suspicion: 0,
+    },
+    opponentEffects: {
+      evidence: 0,
+      morale: -3,
       justiceInfluence: 0,
       suspicion: 0,
     },
@@ -71,11 +107,17 @@ export const lCards = [
   {
     id: "l_public_statement",
     name: "Public Statement",
-    description: "Reassure the team",
-    effects: {
+    description: "Reassure the team and public",
+    selfEffects: {
       evidence: 0,
-      morale: -8,
+      morale: 8,
       justiceInfluence: 0,
+      suspicion: 0,
+    },
+    opponentEffects: {
+      evidence: 0,
+      morale: 0,
+      justiceInfluence: -6,
       suspicion: 0,
     },
   },
@@ -83,10 +125,16 @@ export const lCards = [
     id: "l_discredit_vigilante",
     name: "Discredit Vigilante",
     description: "Expose flaws in vigilante justice",
-    effects: {
+    selfEffects: {
       evidence: 3,
       morale: 0,
-      justiceInfluence: -8,
+      justiceInfluence: 0,
+      suspicion: 0,
+    },
+    opponentEffects: {
+      evidence: 0,
+      morale: 0,
+      justiceInfluence: -8,  // Reduce their public support
       suspicion: 0,
     },
   },
@@ -94,7 +142,13 @@ export const lCards = [
     id: "l_counter_propaganda",
     name: "Counter Propaganda",
     description: "Challenge the vigilante's public support",
-    effects: {
+    selfEffects: {
+      evidence: 0,
+      morale: 0,
+      justiceInfluence: 0,
+      suspicion: 0,
+    },
+    opponentEffects: {
       evidence: 0,
       morale: 0,
       justiceInfluence: -10,
@@ -108,10 +162,16 @@ export const kiraCards = [
     id: "kira_righteous_act",
     name: "Righteous Act",
     description: "Execute a major criminal",
-    effects: {
+    selfEffects: {
       evidence: 0,
       morale: 0,
-      justiceInfluence: 12,
+      justiceInfluence: 12,  // Boost your public support
+      suspicion: 0,
+    },
+    opponentEffects: {
+      evidence: 0,
+      morale: -5,            // Demoralize detective team
+      justiceInfluence: 0,
       suspicion: 0,
     },
   },
@@ -119,31 +179,49 @@ export const kiraCards = [
     id: "kira_eliminate_witness",
     name: "Eliminate Witness",
     description: "Remove someone who knows too much",
-    effects: {
-      evidence: -10,
+    selfEffects: {
+      evidence: -8,          // Reduce evidence against you
       morale: 0,
       justiceInfluence: 0,
-      suspicion: 6,
+      suspicion: -6,         // Reduce investigation heat
+    },
+    opponentEffects: {
+      evidence: -5,          // Destroy their evidence
+      morale: 0,
+      justiceInfluence: 0,
+      suspicion: 0,
     },
   },
   {
     id: "kira_media_manipulation",
     name: "Media Manipulation",
     description: "Control the narrative",
-    effects: {
+    selfEffects: {
       evidence: 0,
       morale: 0,
-      justiceInfluence: 0,
-      suspicion: -12,
+      justiceInfluence: 8,   // Boost public support
+      suspicion: -10,        // Reduce investigation heat
+    },
+    opponentEffects: {
+      evidence: 0,
+      morale: 0,
+      justiceInfluence: 5,   // Public pressure increases
+      suspicion: 0,
     },
   },
   {
     id: "kira_intimidation",
     name: "Intimidation",
     description: "Threaten those investigating",
-    effects: {
+    selfEffects: {
       evidence: -6,
       morale: 0,
+      justiceInfluence: 0,
+      suspicion: 0,
+    },
+    opponentEffects: {
+      evidence: -3,
+      morale: -4,            // Scare the team
       justiceInfluence: 0,
       suspicion: 0,
     },
@@ -152,10 +230,16 @@ export const kiraCards = [
     id: "kira_strategic_kill",
     name: "Strategic Kill",
     description: "Make a calculated move",
-    effects: {
+    selfEffects: {
       evidence: 0,
-      morale: 8,
-      justiceInfluence: 6,
+      morale: 8,             // Boost confidence
+      justiceInfluence: 6,   // Gain public support
+      suspicion: 0,
+    },
+    opponentEffects: {
+      evidence: 0,
+      morale: 0,
+      justiceInfluence: 3,   // Public pressure increases
       suspicion: 0,
     },
   },
@@ -163,43 +247,67 @@ export const kiraCards = [
     id: "kira_cover_tracks",
     name: "Cover Tracks",
     description: "Hide your involvement",
-    effects: {
-      evidence: 0,
+    selfEffects: {
+      evidence: -5,
       morale: 0,
       justiceInfluence: 0,
       suspicion: -8,
+    },
+    opponentEffects: {
+      evidence: -3,
+      morale: 0,
+      justiceInfluence: 0,
+      suspicion: 0,
     },
   },
   {
     id: "kira_mass_judgment",
     name: "Mass Judgment",
     description: "Execute multiple criminals at once",
-    effects: {
+    selfEffects: {
       evidence: 0,
       morale: 6,
       justiceInfluence: 10,
       suspicion: 4,
+    },
+    opponentEffects: {
+      evidence: 0,
+      morale: -6,
+      justiceInfluence: 5,
+      suspicion: 0,
     },
   },
   {
     id: "kira_destroy_evidence",
     name: "Destroy Evidence",
     description: "Eliminate critical proof against you",
-    effects: {
+    selfEffects: {
       evidence: -12,
       morale: 0,
       justiceInfluence: 0,
       suspicion: 5,
+    },
+    opponentEffects: {
+      evidence: -8,
+      morale: 0,
+      justiceInfluence: 0,
+      suspicion: 0,
     },
   },
   {
     id: "kira_plant_false_leads",
     name: "Plant False Leads",
     description: "Mislead the investigation",
-    effects: {
+    selfEffects: {
       evidence: -8,
       morale: 0,
       justiceInfluence: 4,
+      suspicion: 0,
+    },
+    opponentEffects: {
+      evidence: -5,
+      morale: 0,
+      justiceInfluence: 0,
       suspicion: 0,
     },
   },

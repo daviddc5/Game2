@@ -42,13 +42,23 @@ export default class BattleScene extends Phaser.Scene {
     this.playerCharacter = getCharacter(playerCharacterName);
     this.opponentCharacter = getOpponent(playerCharacterName);
 
-    // Initialize stat values
-    this.stats = {
+    // Initialize separate stat values for each player
+    this.playerStats = {
       evidence: 50,
       morale: 50,
       justiceInfluence: 50,
       suspicion: 50,
     };
+
+    this.opponentStats = {
+      evidence: 50,
+      morale: 50,
+      justiceInfluence: 50,
+      suspicion: 50,
+    };
+
+    // Keep legacy stats for backward compatibility (will update UI progressively)
+    this.stats = this.playerStats;
 
     // Get both decks
     this.playerDeck = getDeckForCharacter(this.playerCharacter.name);
@@ -191,7 +201,7 @@ export default class BattleScene extends Phaser.Scene {
     this.opponentStatGroup.create();
 
     // Player stats (above portrait at bottom right)
-    this.playerStatGroup = new StatBarGroup(this, 520, 580, sortedPlayerStats, true);
+    this.playerStatGroup = new StatBarGroup(this, 520, 460, sortedPlayerStats, true);
     this.playerStatGroup.create();
 
     // Store references for updates (maintain backward compatibility)
@@ -499,43 +509,44 @@ export default class BattleScene extends Phaser.Scene {
       .setOrigin(0.5)
       .setDepth(2002);
 
-    // Format and display effects
+    // Format and display effects - show both self and opponent effects
     const effectLines = [];
-    if (card.effects.evidence !== 0) {
-      effectLines.push(
-        `Evidence: ${card.effects.evidence > 0 ? "+" : ""}${
-          card.effects.evidence
-        }`
-      );
+    effectLines.push("━━━ You ━━━");
+    if (card.selfEffects.evidence !== 0) {
+      effectLines.push(`Evidence: ${card.selfEffects.evidence > 0 ? "+" : ""}${card.selfEffects.evidence}`);
     }
-    if (card.effects.morale !== 0) {
-      effectLines.push(
-        `Morale: ${card.effects.morale > 0 ? "+" : ""}${card.effects.morale}`
-      );
+    if (card.selfEffects.morale !== 0) {
+      effectLines.push(`Morale: ${card.selfEffects.morale > 0 ? "+" : ""}${card.selfEffects.morale}`);
     }
-    if (card.effects.justiceInfluence !== 0) {
-      effectLines.push(
-        `Justice: ${card.effects.justiceInfluence > 0 ? "+" : ""}${
-          card.effects.justiceInfluence
-        }`
-      );
+    if (card.selfEffects.justiceInfluence !== 0) {
+      effectLines.push(`Justice: ${card.selfEffects.justiceInfluence > 0 ? "+" : ""}${card.selfEffects.justiceInfluence}`);
     }
-    if (card.effects.suspicion !== 0) {
-      effectLines.push(
-        `Suspicion: ${card.effects.suspicion > 0 ? "+" : ""}${
-          card.effects.suspicion
-        }`
-      );
+    if (card.selfEffects.suspicion !== 0) {
+      effectLines.push(`Suspicion: ${card.selfEffects.suspicion > 0 ? "+" : ""}${card.selfEffects.suspicion}`);
+    }
+    
+    effectLines.push("━━━ Foe ━━━");
+    if (card.opponentEffects.evidence !== 0) {
+      effectLines.push(`Evidence: ${card.opponentEffects.evidence > 0 ? "+" : ""}${card.opponentEffects.evidence}`);
+    }
+    if (card.opponentEffects.morale !== 0) {
+      effectLines.push(`Morale: ${card.opponentEffects.morale > 0 ? "+" : ""}${card.opponentEffects.morale}`);
+    }
+    if (card.opponentEffects.justiceInfluence !== 0) {
+      effectLines.push(`Justice: ${card.opponentEffects.justiceInfluence > 0 ? "+" : ""}${card.opponentEffects.justiceInfluence}`);
+    }
+    if (card.opponentEffects.suspicion !== 0) {
+      effectLines.push(`Suspicion: ${card.opponentEffects.suspicion > 0 ? "+" : ""}${card.opponentEffects.suspicion}`);
     }
 
     const effectsText = this.add
       .text(cardX, cardY + 100, effectLines.join("\n"), {
         fontFamily: "Arial, sans-serif",
-        fontSize: "26px",
+        fontSize: "22px",
         color: "#ffd700",
         align: "center",
         fontStyle: "bold",
-        lineSpacing: 12,
+        lineSpacing: 8,
       })
       .setOrigin(0.5)
       .setDepth(2002);
@@ -744,17 +755,41 @@ export default class BattleScene extends Phaser.Scene {
     this.revealedPlayerCardObjects.push(playerCardDesc);
 
     const playerEffectLines = [];
-    if (this.selectedCard.card.effects.evidence !== 0) {
-      playerEffectLines.push(`Ev: ${this.selectedCard.card.effects.evidence > 0 ? "+" : ""}${this.selectedCard.card.effects.evidence}`);
+    
+    // Self effects
+    const selfEffectLines = [];
+    if (this.selectedCard.card.selfEffects.evidence !== 0) {
+      selfEffectLines.push(`Ev: ${this.selectedCard.card.selfEffects.evidence > 0 ? "+" : ""}${this.selectedCard.card.selfEffects.evidence}`);
     }
-    if (this.selectedCard.card.effects.morale !== 0) {
-      playerEffectLines.push(`Mo: ${this.selectedCard.card.effects.morale > 0 ? "+" : ""}${this.selectedCard.card.effects.morale}`);
+    if (this.selectedCard.card.selfEffects.morale !== 0) {
+      selfEffectLines.push(`Mo: ${this.selectedCard.card.selfEffects.morale > 0 ? "+" : ""}${this.selectedCard.card.selfEffects.morale}`);
     }
-    if (this.selectedCard.card.effects.justiceInfluence !== 0) {
-      playerEffectLines.push(`Ju: ${this.selectedCard.card.effects.justiceInfluence > 0 ? "+" : ""}${this.selectedCard.card.effects.justiceInfluence}`);
+    if (this.selectedCard.card.selfEffects.justiceInfluence !== 0) {
+      selfEffectLines.push(`Ju: ${this.selectedCard.card.selfEffects.justiceInfluence > 0 ? "+" : ""}${this.selectedCard.card.selfEffects.justiceInfluence}`);
     }
-    if (this.selectedCard.card.effects.suspicion !== 0) {
-      playerEffectLines.push(`Su: ${this.selectedCard.card.effects.suspicion > 0 ? "+" : ""}${this.selectedCard.card.effects.suspicion}`);
+    if (this.selectedCard.card.selfEffects.suspicion !== 0) {
+      selfEffectLines.push(`Su: ${this.selectedCard.card.selfEffects.suspicion > 0 ? "+" : ""}${this.selectedCard.card.selfEffects.suspicion}`);
+    }
+    if (selfEffectLines.length > 0) {
+      playerEffectLines.push("You: " + selfEffectLines.join(", "));
+    }
+
+    // Opponent effects
+    const oppEffectLines = [];
+    if (this.selectedCard.card.opponentEffects.evidence !== 0) {
+      oppEffectLines.push(`Ev: ${this.selectedCard.card.opponentEffects.evidence > 0 ? "+" : ""}${this.selectedCard.card.opponentEffects.evidence}`);
+    }
+    if (this.selectedCard.card.opponentEffects.morale !== 0) {
+      oppEffectLines.push(`Mo: ${this.selectedCard.card.opponentEffects.morale > 0 ? "+" : ""}${this.selectedCard.card.opponentEffects.morale}`);
+    }
+    if (this.selectedCard.card.opponentEffects.justiceInfluence !== 0) {
+      oppEffectLines.push(`Ju: ${this.selectedCard.card.opponentEffects.justiceInfluence > 0 ? "+" : ""}${this.selectedCard.card.opponentEffects.justiceInfluence}`);
+    }
+    if (this.selectedCard.card.opponentEffects.suspicion !== 0) {
+      oppEffectLines.push(`Su: ${this.selectedCard.card.opponentEffects.suspicion > 0 ? "+" : ""}${this.selectedCard.card.opponentEffects.suspicion}`);
+    }
+    if (oppEffectLines.length > 0) {
+      playerEffectLines.push("Foe: " + oppEffectLines.join(", "));
     }
 
     const playerCardEffects = this.add
@@ -806,17 +841,41 @@ export default class BattleScene extends Phaser.Scene {
     this.revealedOpponentCardObjects.push(aiCardDesc);
 
     const aiEffectLines = [];
-    if (aiCard.effects.evidence !== 0) {
-      aiEffectLines.push(`Ev: ${aiCard.effects.evidence > 0 ? "+" : ""}${aiCard.effects.evidence}`);
+    
+    // AI's self effects (what card does to AI)
+    const aiSelfEffectLines = [];
+    if (aiCard.selfEffects.evidence !== 0) {
+      aiSelfEffectLines.push(`Ev: ${aiCard.selfEffects.evidence > 0 ? "+" : ""}${aiCard.selfEffects.evidence}`);
     }
-    if (aiCard.effects.morale !== 0) {
-      aiEffectLines.push(`Mo: ${aiCard.effects.morale > 0 ? "+" : ""}${aiCard.effects.morale}`);
+    if (aiCard.selfEffects.morale !== 0) {
+      aiSelfEffectLines.push(`Mo: ${aiCard.selfEffects.morale > 0 ? "+" : ""}${aiCard.selfEffects.morale}`);
     }
-    if (aiCard.effects.justiceInfluence !== 0) {
-      aiEffectLines.push(`Ju: ${aiCard.effects.justiceInfluence > 0 ? "+" : ""}${aiCard.effects.justiceInfluence}`);
+    if (aiCard.selfEffects.justiceInfluence !== 0) {
+      aiSelfEffectLines.push(`Ju: ${aiCard.selfEffects.justiceInfluence > 0 ? "+" : ""}${aiCard.selfEffects.justiceInfluence}`);
     }
-    if (aiCard.effects.suspicion !== 0) {
-      aiEffectLines.push(`Su: ${aiCard.effects.suspicion > 0 ? "+" : ""}${aiCard.effects.suspicion}`);
+    if (aiCard.selfEffects.suspicion !== 0) {
+      aiSelfEffectLines.push(`Su: ${aiCard.selfEffects.suspicion > 0 ? "+" : ""}${aiCard.selfEffects.suspicion}`);
+    }
+    if (aiSelfEffectLines.length > 0) {
+      aiEffectLines.push("Them: " + aiSelfEffectLines.join(", "));
+    }
+
+    // AI's opponent effects (what card does to player)
+    const aiOppEffectLines = [];
+    if (aiCard.opponentEffects.evidence !== 0) {
+      aiOppEffectLines.push(`Ev: ${aiCard.opponentEffects.evidence > 0 ? "+" : ""}${aiCard.opponentEffects.evidence}`);
+    }
+    if (aiCard.opponentEffects.morale !== 0) {
+      aiOppEffectLines.push(`Mo: ${aiCard.opponentEffects.morale > 0 ? "+" : ""}${aiCard.opponentEffects.morale}`);
+    }
+    if (aiCard.opponentEffects.justiceInfluence !== 0) {
+      aiOppEffectLines.push(`Ju: ${aiCard.opponentEffects.justiceInfluence > 0 ? "+" : ""}${aiCard.opponentEffects.justiceInfluence}`);
+    }
+    if (aiCard.opponentEffects.suspicion !== 0) {
+      aiOppEffectLines.push(`Su: ${aiCard.opponentEffects.suspicion > 0 ? "+" : ""}${aiCard.opponentEffects.suspicion}`);
+    }
+    if (aiOppEffectLines.length > 0) {
+      aiEffectLines.push("You: " + aiOppEffectLines.join(", "));
     }
 
     const aiCardEffects = this.add
@@ -837,13 +896,18 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   applyBothCardEffects(playerCard, aiCard) {
-    // Apply player card
+    // Apply player card - affects both player and opponent
     this.battleLog.addMessage(`► You played: ${playerCard.name}`, "#00aaff");
-    this.stats = GameLogic.applyEffects(this.stats, playerCard.effects);
+    this.playerStats = GameLogic.applyEffects(this.playerStats, playerCard.selfEffects);
+    this.opponentStats = GameLogic.applyEffects(this.opponentStats, playerCard.opponentEffects);
 
-    // Apply AI card
+    // Apply AI card - affects both opponent and player
     this.battleLog.addMessage(`► Enemy played: ${aiCard.name}`, "#ff4444");
-    this.stats = GameLogic.applyEffects(this.stats, aiCard.effects);
+    this.opponentStats = GameLogic.applyEffects(this.opponentStats, aiCard.selfEffects);
+    this.playerStats = GameLogic.applyEffects(this.playerStats, aiCard.opponentEffects);
+
+    // Update legacy stats reference
+    this.stats = this.playerStats;
 
     // Update UI
     this.updateStatBars();
