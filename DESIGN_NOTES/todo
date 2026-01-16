@@ -102,51 +102,72 @@ Allow user to select between multiple background tracks during gameplay
 [ ] Implement music selection menu
 [ ] Add at least 2 background tracks
 
-=== PHASE 6: ONLINE MULTIPLAYER (2-4 weeks) ===
-Backend (Node.js + Express + Socket.io):
-[ ] Set up Node.js + Express server locally
-[ ] Implement WebSocket server (Socket.io)
-[ ] Create matchmaking queue system (simple FIFO queue)
-[ ] Game room management (pair players, track game state)
-[ ] Basic user authentication (username only for MVP, no passwords)
-[ ] Server-side validation:
-    - Validate it's player's turn before accepting card play
-    - Verify card is in player's hand
-    - Check energy cost (when energy system added)
-    - Prevent duplicate actions
-[ ] Handle disconnection/reconnection (simple: other player wins if opponent DC)
+=== PHASE 6: ONLINE MULTIPLAYER (40-60 hours total) ===
 
-Frontend:
-[ ] Create multiplayer lobby/menu scene
-[ ] Add "Find Match" button and waiting UI
-[ ] Network layer for sending/receiving game actions
-[ ] Refactor BattleScene to work with remote opponent
-[ ] Handle network latency and delays (show "waiting for opponent")
-[ ] Show connection status indicator
-[ ] Timeout handling for inactive players (30s timeout)
-[ ] Friend code/room system (optional, for private matches)
+=== Backend Setup (8-12 hours) ===
+[ ] Create /server folder, install express + socket.io + cors
+[ ] Set up Express server on port 3001 with CORS
+[ ] Configure Socket.io connection handlers
+[ ] Create matchmaking queue (FIFO array, pair when 2 players)
+[ ] Create game rooms Map (roomId → game state)
+[ ] Server-side card validation:
+    - Is card in player's hand?
+    - Is it player's turn to play?
+    - Has player already played this turn?
+[ ] Handle disconnections (opponent wins if player leaves)
 
-Google Cloud Deployment (GCP Learning):
-[ ] Create Google Cloud project
-[ ] Choose hosting option:
-    - Cloud Run (recommended - auto-scaling, pay-per-use)
-    - App Engine (easier, but less flexible)
-    - Compute Engine (full control, more setup)
-[ ] Set up Firestore (NoSQL) or Cloud SQL (PostgreSQL) for game data
-[ ] Configure environment variables in GCP
-[ ] Set up Cloud Build for CI/CD (optional)
-[ ] Deploy backend to GCP
-[ ] Configure custom domain (optional)
-[ ] Monitor with Cloud Logging and Cloud Monitoring
-[ ] Set up billing alerts (stay within free tier initially)
+=== Game State Synchronization (10-15 hours) ===
+[ ] Socket events: 'findMatch', 'selectCard', 'bothCardsSelected', 'gameOver'
+[ ] Server shuffles decks, draws hands (don't trust client)
+[ ] Server validates and processes both card plays
+[ ] Server calculates stat changes and win/loss
+[ ] Emit game state updates to both clients
+[ ] Track turn state server-side
 
-Testing:
-[ ] Test locally with ngrok or localhost
-[ ] Test on GCP with real network conditions
-[ ] Load test with multiple concurrent games
+=== Frontend Network Layer (8-12 hours) ===
+[ ] Create NetworkManager.js (socket.io-client)
+[ ] Connect to server, emit/listen for events
+[ ] Refactor BattleScene with isMultiplayer flag
+[ ] Disable AI when multiplayer mode active
+[ ] Send card selection to server, wait for response
+[ ] Update UI from server game state (don't calculate locally)
+[ ] Show "Waiting for opponent..." UI
 
-Alternative (Quicker for immediate demo):
-[ ] Hot-seat local multiplayer (2 players, same device) - 2-4 hours
+=== Multiplayer Lobby UI (4-6 hours) ===
+[ ] Create MultiplayerLobbyScene
+[ ] Username input + character selection
+[ ] "Find Match" button → matchmaking queue
+[ ] "Searching..." animation while waiting
+[ ] Connection status indicator
+[ ] Handle match found → transition to BattleScene
+
+=== Google Cloud Deployment (10-15 hours) ===
+[ ] Create GCP project, enable billing
+[ ] Install gcloud CLI, authenticate
+[ ] Write Dockerfile for Node.js server
+[ ] Deploy to Cloud Run: gcloud run deploy
+[ ] Set up Firestore for user stats (optional)
+[ ] Configure environment variables (CORS, production URL)
+[ ] Update frontend to use production server URL
+[ ] Test WebSocket/long-polling on Cloud Run
+[ ] Set up monitoring, logging, billing alerts
+
+=== Testing & Bug Fixes (5-10 hours) ===
+[ ] Test locally with 2 browser windows
+[ ] Test production with 2 devices (phone + laptop)
+[ ] Handle edge cases: refresh, timeout, spam clicks
+[ ] Latency testing and optimization
+
+**ESTIMATED TOTAL: 45-70 hours (1-2 weeks full-time, 3-4 weeks part-time)**
+
+**Cost: $0-5/month for first few months with free tier**
+
+=== ALTERNATIVE: Hot-Seat Local Multiplayer (2-4 hours) ===
+[ ] Add "Pass & Play" mode in menu
+[ ] Both players use same device, take turns
+[ ] "Pass Device" screen hides opponent's hand
+[ ] No server, no networking, works offline
+[ ] Perfect for quick friend demo
 
 
 IN PROGRESS
