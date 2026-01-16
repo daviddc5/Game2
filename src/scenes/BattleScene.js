@@ -112,44 +112,86 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   createStatBars() {
-    const playerIsDetective =
-      this.playerCharacter.name === "Independent Detective";
-
-    // Define stat configurations for each character
-    const detectiveStats = [
-      { key: "evidence", label: "Evidence", color: 0x00ff00, isPositive: true },
-      { key: "morale", label: "Morale", color: 0xff4444, isPositive: false },
+    // Get stat configurations from character data
+    const playerStatConfigs = [
+      { 
+        key: "evidence", 
+        label: this.playerCharacter.statLabels.evidence, 
+        color: this.playerCharacter.statColors.evidence.color, 
+        isPositive: this.playerCharacter.statColors.evidence.isGreen 
+      },
+      { 
+        key: "morale", 
+        label: this.playerCharacter.statLabels.morale, 
+        color: this.playerCharacter.statColors.morale.color, 
+        isPositive: this.playerCharacter.statColors.morale.isGreen 
+      },
+      { 
+        key: "justiceInfluence", 
+        label: this.playerCharacter.statLabels.justiceInfluence, 
+        color: this.playerCharacter.statColors.justiceInfluence.color, 
+        isPositive: this.playerCharacter.statColors.justiceInfluence.isGreen 
+      },
+      { 
+        key: "suspicion", 
+        label: this.playerCharacter.statLabels.suspicion, 
+        color: this.playerCharacter.statColors.suspicion.color, 
+        isPositive: this.playerCharacter.statColors.suspicion.isGreen 
+      },
     ];
 
-    const vigilanteStats = [
-      {
-        key: "justiceInfluence",
-        label: "Justice",
-        color: 0x00ff00,
-        isPositive: true,
+    const opponentStatConfigs = [
+      { 
+        key: "evidence", 
+        label: this.opponentCharacter.statLabels.evidence, 
+        color: this.opponentCharacter.statColors.evidence.color, 
+        isPositive: this.opponentCharacter.statColors.evidence.isGreen 
       },
-      {
-        key: "suspicion",
-        label: "Suspicion",
-        color: 0xff4444,
-        isPositive: false,
+      { 
+        key: "morale", 
+        label: this.opponentCharacter.statLabels.morale, 
+        color: this.opponentCharacter.statColors.morale.color, 
+        isPositive: this.opponentCharacter.statColors.morale.isGreen 
+      },
+      { 
+        key: "justiceInfluence", 
+        label: this.opponentCharacter.statLabels.justiceInfluence, 
+        color: this.opponentCharacter.statColors.justiceInfluence.color, 
+        isPositive: this.opponentCharacter.statColors.justiceInfluence.isGreen 
+      },
+      { 
+        key: "suspicion", 
+        label: this.opponentCharacter.statLabels.suspicion, 
+        color: this.opponentCharacter.statColors.suspicion.color, 
+        isPositive: this.opponentCharacter.statColors.suspicion.isGreen 
       },
     ];
+
+    // Sort stats: green (positive) first, then red (negative)
+    const sortedPlayerStats = playerStatConfigs.sort((a, b) => {
+      if (a.isPositive && !b.isPositive) return -1;
+      if (!a.isPositive && b.isPositive) return 1;
+      return 0;
+    });
+
+    const sortedOpponentStats = opponentStatConfigs.sort((a, b) => {
+      if (a.isPositive && !b.isPositive) return -1;
+      if (!a.isPositive && b.isPositive) return 1;
+      return 0;
+    });
 
     // Opponent stats (below portrait at top)
-    const opponentStats = playerIsDetective ? vigilanteStats : detectiveStats;
     this.opponentStatGroup = new StatBarGroup(
       this,
       20,
       180,
-      opponentStats,
+      sortedOpponentStats,
       false
     );
     this.opponentStatGroup.create();
 
     // Player stats (above portrait at bottom right)
-    const playerStats = playerIsDetective ? detectiveStats : vigilanteStats;
-    this.playerStatGroup = new StatBarGroup(this, 520, 580, playerStats, true);
+    this.playerStatGroup = new StatBarGroup(this, 520, 580, sortedPlayerStats, true);
     this.playerStatGroup.create();
 
     // Store references for updates (maintain backward compatibility)

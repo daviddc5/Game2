@@ -6,6 +6,18 @@ export const characters = {
     name: "Independent Detective",
     displayName: "Detective",
     portrait: "detective-neutral.png",
+    statLabels: {
+      evidence: "Investigation",
+      morale: "Team Morale",
+      justiceInfluence: "Public Pressure",
+      suspicion: "Suspicion Level"
+    },
+    statColors: {
+      evidence: { color: 0x00ff00, isGreen: true },        // Green - want high
+      morale: { color: 0x00ff00, isGreen: true },          // Green - want high
+      justiceInfluence: { color: 0xff4444, isGreen: false }, // Red - vigilante support is bad
+      suspicion: { color: 0xff4444, isGreen: false }       // Red - suspicion on case is bad
+    },
     positiveStats: ["evidence"],
     negativeStats: ["morale"],
     winCondition: {
@@ -24,6 +36,18 @@ export const characters = {
     name: "Vigilante",
     displayName: "Vigilante",
     portrait: "killer-neutral.png",
+    statLabels: {
+      evidence: "Evidence Against",
+      morale: "Confidence",
+      justiceInfluence: "Public Support",
+      suspicion: "Investigation Heat"
+    },
+    statColors: {
+      evidence: { color: 0xff4444, isGreen: false },       // Red - evidence against him is bad
+      morale: { color: 0x00ff00, isGreen: true },          // Green - confidence is good
+      justiceInfluence: { color: 0x00ff00, isGreen: true }, // Green - public support is good
+      suspicion: { color: 0xff4444, isGreen: false }       // Red - being investigated is bad
+    },
     positiveStats: ["justiceInfluence"],
     negativeStats: ["suspicion"],
     winCondition: {

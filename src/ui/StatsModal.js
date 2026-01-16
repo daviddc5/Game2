@@ -70,21 +70,27 @@ export default class StatsModal {
       .setDepth(3002);
     this.modalObjects.push(statsTitle);
 
-    // Display all 4 stats with bars
-    const statConfigs = [
-      { key: "evidence", label: "Evidence", color: 0x00ff00 },
-      { key: "morale", label: "Morale", color: 0xff4444 },
-      { key: "justiceInfluence", label: "Justice Influence", color: 0xffaa00 },
-      { key: "suspicion", label: "Suspicion", color: 0xff00ff },
-    ];
+    // Display all 4 stats with bars using character-specific labels and colors
+    // Sort stats: green (positive) first, then red (negative)
+    const statKeys = ["evidence", "morale", "justiceInfluence", "suspicion"];
+    const sortedStats = statKeys.sort((a, b) => {
+      const aIsGreen = character.statColors[a].isGreen;
+      const bIsGreen = character.statColors[b].isGreen;
+      // Green stats (true) come before red stats (false)
+      if (aIsGreen && !bIsGreen) return -1;
+      if (!aIsGreen && bIsGreen) return 1;
+      return 0;
+    });
 
     let yOffset = 480;
-    statConfigs.forEach((stat) => {
-      const value = stats[stat.key];
+    sortedStats.forEach((statKey) => {
+      const value = stats[statKey];
+      const label = character.statLabels[statKey];
+      const colorInfo = character.statColors[statKey];
 
       // Stat label and value
       const statText = this.scene.add
-        .text(150, yOffset, `${stat.label}:`, {
+        .text(150, yOffset, `${label}:`, {
           fontSize: "18px",
           color: "#ffffff",
         })
@@ -112,7 +118,7 @@ export default class StatsModal {
       // Stat bar fill
       const barWidth = (value / 100) * 450;
       const barFill = this.scene.add
-        .rectangle(150, yOffset + 25, barWidth, 20, stat.color)
+        .rectangle(150, yOffset + 25, barWidth, 20, colorInfo.color)
         .setOrigin(0, 0.5)
         .setDepth(3003);
       this.modalObjects.push(barFill);
