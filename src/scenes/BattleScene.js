@@ -363,6 +363,10 @@ export default class BattleScene extends Phaser.Scene {
     // Placeholders for face-down cards (will show later)
     this.playerStagedCard = null;
     this.opponentStagedCard = null;
+    
+    // Store references to revealed card display objects for cleanup
+    this.revealedPlayerCardObjects = [];
+    this.revealedOpponentCardObjects = [];
   }
 
   showEnlargedCardView() {
@@ -629,18 +633,26 @@ export default class BattleScene extends Phaser.Scene {
     if (this.playerStagedCardBack) this.playerStagedCardBack.destroy();
     if (this.opponentStagedCard) this.opponentStagedCard.destroy();
     if (this.opponentStagedCardBack) this.opponentStagedCardBack.destroy();
+    
+    // Clear any previously revealed cards
+    this.revealedPlayerCardObjects.forEach(obj => obj.destroy());
+    this.revealedPlayerCardObjects = [];
+    this.revealedOpponentCardObjects.forEach(obj => obj.destroy());
+    this.revealedOpponentCardObjects = [];
 
     // Show actual player card (full card design)
     const playerCardBg = this.add
       .rectangle(375, 600, 140, 200, 0x2a2a2a)
       .setOrigin(0.5)
       .setDepth(100);
+    this.revealedPlayerCardObjects.push(playerCardBg);
     
     const playerCardBorder = this.add
       .rectangle(375, 600, 140, 200)
       .setOrigin(0.5)
       .setStrokeStyle(3, 0x00aaff)
       .setDepth(100);
+    this.revealedPlayerCardObjects.push(playerCardBorder);
 
     const playerCardName = this.add
       .text(375, 530, this.selectedCard.card.name, {
@@ -652,6 +664,7 @@ export default class BattleScene extends Phaser.Scene {
       })
       .setOrigin(0.5)
       .setDepth(101);
+    this.revealedPlayerCardObjects.push(playerCardName);
 
     const playerCardDesc = this.add
       .text(375, 590, this.selectedCard.card.description, {
@@ -662,6 +675,7 @@ export default class BattleScene extends Phaser.Scene {
       })
       .setOrigin(0.5)
       .setDepth(101);
+    this.revealedPlayerCardObjects.push(playerCardDesc);
 
     const playerEffectLines = [];
     if (this.selectedCard.card.effects.evidence !== 0) {
@@ -686,18 +700,21 @@ export default class BattleScene extends Phaser.Scene {
       })
       .setOrigin(0.5)
       .setDepth(101);
+    this.revealedPlayerCardObjects.push(playerCardEffects);
 
     // Show actual AI card (full card design)
     const aiCardBg = this.add
       .rectangle(375, 310, 140, 200, 0x2a2a2a)
       .setOrigin(0.5)
       .setDepth(100);
+    this.revealedOpponentCardObjects.push(aiCardBg);
     
     const aiCardBorder = this.add
       .rectangle(375, 310, 140, 200)
       .setOrigin(0.5)
       .setStrokeStyle(3, 0xff4444)
       .setDepth(100);
+    this.revealedOpponentCardObjects.push(aiCardBorder);
 
     const aiCardName = this.add
       .text(375, 240, aiCard.name, {
@@ -709,6 +726,7 @@ export default class BattleScene extends Phaser.Scene {
       })
       .setOrigin(0.5)
       .setDepth(101);
+    this.revealedOpponentCardObjects.push(aiCardName);
 
     const aiCardDesc = this.add
       .text(375, 300, aiCard.description, {
@@ -719,6 +737,7 @@ export default class BattleScene extends Phaser.Scene {
       })
       .setOrigin(0.5)
       .setDepth(101);
+    this.revealedOpponentCardObjects.push(aiCardDesc);
 
     const aiEffectLines = [];
     if (aiCard.effects.evidence !== 0) {
@@ -743,6 +762,7 @@ export default class BattleScene extends Phaser.Scene {
       })
       .setOrigin(0.5)
       .setDepth(101);
+    this.revealedOpponentCardObjects.push(aiCardEffects);
 
     // Apply card effects
     this.time.delayedCall(1500, () => {
