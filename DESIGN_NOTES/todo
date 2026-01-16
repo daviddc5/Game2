@@ -230,6 +230,11 @@ CHARACTERS
 [ ] Character selection screen improvements
 [ ] More character choices (4+ characters)
 [ ] Character unlock system
+[ ] Generic stat slot system for different character types
+    - Allow characters to have custom stat names (e.g., "Legal Power" vs "Evidence")
+    - Cards use generic slots (slot1, slot2, etc.) that map to character-specific stats
+    - Display layer translates slot names to actual stat names
+    - Enables totally different character archetypes beyond Death Note theme
 
 AUDIO
 [ ] Background music
