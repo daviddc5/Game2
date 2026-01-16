@@ -76,6 +76,10 @@ export default class BattleScene extends Phaser.Scene {
     this.opponentPortrait = this.add.image(80, 75, opponentPortrait);
     this.opponentPortrait.setScale(0.15); // Smaller
     this.opponentPortrait.setFlipX(false);
+    this.opponentPortrait.setInteractive({ useHandCursor: true });
+    this.opponentPortrait.on('pointerdown', () => {
+      this.showStatsModal('opponent');
+    });
 
     this.add
       .text(160, 75, this.opponentCharacter.displayName, {
@@ -89,6 +93,10 @@ export default class BattleScene extends Phaser.Scene {
     this.playerPortrait = this.add.image(600, 780, playerPortrait);
     this.playerPortrait.setScale(0.15); // Smaller
     this.playerPortrait.setFlipX(true);
+    this.playerPortrait.setInteractive({ useHandCursor: true });
+    this.playerPortrait.on('pointerdown', () => {
+      this.showStatsModal('player');
+    });
 
     this.add
       .text(520, 780, this.playerCharacter.displayName, {
@@ -367,6 +375,162 @@ export default class BattleScene extends Phaser.Scene {
     // Store references to revealed card display objects for cleanup
     this.revealedPlayerCardObjects = [];
     this.revealedOpponentCardObjects = [];
+  }
+
+  showStatsModal(target) {
+    // Prevent opening during card selection or turn in progress
+    if (this.enlargedCardObjects || this.turnInProgress) return;
+
+    const isPlayer = target === 'player';
+    const character = isPlayer ? this.playerCharacter : this.opponentCharacter;
+    const portraitKey = character.name === "Independent Detective" ? "detective-neutral" : "killer-neutral";
+    const themeColor = isPlayer ? 0x00aaff : 0xff4444;
+    const themeColorHex = isPlayer ? "#00aaff" : "#ff4444";
+
+    // Store modal objects for cleanup
+    this.statsModalObjects = [];
+
+    // Dark overlay background
+    const overlay = this.add
+      .rectangle(375, 667, 750, 1334, 0x000000, 0.9)
+      .setOrigin(0.5)
+      .setDepth(3000)
+      .setInteractive(); // Block clicks behind
+    this.statsModalObjects.push(overlay);
+
+    // Close on tap outside (on overlay)
+    overlay.on('pointerdown', () => {
+      this.closeStatsModal();
+    });
+
+    // Modal container background
+    const modalBg = this.add
+      .rectangle(375, 500, 600, 900, 0x1a1a1a)
+      .setOrigin(0.5)
+      .setDepth(3001);
+    this.statsModalObjects.push(modalBg);
+
+    const modalBorder = this.add
+      .rectangle(375, 500, 600, 900)
+      .setOrigin(0.5)
+      .setStrokeStyle(4, themeColor)
+      .setDepth(3001);
+    this.statsModalObjects.push(modalBorder);
+
+    // Enlarged portrait
+    const portrait = this.add.image(375, 200, portraitKey);
+    portrait.setScale(0.4);
+    if (isPlayer) portrait.setFlipX(true);
+    portrait.setDepth(3002);
+    this.statsModalObjects.push(portrait);
+
+    // Character name
+    const nameText = this.add
+      .text(375, 350, character.displayName, {
+        fontSize: "32px",
+        color: themeColorHex,
+        fontStyle: "bold",
+      })
+      .setOrigin(0.5)
+      .setDepth(3002);
+    this.statsModalObjects.push(nameText);
+
+    // Stats title
+    const statsTitle = this.add
+      .text(375, 420, "STATS", {
+        fontSize: "24px",
+        color: "#ffffff",
+        fontStyle: "bold",
+      })
+      .setOrigin(0.5)
+      .setDepth(3002);
+    this.statsModalObjects.push(statsTitle);
+
+    // Display all 4 stats with bars
+    const stats = [
+      { key: "evidence", label: "Evidence", color: 0x00ff00 },
+      { key: "morale", label: "Morale", color: 0xff4444 },
+      { key: "justiceInfluence", label: "Justice Influence", color: 0xffaa00 },
+      { key: "suspicion", label: "Suspicion", color: 0xff00ff },
+    ];
+
+    let yOffset = 480;
+    stats.forEach((stat) => {
+      const value = this.stats[stat.key];
+
+      // Stat label and value
+      const statText = this.add
+        .text(150, yOffset, `${stat.label}:`, {
+          fontSize: "18px",
+          color: "#ffffff",
+        })
+        .setOrigin(0, 0.5)
+        .setDepth(3002);
+      this.statsModalObjects.push(statText);
+
+      const valueText = this.add
+        .text(600, yOffset, `${value}/100`, {
+          fontSize: "18px",
+          color: "#ffffff",
+          fontStyle: "bold",
+        })
+        .setOrigin(1, 0.5)
+        .setDepth(3002);
+      this.statsModalObjects.push(valueText);
+
+      // Stat bar background
+      const barBg = this.add
+        .rectangle(375, yOffset + 25, 450, 20, 0x333333)
+        .setOrigin(0.5)
+        .setDepth(3002);
+      this.statsModalObjects.push(barBg);
+
+      // Stat bar fill
+      const barWidth = (value / 100) * 450;
+      const barFill = this.add
+        .rectangle(150, yOffset + 25, barWidth, 20, stat.color)
+        .setOrigin(0, 0.5)
+        .setDepth(3003);
+      this.statsModalObjects.push(barFill);
+
+      yOffset += 80;
+    });
+
+    // Close button
+    const closeButton = this.add
+      .circle(650, 100, 30, 0xff4444)
+      .setDepth(3004)
+      .setInteractive({ useHandCursor: true });
+    this.statsModalObjects.push(closeButton);
+
+    const closeX = this.add
+      .text(650, 100, "✕", {
+        fontSize: "32px",
+        color: "#ffffff",
+        fontStyle: "bold",
+      })
+      .setOrigin(0.5)
+      .setDepth(3005);
+    this.statsModalObjects.push(closeX);
+
+    closeButton.on('pointerdown', () => {
+      this.closeStatsModal();
+    });
+
+    // Hover effect on close button
+    closeButton.on('pointerover', () => {
+      closeButton.setFillStyle(0xff6666);
+    });
+    closeButton.on('pointerout', () => {
+      closeButton.setFillStyle(0xff4444);
+    });
+  }
+
+  closeStatsModal() {
+    if (this.statsModalObjects) {
+      this.statsModalObjects.forEach(obj => obj.destroy());
+      this.statsModalObjects = null;
+    }
   }
 
   showEnlargedCardView() {
