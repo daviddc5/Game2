@@ -26,6 +26,9 @@ export default class BattleScene extends Phaser.Scene {
 
     // Initialize StatsModal
     this.statsModal = new StatsModal(this);
+    
+    // Check if PASS button should be shown initially
+    this.updatePassButtonVisibility();
   }
 
   initializeGameState() {
@@ -465,6 +468,82 @@ export default class BattleScene extends Phaser.Scene {
     // Store references to revealed card display objects for cleanup
     this.revealedPlayerCardObjects = [];
     this.revealedOpponentCardObjects = [];
+
+    // Create PASS button (initially hidden)
+    this.createPassButton();
+  }
+
+  createPassButton() {
+    // Create PASS button (left side near player stats, gray, initially hidden)
+    this.passButtonBg = this.add
+      .rectangle(100, 780, 140, 50, 0x555555)
+      .setDepth(150)
+      .setInteractive({ useHandCursor: true })
+      .setVisible(false);
+
+    this.passButtonText = this.add
+      .text(100, 780, "PASS ⏭", {
+        fontSize: "20px",
+        color: "#cccccc",
+        fontStyle: "bold",
+      })
+      .setOrigin(0.5)
+      .setDepth(151)
+      .setVisible(false);
+
+    this.passButtonBg.on("pointerdown", () => {
+      this.handlePass();
+    });
+    this.passButtonBg.on("pointerover", () => {
+      this.passButtonBg.setFillStyle(0x777777);
+    });
+    this.passButtonBg.on("pointerout", () => {
+      this.passButtonBg.setFillStyle(0x555555);
+    });
+  }
+
+  handlePass() {
+    if (this.turnInProgress || !this.isPlayerTurn) return;
+
+    // Hide pass button
+    this.passButtonBg.setVisible(false);
+    this.passButtonText.setVisible(false);
+
+    // Lock the turn
+    this.turnInProgress = true;
+
+    // Show player "passed" in staging area
+    this.playerStagedCard = this.add
+      .rectangle(375, 600, 120, 160, 0x333333)
+      .setStrokeStyle(3, 0x888888)
+      .setDepth(100);
+
+    this.playerStagedCardBack = this.add
+      .text(375, 600, "PASS", {
+        fontSize: "20px",
+        color: "#888888",
+        fontStyle: "bold",
+      })
+      .setOrigin(0.5)
+      .setDepth(101);
+
+    // Trigger AI turn
+    this.time.delayedCall(800, () => {
+      this.aiSelectCard();
+    });
+  }
+
+  updatePassButtonVisibility() {
+    // Always show PASS button when it's player's turn and no turn in progress
+    if (!this.isPlayerTurn || this.turnInProgress) {
+      this.passButtonBg.setVisible(false);
+      this.passButtonText.setVisible(false);
+      return;
+    }
+
+    // Show button during player turn
+    this.passButtonBg.setVisible(true);
+    this.passButtonText.setVisible(true);
   }
 
   showStatsModal(target) {
@@ -738,6 +817,7 @@ export default class BattleScene extends Phaser.Scene {
     // Deduct energy cost
     this.playerEnergy -= energyCost;
     this.updateEnergyDisplay();
+    this.updatePassButtonVisibility();
 
     // Show player's card face-down in staging area (centered)
     this.playerStagedCard = this.add
@@ -812,111 +892,157 @@ export default class BattleScene extends Phaser.Scene {
     this.revealedOpponentCardObjects.forEach((obj) => obj.destroy());
     this.revealedOpponentCardObjects = [];
 
-    // Show actual player card (full card design)
-    const playerCardBg = this.add
-      .rectangle(375, 600, 140, 200, 0x2a2a2a)
-      .setOrigin(0.5)
-      .setDepth(100);
-    this.revealedPlayerCardObjects.push(playerCardBg);
+    // Check if player passed (no selectedCard means player passed)
+    const playerPassed = !this.selectedCard;
 
-    const playerCardBorder = this.add
-      .rectangle(375, 600, 140, 200)
-      .setOrigin(0.5)
-      .setStrokeStyle(3, 0x00aaff)
-      .setDepth(100);
-    this.revealedPlayerCardObjects.push(playerCardBorder);
+    // Show player's card or PASS indicator
+    if (playerPassed) {
+      const playerPassBg = this.add
+        .rectangle(375, 600, 140, 200, 0x333333)
+        .setOrigin(0.5)
+        .setStrokeStyle(3, 0x888888)
+        .setDepth(100);
+      this.revealedPlayerCardObjects.push(playerPassBg);
 
-    const playerCardName = this.add
-      .text(375, 530, this.selectedCard.card.name, {
-        fontSize: "14px",
-        color: "#ffffff",
-        align: "center",
-        wordWrap: { width: 130 },
-        fontStyle: "bold",
-      })
-      .setOrigin(0.5)
-      .setDepth(101);
-    this.revealedPlayerCardObjects.push(playerCardName);
+      const playerPassText = this.add
+        .text(375, 600, "PASS", {
+          fontSize: "24px",
+          color: "#888888",
+          fontStyle: "bold",
+        })
+        .setOrigin(0.5)
+        .setDepth(101);
+      this.revealedPlayerCardObjects.push(playerPassText);
+    } else {
+      // Show actual player card (full card design)
+      const playerCardBg = this.add
+        .rectangle(375, 600, 140, 200, 0x2a2a2a)
+        .setOrigin(0.5)
+        .setDepth(100);
+      this.revealedPlayerCardObjects.push(playerCardBg);
 
-    const playerCardDesc = this.add
-      .text(375, 590, this.selectedCard.card.description, {
-        fontSize: "10px",
-        color: "#cccccc",
-        align: "center",
-        wordWrap: { width: 130 },
-      })
-      .setOrigin(0.5)
-      .setDepth(101);
-    this.revealedPlayerCardObjects.push(playerCardDesc);
+      const playerCardBorder = this.add
+        .rectangle(375, 600, 140, 200)
+        .setOrigin(0.5)
+        .setStrokeStyle(3, 0x00aaff)
+        .setDepth(100);
+      this.revealedPlayerCardObjects.push(playerCardBorder);
 
-    // Show actual AI card (full card design)
-    const aiCardBg = this.add
-      .rectangle(375, 310, 140, 200, 0x2a2a2a)
-      .setOrigin(0.5)
-      .setDepth(100);
-    this.revealedOpponentCardObjects.push(aiCardBg);
+      const playerCardName = this.add
+        .text(375, 530, this.selectedCard.card.name, {
+          fontSize: "14px",
+          color: "#ffffff",
+          align: "center",
+          wordWrap: { width: 130 },
+          fontStyle: "bold",
+        })
+        .setOrigin(0.5)
+        .setDepth(101);
+      this.revealedPlayerCardObjects.push(playerCardName);
 
-    const aiCardBorder = this.add
-      .rectangle(375, 310, 140, 200)
-      .setOrigin(0.5)
-      .setStrokeStyle(3, 0xff4444)
-      .setDepth(100);
-    this.revealedOpponentCardObjects.push(aiCardBorder);
+      const playerCardDesc = this.add
+        .text(375, 590, this.selectedCard.card.description, {
+          fontSize: "10px",
+          color: "#cccccc",
+          align: "center",
+          wordWrap: { width: 130 },
+        })
+        .setOrigin(0.5)
+        .setDepth(101);
+      this.revealedPlayerCardObjects.push(playerCardDesc);
+    }
 
-    const aiCardName = this.add
-      .text(375, 240, aiCard.name, {
-        fontSize: "14px",
-        color: "#ffffff",
-        align: "center",
-        wordWrap: { width: 130 },
-        fontStyle: "bold",
-      })
-      .setOrigin(0.5)
-      .setDepth(101);
-    this.revealedOpponentCardObjects.push(aiCardName);
+    // Show AI's card or PASS indicator
+    if (!aiCard) {
+      const aiPassBg = this.add
+        .rectangle(375, 310, 140, 200, 0x333333)
+        .setOrigin(0.5)
+        .setStrokeStyle(3, 0x888888)
+        .setDepth(100);
+      this.revealedOpponentCardObjects.push(aiPassBg);
 
-    const aiCardDesc = this.add
-      .text(375, 300, aiCard.description, {
-        fontSize: "10px",
-        color: "#cccccc",
-        align: "center",
-        wordWrap: { width: 130 },
-      })
-      .setOrigin(0.5)
-      .setDepth(101);
-    this.revealedOpponentCardObjects.push(aiCardDesc);
+      const aiPassText = this.add
+        .text(375, 310, "PASS", {
+          fontSize: "24px",
+          color: "#888888",
+          fontStyle: "bold",
+        })
+        .setOrigin(0.5)
+        .setDepth(101);
+      this.revealedOpponentCardObjects.push(aiPassText);
+    } else {
+      // Show actual AI card (full card design)
+      const aiCardBg = this.add
+        .rectangle(375, 310, 140, 200, 0x2a2a2a)
+        .setOrigin(0.5)
+        .setDepth(100);
+      this.revealedOpponentCardObjects.push(aiCardBg);
 
-    // Apply card effects
+      const aiCardBorder = this.add
+        .rectangle(375, 310, 140, 200)
+        .setOrigin(0.5)
+        .setStrokeStyle(3, 0xff4444)
+        .setDepth(100);
+      this.revealedOpponentCardObjects.push(aiCardBorder);
+
+      const aiCardName = this.add
+        .text(375, 240, aiCard.name, {
+          fontSize: "14px",
+          color: "#ffffff",
+          align: "center",
+          wordWrap: { width: 130 },
+          fontStyle: "bold",
+        })
+        .setOrigin(0.5)
+        .setDepth(101);
+      this.revealedOpponentCardObjects.push(aiCardName);
+
+      const aiCardDesc = this.add
+        .text(375, 300, aiCard.description, {
+          fontSize: "10px",
+          color: "#cccccc",
+          align: "center",
+          wordWrap: { width: 130 },
+        })
+        .setOrigin(0.5)
+        .setDepth(101);
+      this.revealedOpponentCardObjects.push(aiCardDesc);
+    }
+
+    // Apply card effects (if any)
     this.time.delayedCall(1500, () => {
-      this.applyBothCardEffects(this.selectedCard.card, aiCard);
+      const playerCard = playerPassed ? null : this.selectedCard.card;
+      this.applyBothCardEffects(playerCard, aiCard);
     });
   }
 
   applyBothCardEffects(playerCard, aiCard) {
-    // Apply player card - affects both player and opponent
-    this.playerStats = GameLogic.applyEffects(
-      this.playerStats,
-      playerCard.selfEffects
-    );
-    this.opponentStats = GameLogic.applyEffects(
-      this.opponentStats,
-      playerCard.opponentEffects
-    );
+    // Apply player card effects (if player didn't pass)
+    if (playerCard) {
+      this.playerStats = GameLogic.applyEffects(
+        this.playerStats,
+        playerCard.selfEffects
+      );
+      this.opponentStats = GameLogic.applyEffects(
+        this.opponentStats,
+        playerCard.opponentEffects
+      );
+    }
 
-    // Apply AI card - affects both opponent and player
-    this.opponentStats = GameLogic.applyEffects(
-      this.opponentStats,
-      aiCard.selfEffects
-    );
-    this.playerStats = GameLogic.applyEffects(
-      this.playerStats,
-      aiCard.opponentEffects
-    );
+    // Apply AI card effects (if AI didn't pass)
+    if (aiCard) {
+      this.opponentStats = GameLogic.applyEffects(
+        this.opponentStats,
+        aiCard.selfEffects
+      );
+      this.playerStats = GameLogic.applyEffects(
+        this.playerStats,
+        aiCard.opponentEffects
+      );
+    }
 
     // Update legacy stats reference
-    this.stats = this.playerStats;
-
-    // Update UI
+    this.stats = this.playerStats;    // Update UI
     this.updateStatBars();
 
     // Check win/loss
@@ -942,6 +1068,9 @@ export default class BattleScene extends Phaser.Scene {
       this.cardHand.setCards(this.hand);
       this.cardHand.render();
     }
+
+    // Update PASS button visibility
+    this.updatePassButtonVisibility();
   }
 
   endPlayerTurn() {
@@ -999,6 +1128,9 @@ export default class BattleScene extends Phaser.Scene {
     this.turnInProgress = false;
 
     console.log(`=== Turn ${this.turnNumber} - Player's turn ===`);
+    
+    // Update PASS button visibility for new player turn
+    this.updatePassButtonVisibility();
   }
 
   aiTurn() {
