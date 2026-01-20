@@ -49,6 +49,9 @@ export default class CardHand {
   }
 
   createCard(x, y, cardData, cardIndex, rotation = 0) {
+    // Check if card is affordable
+    const isAffordable = !cardData.energyCost || this.scene.playerEnergy >= cardData.energyCost;
+    
     // Container for card (allows grouped transformations)
     const cardContainer = this.scene.add.container(
       x + this.CARD_WIDTH / 2,
@@ -62,42 +65,46 @@ export default class CardHand {
       .rectangle(3, 3, this.CARD_WIDTH, this.CARD_HEIGHT, 0x000000, 0.4)
       .setOrigin(0.5);
 
-    // Card background with rounded appearance
+    // Card background with rounded appearance (gray out if unaffordable)
+    const bgColor = isAffordable ? 0x2a2a2a : 0x1a1a1a;
     const cardBg = this.scene.add
-      .rectangle(0, 0, this.CARD_WIDTH, this.CARD_HEIGHT, 0x2a2a2a)
+      .rectangle(0, 0, this.CARD_WIDTH, this.CARD_HEIGHT, bgColor)
       .setOrigin(0.5)
-      .setInteractive({ useHandCursor: true });
+      .setInteractive({ useHandCursor: isAffordable });
 
-    // Card border with gradient effect
+    // Card border with gradient effect (dimmed if unaffordable)
+    const borderColor = isAffordable ? 0xd4af37 : 0x555555;
     const cardBorder = this.scene.add
       .rectangle(0, 0, this.CARD_WIDTH, this.CARD_HEIGHT)
       .setOrigin(0.5)
-      .setStrokeStyle(3, 0xd4af37); // Gold border
+      .setStrokeStyle(3, borderColor); // Gold or gray border
 
     // Inner border for depth
     const innerBorder = this.scene.add
       .rectangle(0, 0, this.CARD_WIDTH - 10, this.CARD_HEIGHT - 10)
       .setOrigin(0.5)
-      .setStrokeStyle(1, 0x666666);
+      .setStrokeStyle(1, isAffordable ? 0x666666 : 0x333333);
 
-    // Card name with better styling
+    // Card name with better styling (dimmed if unaffordable)
+    const nameColor = isAffordable ? "#ffffff" : "#666666";
     const nameText = this.scene.add
       .text(0, -100, cardData.name, {
         fontFamily: "Georgia, serif",
         fontSize: "18px",
-        color: "#ffffff",
+        color: nameColor,
         align: "center",
         wordWrap: { width: 160 },
         fontStyle: "bold",
       })
       .setOrigin(0.5);
 
-    // Card description
+    // Card description (dimmed if unaffordable)
+    const descColor = isAffordable ? "#cccccc" : "#555555";
     const descText = this.scene.add
       .text(0, -40, cardData.description, {
         fontFamily: "Arial, sans-serif",
         fontSize: "13px",
-        color: "#cccccc",
+        color: descColor,
         align: "center",
         wordWrap: { width: 160 },
       })
@@ -181,6 +188,19 @@ export default class CardHand {
           return;
         }
         if (this.scene.turnInProgress) {
+          return;
+        }
+        
+        // Check if card is affordable
+        if (!isAffordable) {
+          // Flash red to indicate unaffordable
+          this.scene.tweens.add({
+            targets: cardBorder,
+            alpha: 0.3,
+            duration: 100,
+            yoyo: true,
+            repeat: 1,
+          });
           return;
         }
 

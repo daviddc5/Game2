@@ -77,13 +77,25 @@ export default class AIController {
     return score;
   }
 
-  selectCard(deck, stats, isPlayerTurn) {
-    // Draw 3 cards and pick the best one
+  selectCard(deck, stats, isPlayerTurn, aiEnergy = 999) {
+    // Draw 3 cards and pick the best affordable one
     const cards = [];
     for (let i = 0; i < Math.min(3, deck.length); i++) {
       const randomIndex = Math.floor(Math.random() * deck.length);
       cards.push(deck[randomIndex]);
     }
-    return this.chooseBestCard(cards);
+    
+    // Filter to only affordable cards
+    const affordableCards = cards.filter(card => {
+      const cost = card.energyCost || 0;
+      return cost <= aiEnergy;
+    });
+    
+    // If no affordable cards, return null
+    if (affordableCards.length === 0) {
+      return null;
+    }
+    
+    return this.chooseBestCard(affordableCards);
   }
 }
