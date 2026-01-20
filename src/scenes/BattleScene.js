@@ -230,7 +230,7 @@ export default class BattleScene extends Phaser.Scene {
     const opponentEnergyY = 160; // In line with top of stats
     this.opponentEnergyText = this.add
       .text(20, opponentEnergyY, this.getEnergyString(this.opponentEnergy), {
-        fontSize: "20px",
+        fontSize: "24px",
         color: "#00d4ff",
         fontStyle: "bold",
       })
@@ -240,7 +240,7 @@ export default class BattleScene extends Phaser.Scene {
     const playerEnergyY = 690; // More separation from stats
     this.playerEnergyText = this.add
       .text(520, playerEnergyY, this.getEnergyString(this.playerEnergy), {
-        fontSize: "20px",
+        fontSize: "24px",
         color: "#00d4ff",
         fontStyle: "bold",
       })
@@ -248,9 +248,7 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   getEnergyString(energy) {
-    const filled = "⬢".repeat(Math.min(energy, this.maxEnergy));
-    const empty = "⬡".repeat(Math.max(0, this.maxEnergy - energy));
-    return `Energy: ${filled}${empty} ${energy}/${this.maxEnergy}`;
+    return `Energy: ⬢ ${energy}/${this.maxEnergy}`;
   }
 
   updateEnergyDisplay() {
