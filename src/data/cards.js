@@ -8,13 +8,13 @@ export const lCards = [
     description: "Analyze patterns in the data",
     energyCost: 6,
     selfEffects: {
-      evidence: 8,      // Boost your investigation
+      evidence: 8, // Boost your investigation
       morale: 0,
       justiceInfluence: 0,
       suspicion: 0,
     },
     opponentEffects: {
-      evidence: 5,      // Gather evidence against them
+      evidence: 5, // Gather evidence against them
       morale: 0,
       justiceInfluence: 0,
       suspicion: 0,
@@ -33,9 +33,9 @@ export const lCards = [
     },
     opponentEffects: {
       evidence: 0,
-      morale: -4,     // Shake their confidence
+      morale: -4, // Shake their confidence
       justiceInfluence: 0,
-      suspicion: 4,   // Increase heat on them
+      suspicion: 4, // Increase heat on them
     },
   },
   {
@@ -45,14 +45,14 @@ export const lCards = [
     energyCost: 5,
     selfEffects: {
       evidence: 0,
-      morale: 10,     // Boost your team morale
+      morale: 10, // Boost your team morale
       justiceInfluence: 0,
       suspicion: 0,
     },
     opponentEffects: {
       evidence: 0,
       morale: 0,
-      justiceInfluence: -5,  // Reduce vigilante public support
+      justiceInfluence: -5, // Reduce vigilante public support
       suspicion: 0,
     },
   },
@@ -71,7 +71,7 @@ export const lCards = [
       evidence: 3,
       morale: 0,
       justiceInfluence: 0,
-      suspicion: 3,   // Put pressure on them
+      suspicion: 3, // Put pressure on them
     },
   },
   {
@@ -142,7 +142,7 @@ export const lCards = [
     opponentEffects: {
       evidence: 0,
       morale: 0,
-      justiceInfluence: -8,  // Reduce their public support
+      justiceInfluence: -8, // Reduce their public support
       suspicion: 0,
     },
   },
@@ -175,12 +175,12 @@ export const kiraCards = [
     selfEffects: {
       evidence: 0,
       morale: 0,
-      justiceInfluence: 12,  // Boost your public support
+      justiceInfluence: 12, // Boost your public support
       suspicion: 0,
     },
     opponentEffects: {
       evidence: 0,
-      morale: -5,            // Demoralize detective team
+      morale: -5, // Demoralize detective team
       justiceInfluence: 0,
       suspicion: 0,
     },
@@ -191,13 +191,13 @@ export const kiraCards = [
     description: "Remove someone who knows too much",
     energyCost: 8,
     selfEffects: {
-      evidence: -8,          // Reduce evidence against you
+      evidence: -8, // Reduce evidence against you
       morale: 0,
       justiceInfluence: 0,
-      suspicion: -6,         // Reduce investigation heat
+      suspicion: -6, // Reduce investigation heat
     },
     opponentEffects: {
-      evidence: -5,          // Destroy their evidence
+      evidence: -5, // Destroy their evidence
       morale: 0,
       justiceInfluence: 0,
       suspicion: 0,
@@ -211,13 +211,13 @@ export const kiraCards = [
     selfEffects: {
       evidence: 0,
       morale: 0,
-      justiceInfluence: 8,   // Boost public support
-      suspicion: -10,        // Reduce investigation heat
+      justiceInfluence: 8, // Boost public support
+      suspicion: -10, // Reduce investigation heat
     },
     opponentEffects: {
       evidence: 0,
       morale: 0,
-      justiceInfluence: 5,   // Public pressure increases
+      justiceInfluence: 5, // Public pressure increases
       suspicion: 0,
     },
   },
@@ -234,7 +234,7 @@ export const kiraCards = [
     },
     opponentEffects: {
       evidence: -3,
-      morale: -4,            // Scare the team
+      morale: -4, // Scare the team
       justiceInfluence: 0,
       suspicion: 0,
     },
@@ -246,14 +246,14 @@ export const kiraCards = [
     energyCost: 5,
     selfEffects: {
       evidence: 0,
-      morale: 8,             // Boost confidence
-      justiceInfluence: 6,   // Gain public support
+      morale: 8, // Boost confidence
+      justiceInfluence: 6, // Gain public support
       suspicion: 0,
     },
     opponentEffects: {
       evidence: 0,
       morale: 0,
-      justiceInfluence: 3,   // Public pressure increases
+      justiceInfluence: 3, // Public pressure increases
       suspicion: 0,
     },
   },
@@ -333,11 +333,11 @@ export const kiraCards = [
 
 // Helper function to get energy cost color
 export function getEnergyCostColor(cost) {
-  if (cost <= 3) return "#00ff00";      // Green - Counter
-  if (cost <= 4) return "#00ccff";      // Cyan - Quick
-  if (cost <= 5) return "#ffff00";      // Yellow - Normal
-  if (cost <= 7) return "#ff9900";      // Orange - Power
-  return "#ff0000";                      // Red - Ultimate
+  if (cost <= 3) return "#00ff00"; // Green - Counter
+  if (cost <= 4) return "#00ccff"; // Cyan - Quick
+  if (cost <= 5) return "#ffff00"; // Yellow - Normal
+  if (cost <= 7) return "#ff9900"; // Orange - Power
+  return "#ff0000"; // Red - Ultimate
 }
 
 // Helper function to get the correct deck for a character

@@ -106,11 +106,13 @@ export default class CardHand {
     // Energy cost display with color coding
     let costColor = "#00ff00"; // Default green
     if (cardData.energyCost) {
-      if (cardData.energyCost <= 3) costColor = "#00ff00";      // Green - Counter
+      if (cardData.energyCost <= 3) costColor = "#00ff00"; // Green - Counter
       else if (cardData.energyCost <= 4) costColor = "#00ccff"; // Cyan - Quick
-      else if (cardData.energyCost <= 5) costColor = "#ffff00"; // Yellow - Normal
-      else if (cardData.energyCost <= 7) costColor = "#ff9900"; // Orange - Power
-      else costColor = "#ff0000";                                // Red - Ultimate
+      else if (cardData.energyCost <= 5)
+        costColor = "#ffff00"; // Yellow - Normal
+      else if (cardData.energyCost <= 7)
+        costColor = "#ff9900"; // Orange - Power
+      else costColor = "#ff0000"; // Red - Ultimate
     }
 
     const costText = this.scene.add

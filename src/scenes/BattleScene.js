@@ -231,7 +231,7 @@ export default class BattleScene extends Phaser.Scene {
     this.opponentEnergyText = this.add
       .text(20, opponentEnergyY, this.getEnergyString(this.opponentEnergy), {
         fontSize: "24px",
-        color: "#00d4ff",
+        color: "#ffffff",
         fontStyle: "bold",
       })
       .setOrigin(0, 0.5);
@@ -241,7 +241,7 @@ export default class BattleScene extends Phaser.Scene {
     this.playerEnergyText = this.add
       .text(520, playerEnergyY, this.getEnergyString(this.playerEnergy), {
         fontSize: "24px",
-        color: "#00d4ff",
+        color: "#ffffff",
         fontStyle: "bold",
       })
       .setOrigin(0, 0.5);
