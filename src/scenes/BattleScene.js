@@ -26,7 +26,7 @@ export default class BattleScene extends Phaser.Scene {
 
     // Initialize StatsModal
     this.statsModal = new StatsModal(this);
-    
+
     // Check if PASS button should be shown initially
     this.updatePassButtonVisibility();
   }
@@ -1042,7 +1042,7 @@ export default class BattleScene extends Phaser.Scene {
     }
 
     // Update legacy stats reference
-    this.stats = this.playerStats;    // Update UI
+    this.stats = this.playerStats; // Update UI
     this.updateStatBars();
 
     // Check win/loss
@@ -1128,7 +1128,7 @@ export default class BattleScene extends Phaser.Scene {
     this.turnInProgress = false;
 
     console.log(`=== Turn ${this.turnNumber} - Player's turn ===`);
-    
+
     // Update PASS button visibility for new player turn
     this.updatePassButtonVisibility();
   }
