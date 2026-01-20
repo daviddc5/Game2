@@ -6,6 +6,7 @@ export const lCards = [
     id: "l_data_cross_match",
     name: "Data Cross-Match",
     description: "Analyze patterns in the data",
+    energyCost: 6,
     selfEffects: {
       evidence: 8,      // Boost your investigation
       morale: 0,
@@ -23,6 +24,7 @@ export const lCards = [
     id: "l_logical_trap",
     name: "Logical Trap",
     description: "Set a clever trap for the vigilante",
+    energyCost: 5,
     selfEffects: {
       evidence: 6,
       morale: 0,
@@ -40,6 +42,7 @@ export const lCards = [
     id: "l_press_interview",
     name: "Press Interview",
     description: "Boost team morale publicly",
+    energyCost: 5,
     selfEffects: {
       evidence: 0,
       morale: 10,     // Boost your team morale
@@ -57,6 +60,7 @@ export const lCards = [
     id: "l_surveillance_sweep",
     name: "Surveillance Sweep",
     description: "Monitor suspects intensively",
+    energyCost: 5,
     selfEffects: {
       evidence: 6,
       morale: 0,
@@ -74,6 +78,7 @@ export const lCards = [
     id: "l_interrogation",
     name: "Interrogation",
     description: "Question a key witness",
+    energyCost: 4,
     selfEffects: {
       evidence: 5,
       morale: 0,
@@ -91,6 +96,7 @@ export const lCards = [
     id: "l_task_force_rally",
     name: "Task Force Rally",
     description: "Rally the team together",
+    energyCost: 4,
     selfEffects: {
       evidence: 3,
       morale: 8,
@@ -108,6 +114,7 @@ export const lCards = [
     id: "l_public_statement",
     name: "Public Statement",
     description: "Reassure the team and public",
+    energyCost: 4,
     selfEffects: {
       evidence: 0,
       morale: 8,
@@ -125,6 +132,7 @@ export const lCards = [
     id: "l_discredit_vigilante",
     name: "Discredit Vigilante",
     description: "Expose flaws in vigilante justice",
+    energyCost: 6,
     selfEffects: {
       evidence: 3,
       morale: 0,
@@ -142,6 +150,7 @@ export const lCards = [
     id: "l_counter_propaganda",
     name: "Counter Propaganda",
     description: "Challenge the vigilante's public support",
+    energyCost: 3,
     selfEffects: {
       evidence: 0,
       morale: 0,
@@ -162,6 +171,7 @@ export const kiraCards = [
     id: "kira_righteous_act",
     name: "Righteous Act",
     description: "Execute a major criminal",
+    energyCost: 7,
     selfEffects: {
       evidence: 0,
       morale: 0,
@@ -179,6 +189,7 @@ export const kiraCards = [
     id: "kira_eliminate_witness",
     name: "Eliminate Witness",
     description: "Remove someone who knows too much",
+    energyCost: 8,
     selfEffects: {
       evidence: -8,          // Reduce evidence against you
       morale: 0,
@@ -196,6 +207,7 @@ export const kiraCards = [
     id: "kira_media_manipulation",
     name: "Media Manipulation",
     description: "Control the narrative",
+    energyCost: 7,
     selfEffects: {
       evidence: 0,
       morale: 0,
@@ -213,6 +225,7 @@ export const kiraCards = [
     id: "kira_intimidation",
     name: "Intimidation",
     description: "Threaten those investigating",
+    energyCost: 4,
     selfEffects: {
       evidence: -6,
       morale: 0,
@@ -230,6 +243,7 @@ export const kiraCards = [
     id: "kira_strategic_kill",
     name: "Strategic Kill",
     description: "Make a calculated move",
+    energyCost: 5,
     selfEffects: {
       evidence: 0,
       morale: 8,             // Boost confidence
@@ -247,6 +261,7 @@ export const kiraCards = [
     id: "kira_cover_tracks",
     name: "Cover Tracks",
     description: "Hide your involvement",
+    energyCost: 5,
     selfEffects: {
       evidence: -5,
       morale: 0,
@@ -264,6 +279,7 @@ export const kiraCards = [
     id: "kira_mass_judgment",
     name: "Mass Judgment",
     description: "Execute multiple criminals at once",
+    energyCost: 8,
     selfEffects: {
       evidence: 0,
       morale: 6,
@@ -281,6 +297,7 @@ export const kiraCards = [
     id: "kira_destroy_evidence",
     name: "Destroy Evidence",
     description: "Eliminate critical proof against you",
+    energyCost: 9,
     selfEffects: {
       evidence: -12,
       morale: 0,
@@ -298,6 +315,7 @@ export const kiraCards = [
     id: "kira_plant_false_leads",
     name: "Plant False Leads",
     description: "Mislead the investigation",
+    energyCost: 6,
     selfEffects: {
       evidence: -8,
       morale: 0,
@@ -312,6 +330,15 @@ export const kiraCards = [
     },
   },
 ];
+
+// Helper function to get energy cost color
+export function getEnergyCostColor(cost) {
+  if (cost <= 3) return "#00ff00";      // Green - Counter
+  if (cost <= 4) return "#00ccff";      // Cyan - Quick
+  if (cost <= 5) return "#ffff00";      // Yellow - Normal
+  if (cost <= 7) return "#ff9900";      // Orange - Power
+  return "#ff0000";                      // Red - Ultimate
+}
 
 // Helper function to get the correct deck for a character
 export function getDeckForCharacter(character) {

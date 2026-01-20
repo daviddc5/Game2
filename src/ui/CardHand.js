@@ -103,6 +103,26 @@ export default class CardHand {
       })
       .setOrigin(0.5);
 
+    // Energy cost display with color coding
+    let costColor = "#00ff00"; // Default green
+    if (cardData.energyCost) {
+      if (cardData.energyCost <= 3) costColor = "#00ff00";      // Green - Counter
+      else if (cardData.energyCost <= 4) costColor = "#00ccff"; // Cyan - Quick
+      else if (cardData.energyCost <= 5) costColor = "#ffff00"; // Yellow - Normal
+      else if (cardData.energyCost <= 7) costColor = "#ff9900"; // Orange - Power
+      else costColor = "#ff0000";                                // Red - Ultimate
+    }
+
+    const costText = this.scene.add
+      .text(0, 70, `⬢ ${cardData.energyCost || 0}`, {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "22px",
+        color: costColor,
+        align: "center",
+        fontStyle: "bold",
+      })
+      .setOrigin(0.5);
+
     // Add all elements to container
     cardContainer.add([
       shadow,
@@ -111,6 +131,7 @@ export default class CardHand {
       innerBorder,
       nameText,
       descText,
+      costText,
     ]);
 
     // Poker-style hover animations
