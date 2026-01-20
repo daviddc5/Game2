@@ -71,7 +71,7 @@ Card Types (priority order):
 
 === PHASE 3: ENERGY SYSTEM (45 min) ===
 [ ] Add energy counter UI (display above portraits)
-[ ] Start at 1 energy, +1 per turn, max 10
+[ ] Start at 5 energy, +5 per turn, max 20
 [ ] Add energyCost to all cards:
     - Counter: 2-3 energy
     - Quick: 3-4 energy
@@ -80,6 +80,7 @@ Card Types (priority order):
 [ ] Disable cards if not enough energy
 [ ] Gray out unplayable cards
 [ ] Show energy cost on cards
+[ ] Add PASS button (appears when no affordable cards or player wants to skip turn)
 
 === PHASE 4: VISUAL FEEDBACK (30 min) ===
 [ ] Show both cards face-down in center area
