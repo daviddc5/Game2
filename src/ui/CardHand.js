@@ -103,18 +103,6 @@ export default class CardHand {
       })
       .setOrigin(0.5);
 
-    // Display effects with icons/colors (combine self and opponent effects)
-    const effectText = this.formatEffects(cardData.selfEffects, cardData.opponentEffects);
-    const effectsDisplay = this.scene.add
-      .text(0, 50, effectText.join("\n"), {
-        fontFamily: "Arial, sans-serif",
-        fontSize: "13px",
-        color: "#ffd700",
-        align: "center",
-        fontStyle: "bold",
-      })
-      .setOrigin(0.5);
-
     // Add all elements to container
     cardContainer.add([
       shadow,
@@ -123,7 +111,6 @@ export default class CardHand {
       innerBorder,
       nameText,
       descText,
-      effectsDisplay,
     ]);
 
     // Poker-style hover animations
@@ -231,56 +218,6 @@ export default class CardHand {
     }
     
     this.scene.lockedCardIndex = null;
-  }
-
-  formatEffects(selfEffects, opponentEffects) {
-    const effectText = [];
-
-    // Show self effects (what it does to YOU)
-    if (selfEffects.evidence !== 0) {
-      effectText.push(
-        `You: ${selfEffects.evidence > 0 ? "+" : ""}${selfEffects.evidence} Ev`
-      );
-    }
-    if (selfEffects.morale !== 0) {
-      effectText.push(
-        `You: ${selfEffects.morale > 0 ? "+" : ""}${selfEffects.morale} Mo`
-      );
-    }
-    if (selfEffects.justiceInfluence !== 0) {
-      effectText.push(
-        `You: ${selfEffects.justiceInfluence > 0 ? "+" : ""}${selfEffects.justiceInfluence} Ju`
-      );
-    }
-    if (selfEffects.suspicion !== 0) {
-      effectText.push(
-        `You: ${selfEffects.suspicion > 0 ? "+" : ""}${selfEffects.suspicion} Su`
-      );
-    }
-
-    // Show opponent effects (what it does to THEM)
-    if (opponentEffects.evidence !== 0) {
-      effectText.push(
-        `Foe: ${opponentEffects.evidence > 0 ? "+" : ""}${opponentEffects.evidence} Ev`
-      );
-    }
-    if (opponentEffects.morale !== 0) {
-      effectText.push(
-        `Foe: ${opponentEffects.morale > 0 ? "+" : ""}${opponentEffects.morale} Mo`
-      );
-    }
-    if (opponentEffects.justiceInfluence !== 0) {
-      effectText.push(
-        `Foe: ${opponentEffects.justiceInfluence > 0 ? "+" : ""}${opponentEffects.justiceInfluence} Ju`
-      );
-    }
-    if (opponentEffects.suspicion !== 0) {
-      effectText.push(
-        `Foe: ${opponentEffects.suspicion > 0 ? "+" : ""}${opponentEffects.suspicion} Su`
-      );
-    }
-
-    return effectText;
   }
 
   highlightCard(index) {
