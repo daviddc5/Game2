@@ -22,7 +22,7 @@ export default class BattleScene extends Phaser.Scene {
     this.createStagingArea();
     this.selectedCard = null; // track which card is selected
     this.isSelectingCard = false; // track if player is in card selection mode
-    
+
     // Initialize StatsModal
     this.statsModal = new StatsModal(this);
   }
@@ -89,8 +89,8 @@ export default class BattleScene extends Phaser.Scene {
     this.opponentPortrait.setScale(0.15); // Smaller
     this.opponentPortrait.setFlipX(false);
     this.opponentPortrait.setInteractive({ useHandCursor: true });
-    this.opponentPortrait.on('pointerdown', () => {
-      this.showStatsModal('opponent');
+    this.opponentPortrait.on("pointerdown", () => {
+      this.showStatsModal("opponent");
     });
 
     this.add
@@ -106,8 +106,8 @@ export default class BattleScene extends Phaser.Scene {
     this.playerPortrait.setScale(0.15); // Smaller
     this.playerPortrait.setFlipX(true);
     this.playerPortrait.setInteractive({ useHandCursor: true });
-    this.playerPortrait.on('pointerdown', () => {
-      this.showStatsModal('player');
+    this.playerPortrait.on("pointerdown", () => {
+      this.showStatsModal("player");
     });
 
     this.add
@@ -122,56 +122,56 @@ export default class BattleScene extends Phaser.Scene {
   createStatBars() {
     // Get stat configurations from character data
     const playerStatConfigs = [
-      { 
-        key: "evidence", 
-        label: this.playerCharacter.statLabels.evidence, 
-        color: this.playerCharacter.statColors.evidence.color, 
-        isPositive: this.playerCharacter.statColors.evidence.isGreen 
+      {
+        key: "evidence",
+        label: this.playerCharacter.statLabels.evidence,
+        color: this.playerCharacter.statColors.evidence.color,
+        isPositive: this.playerCharacter.statColors.evidence.isGreen,
       },
-      { 
-        key: "morale", 
-        label: this.playerCharacter.statLabels.morale, 
-        color: this.playerCharacter.statColors.morale.color, 
-        isPositive: this.playerCharacter.statColors.morale.isGreen 
+      {
+        key: "morale",
+        label: this.playerCharacter.statLabels.morale,
+        color: this.playerCharacter.statColors.morale.color,
+        isPositive: this.playerCharacter.statColors.morale.isGreen,
       },
-      { 
-        key: "justiceInfluence", 
-        label: this.playerCharacter.statLabels.justiceInfluence, 
-        color: this.playerCharacter.statColors.justiceInfluence.color, 
-        isPositive: this.playerCharacter.statColors.justiceInfluence.isGreen 
+      {
+        key: "justiceInfluence",
+        label: this.playerCharacter.statLabels.justiceInfluence,
+        color: this.playerCharacter.statColors.justiceInfluence.color,
+        isPositive: this.playerCharacter.statColors.justiceInfluence.isGreen,
       },
-      { 
-        key: "suspicion", 
-        label: this.playerCharacter.statLabels.suspicion, 
-        color: this.playerCharacter.statColors.suspicion.color, 
-        isPositive: this.playerCharacter.statColors.suspicion.isGreen 
+      {
+        key: "suspicion",
+        label: this.playerCharacter.statLabels.suspicion,
+        color: this.playerCharacter.statColors.suspicion.color,
+        isPositive: this.playerCharacter.statColors.suspicion.isGreen,
       },
     ];
 
     const opponentStatConfigs = [
-      { 
-        key: "evidence", 
-        label: this.opponentCharacter.statLabels.evidence, 
-        color: this.opponentCharacter.statColors.evidence.color, 
-        isPositive: this.opponentCharacter.statColors.evidence.isGreen 
+      {
+        key: "evidence",
+        label: this.opponentCharacter.statLabels.evidence,
+        color: this.opponentCharacter.statColors.evidence.color,
+        isPositive: this.opponentCharacter.statColors.evidence.isGreen,
       },
-      { 
-        key: "morale", 
-        label: this.opponentCharacter.statLabels.morale, 
-        color: this.opponentCharacter.statColors.morale.color, 
-        isPositive: this.opponentCharacter.statColors.morale.isGreen 
+      {
+        key: "morale",
+        label: this.opponentCharacter.statLabels.morale,
+        color: this.opponentCharacter.statColors.morale.color,
+        isPositive: this.opponentCharacter.statColors.morale.isGreen,
       },
-      { 
-        key: "justiceInfluence", 
-        label: this.opponentCharacter.statLabels.justiceInfluence, 
-        color: this.opponentCharacter.statColors.justiceInfluence.color, 
-        isPositive: this.opponentCharacter.statColors.justiceInfluence.isGreen 
+      {
+        key: "justiceInfluence",
+        label: this.opponentCharacter.statLabels.justiceInfluence,
+        color: this.opponentCharacter.statColors.justiceInfluence.color,
+        isPositive: this.opponentCharacter.statColors.justiceInfluence.isGreen,
       },
-      { 
-        key: "suspicion", 
-        label: this.opponentCharacter.statLabels.suspicion, 
-        color: this.opponentCharacter.statColors.suspicion.color, 
-        isPositive: this.opponentCharacter.statColors.suspicion.isGreen 
+      {
+        key: "suspicion",
+        label: this.opponentCharacter.statLabels.suspicion,
+        color: this.opponentCharacter.statColors.suspicion.color,
+        isPositive: this.opponentCharacter.statColors.suspicion.isGreen,
       },
     ];
 
@@ -199,7 +199,13 @@ export default class BattleScene extends Phaser.Scene {
     this.opponentStatGroup.create();
 
     // Player stats (above portrait at bottom right)
-    this.playerStatGroup = new StatBarGroup(this, 520, 460, sortedPlayerStats, true);
+    this.playerStatGroup = new StatBarGroup(
+      this,
+      520,
+      460,
+      sortedPlayerStats,
+      true
+    );
     this.playerStatGroup.create();
 
     // Store references for updates (maintain backward compatibility)
@@ -212,8 +218,6 @@ export default class BattleScene extends Phaser.Scene {
       ...this.opponentStatGroup.getAllTexts(),
     };
   }
-
-
 
   createCardHand() {
     this.cardHand.setCards(this.hand);
@@ -383,11 +387,14 @@ export default class BattleScene extends Phaser.Scene {
       ? this.cardHand.getCardCenter(cardIndex)
       : null;
     if (!center) return;
-    
+
     // Position above the elevated card (HOVER_LIFT = 80px)
     const elevatedY = center.y - 80; // Card moves up 80px when elevated
-    const buttonY = elevatedY - (this.cardHand.CARD_HEIGHT * this.cardHand.HOVER_SCALE / 2) - 10; // Above the scaled card, very close
-    
+    const buttonY =
+      elevatedY -
+      (this.cardHand.CARD_HEIGHT * this.cardHand.HOVER_SCALE) / 2 -
+      10; // Above the scaled card, very close
+
     this.cardActionButtons.setPosition(center.x, buttonY);
     this.cardActionButtons.setDepth(1500);
     this.cardActionButtons.setAlpha(1);
@@ -411,7 +418,7 @@ export default class BattleScene extends Phaser.Scene {
     // Placeholders for face-down cards (will show later)
     this.playerStagedCard = null;
     this.opponentStagedCard = null;
-    
+
     // Store references to revealed card display objects for cleanup
     this.revealedPlayerCardObjects = [];
     this.revealedOpponentCardObjects = [];
@@ -421,7 +428,8 @@ export default class BattleScene extends Phaser.Scene {
     // Prevent opening during card selection or turn in progress
     if (this.enlargedCardObjects || this.turnInProgress) return;
 
-    const character = target === 'player' ? this.playerCharacter : this.opponentCharacter;
+    const character =
+      target === "player" ? this.playerCharacter : this.opponentCharacter;
     this.statsModal.show(target, character, this.stats);
   }
 
@@ -431,7 +439,8 @@ export default class BattleScene extends Phaser.Scene {
 
   showEnlargedCardView() {
     // Use hovered card if available, otherwise use selected card
-    const cardData = this.hoveredCard || (this.selectedCard ? this.selectedCard.card : null);
+    const cardData =
+      this.hoveredCard || (this.selectedCard ? this.selectedCard.card : null);
     if (!cardData) return;
 
     // Hide action buttons while viewing enlarged card
@@ -497,30 +506,62 @@ export default class BattleScene extends Phaser.Scene {
     const effectLines = [];
     effectLines.push("━━━ You ━━━");
     if (card.selfEffects.evidence !== 0) {
-      effectLines.push(`Evidence: ${card.selfEffects.evidence > 0 ? "+" : ""}${card.selfEffects.evidence}`);
+      effectLines.push(
+        `Evidence: ${card.selfEffects.evidence > 0 ? "+" : ""}${
+          card.selfEffects.evidence
+        }`
+      );
     }
     if (card.selfEffects.morale !== 0) {
-      effectLines.push(`Morale: ${card.selfEffects.morale > 0 ? "+" : ""}${card.selfEffects.morale}`);
+      effectLines.push(
+        `Morale: ${card.selfEffects.morale > 0 ? "+" : ""}${
+          card.selfEffects.morale
+        }`
+      );
     }
     if (card.selfEffects.justiceInfluence !== 0) {
-      effectLines.push(`Justice: ${card.selfEffects.justiceInfluence > 0 ? "+" : ""}${card.selfEffects.justiceInfluence}`);
+      effectLines.push(
+        `Justice: ${card.selfEffects.justiceInfluence > 0 ? "+" : ""}${
+          card.selfEffects.justiceInfluence
+        }`
+      );
     }
     if (card.selfEffects.suspicion !== 0) {
-      effectLines.push(`Suspicion: ${card.selfEffects.suspicion > 0 ? "+" : ""}${card.selfEffects.suspicion}`);
+      effectLines.push(
+        `Suspicion: ${card.selfEffects.suspicion > 0 ? "+" : ""}${
+          card.selfEffects.suspicion
+        }`
+      );
     }
-    
+
     effectLines.push("━━━ Foe ━━━");
     if (card.opponentEffects.evidence !== 0) {
-      effectLines.push(`Evidence: ${card.opponentEffects.evidence > 0 ? "+" : ""}${card.opponentEffects.evidence}`);
+      effectLines.push(
+        `Evidence: ${card.opponentEffects.evidence > 0 ? "+" : ""}${
+          card.opponentEffects.evidence
+        }`
+      );
     }
     if (card.opponentEffects.morale !== 0) {
-      effectLines.push(`Morale: ${card.opponentEffects.morale > 0 ? "+" : ""}${card.opponentEffects.morale}`);
+      effectLines.push(
+        `Morale: ${card.opponentEffects.morale > 0 ? "+" : ""}${
+          card.opponentEffects.morale
+        }`
+      );
     }
     if (card.opponentEffects.justiceInfluence !== 0) {
-      effectLines.push(`Justice: ${card.opponentEffects.justiceInfluence > 0 ? "+" : ""}${card.opponentEffects.justiceInfluence}`);
+      effectLines.push(
+        `Justice: ${card.opponentEffects.justiceInfluence > 0 ? "+" : ""}${
+          card.opponentEffects.justiceInfluence
+        }`
+      );
     }
     if (card.opponentEffects.suspicion !== 0) {
-      effectLines.push(`Suspicion: ${card.opponentEffects.suspicion > 0 ? "+" : ""}${card.opponentEffects.suspicion}`);
+      effectLines.push(
+        `Suspicion: ${card.opponentEffects.suspicion > 0 ? "+" : ""}${
+          card.opponentEffects.suspicion
+        }`
+      );
     }
 
     const effectsText = this.add
@@ -622,12 +663,15 @@ export default class BattleScene extends Phaser.Scene {
   confirmCardPlay() {
     // Use hovered card info if available, otherwise use selected card
     if (!this.hoveredCard && !this.selectedCard) return;
-    
+
     if (this.hoveredCard && this.hoveredCardIndex !== undefined) {
       // Set as selected card from hover
-      this.selectedCard = { card: this.hoveredCard, cardIndex: this.hoveredCardIndex };
+      this.selectedCard = {
+        card: this.hoveredCard,
+        cardIndex: this.hoveredCardIndex,
+      };
     }
-    
+
     if (!this.selectedCard) return;
 
     // Close enlarged view if open
@@ -637,7 +681,7 @@ export default class BattleScene extends Phaser.Scene {
     if (this.confirmButton) {
       this.confirmButton.setVisible(false);
     }
-    
+
     // Lock the turn
     this.turnInProgress = true;
 
@@ -694,11 +738,11 @@ export default class BattleScene extends Phaser.Scene {
     if (this.playerStagedCardBack) this.playerStagedCardBack.destroy();
     if (this.opponentStagedCard) this.opponentStagedCard.destroy();
     if (this.opponentStagedCardBack) this.opponentStagedCardBack.destroy();
-    
+
     // Clear any previously revealed cards
-    this.revealedPlayerCardObjects.forEach(obj => obj.destroy());
+    this.revealedPlayerCardObjects.forEach((obj) => obj.destroy());
     this.revealedPlayerCardObjects = [];
-    this.revealedOpponentCardObjects.forEach(obj => obj.destroy());
+    this.revealedOpponentCardObjects.forEach((obj) => obj.destroy());
     this.revealedOpponentCardObjects = [];
 
     // Show actual player card (full card design)
@@ -707,7 +751,7 @@ export default class BattleScene extends Phaser.Scene {
       .setOrigin(0.5)
       .setDepth(100);
     this.revealedPlayerCardObjects.push(playerCardBg);
-    
+
     const playerCardBorder = this.add
       .rectangle(375, 600, 140, 200)
       .setOrigin(0.5)
@@ -744,7 +788,7 @@ export default class BattleScene extends Phaser.Scene {
       .setOrigin(0.5)
       .setDepth(100);
     this.revealedOpponentCardObjects.push(aiCardBg);
-    
+
     const aiCardBorder = this.add
       .rectangle(375, 310, 140, 200)
       .setOrigin(0.5)
@@ -783,12 +827,24 @@ export default class BattleScene extends Phaser.Scene {
 
   applyBothCardEffects(playerCard, aiCard) {
     // Apply player card - affects both player and opponent
-    this.playerStats = GameLogic.applyEffects(this.playerStats, playerCard.selfEffects);
-    this.opponentStats = GameLogic.applyEffects(this.opponentStats, playerCard.opponentEffects);
+    this.playerStats = GameLogic.applyEffects(
+      this.playerStats,
+      playerCard.selfEffects
+    );
+    this.opponentStats = GameLogic.applyEffects(
+      this.opponentStats,
+      playerCard.opponentEffects
+    );
 
     // Apply AI card - affects both opponent and player
-    this.opponentStats = GameLogic.applyEffects(this.opponentStats, aiCard.selfEffects);
-    this.playerStats = GameLogic.applyEffects(this.playerStats, aiCard.opponentEffects);
+    this.opponentStats = GameLogic.applyEffects(
+      this.opponentStats,
+      aiCard.selfEffects
+    );
+    this.playerStats = GameLogic.applyEffects(
+      this.playerStats,
+      aiCard.opponentEffects
+    );
 
     // Update legacy stats reference
     this.stats = this.playerStats;
@@ -814,7 +870,6 @@ export default class BattleScene extends Phaser.Scene {
       this.cardHand.setCards(this.hand);
       this.cardHand.render();
     }
-
   }
 
   endPlayerTurn() {

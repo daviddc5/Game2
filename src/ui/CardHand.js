@@ -119,7 +119,7 @@ export default class CardHand {
       if (this.scene.lockedCardIndex === cardIndex) {
         return;
       }
-      
+
       this.scene.tweens.add({
         targets: cardContainer,
         y: y + this.CARD_HEIGHT / 2 - this.HOVER_LIFT,
@@ -137,7 +137,7 @@ export default class CardHand {
       if (this.scene.lockedCardIndex === cardIndex) {
         return;
       }
-      
+
       this.scene.tweens.add({
         targets: cardContainer,
         y: y + this.CARD_HEIGHT / 2,
@@ -162,13 +162,16 @@ export default class CardHand {
         }
 
         // Unlock previous card if any
-        if (this.scene.lockedCardIndex !== null && this.scene.lockedCardIndex !== cardIndex) {
+        if (
+          this.scene.lockedCardIndex !== null &&
+          this.scene.lockedCardIndex !== cardIndex
+        ) {
           this.unlockCard(this.scene.lockedCardIndex);
         }
 
         // Lock this card in elevated state
         this.scene.lockedCardIndex = cardIndex;
-        
+
         // Ensure card is elevated and green
         cardContainer.setY(y + this.CARD_HEIGHT / 2 - this.HOVER_LIFT);
         cardContainer.setScale(this.HOVER_SCALE);
@@ -191,18 +194,19 @@ export default class CardHand {
       const cardContainer = this.cardObjects[cardIndex];
       const cardBg = cardContainer.list[1]; // Background is second element after shadow
       const cardBorder = cardContainer.list[2]; // Border is third element
-      
+
       // Calculate original position
       const numCards = this.cards.length;
       const centerX = this.scene.cameras.main.width / 2;
-      const totalSpacing = (this.CARD_WIDTH + this.CARD_SPACING) * (numCards - 1);
+      const totalSpacing =
+        (this.CARD_WIDTH + this.CARD_SPACING) * (numCards - 1);
       const startX = centerX - totalSpacing / 2;
       const x = startX + (this.CARD_WIDTH + this.CARD_SPACING) * cardIndex;
       const normalizedPos = (cardIndex - (numCards - 1) / 2) / (numCards - 1);
       const arcOffset = Math.abs(normalizedPos) * this.ARC_AMOUNT;
       const y = this.CARD_Y + arcOffset;
       const rotation = normalizedPos * 0.1;
-      
+
       // Animate back to original position
       this.scene.tweens.add({
         targets: cardContainer,
@@ -216,7 +220,7 @@ export default class CardHand {
       cardBg.setFillStyle(0x2a2a2a);
       cardBorder.setStrokeStyle(3, 0xd4af37); // Reset to gold
     }
-    
+
     this.scene.lockedCardIndex = null;
   }
 
