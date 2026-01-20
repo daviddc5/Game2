@@ -1061,9 +1061,9 @@ export default class BattleScene extends Phaser.Scene {
     this.opponentEnergy = Math.min(this.opponentEnergy + 5, this.maxEnergy);
     this.updateEnergyDisplay();
 
-    // Draw new card
+    // Draw new card (max 4 cards)
     const newCard = drawCards(this.playerDeck, 1)[0];
-    if (newCard) {
+    if (newCard && this.hand.length < 4) {
       this.hand.push(newCard);
       this.cardHand.setCards(this.hand);
       this.cardHand.render();

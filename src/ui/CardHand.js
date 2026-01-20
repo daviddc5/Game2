@@ -6,6 +6,7 @@ export default class CardHand {
     this.scene = scene;
     this.cardObjects = [];
     this.cards = [];
+    this.discardMode = false;
 
     // Card layout constants
     this.CARD_WIDTH = 180;
@@ -21,6 +22,10 @@ export default class CardHand {
     this.cards = cards;
   }
 
+  setDiscardMode(enabled) {
+    this.discardMode = enabled;
+  }
+
   render() {
     // Clear existing card visuals
     this.cardObjects.forEach((obj) => obj.destroy());
@@ -29,12 +34,14 @@ export default class CardHand {
     const centerX = this.scene.cameras.main.width / 2;
     const numCards = this.cards.length;
 
-    // Calculate spacing for poker-style fan
-    const totalSpacing = (this.CARD_WIDTH + this.CARD_SPACING) * (numCards - 1);
-    const startX = centerX - totalSpacing / 2;
+    // Calculate spacing between cards and total spread
+    const cardSpacing = this.CARD_WIDTH + this.CARD_SPACING; // 180 + (-40) = 140
+    const totalSpread = (numCards - 1) * cardSpacing;
+    // Shift left by 50px to visually center better
+    const startX = centerX - totalSpread / 2 - 50;
 
     this.cards.forEach((card, index) => {
-      const x = startX + (this.CARD_WIDTH + this.CARD_SPACING) * index;
+      const x = startX + index * cardSpacing;
 
       // Create arc effect - middle cards lower, edge cards higher
       const normalizedPos = (index - (numCards - 1) / 2) / (numCards - 1);
@@ -184,16 +191,19 @@ export default class CardHand {
     // Click to select and lock card in elevated state
     cardBg.on("pointerdown", () => {
       if (this.onCardPlayed) {
-        // Check if it's player's turn
-        if (!this.scene.isPlayerTurn) {
-          return;
-        }
-        if (this.scene.turnInProgress) {
-          return;
+        // Skip checks if in discard mode
+        if (!this.discardMode) {
+          // Check if it's player's turn
+          if (!this.scene.isPlayerTurn) {
+            return;
+          }
+          if (this.scene.turnInProgress) {
+            return;
+          }
         }
 
-        // Check if card is affordable
-        if (!isAffordable) {
+        // Check if card is affordable (skip in discard mode)
+        if (!this.discardMode && !isAffordable) {
           // Flash red to indicate unaffordable
           this.scene.tweens.add({
             targets: cardBorder,
