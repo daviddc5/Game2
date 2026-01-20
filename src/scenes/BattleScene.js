@@ -716,7 +716,7 @@ export default class BattleScene extends Phaser.Scene {
     }
 
     if (!this.selectedCard) return;
-    
+
     // Check if player has enough energy
     const energyCost = this.selectedCard.card.energyCost || 0;
     if (this.playerEnergy < energyCost) {
@@ -734,7 +734,7 @@ export default class BattleScene extends Phaser.Scene {
 
     // Lock the turn
     this.turnInProgress = true;
-    
+
     // Deduct energy cost
     this.playerEnergy -= energyCost;
     this.updateEnergyDisplay();
@@ -769,14 +769,14 @@ export default class BattleScene extends Phaser.Scene {
       this.isPlayerTurn,
       this.opponentEnergy
     );
-    
+
     if (!aiCard) {
       console.log("AI has no affordable cards!");
       // Skip AI turn
       this.time.delayedCall(1000, () => this.revealBothCards(null));
       return;
     }
-    
+
     // Deduct AI energy cost
     const energyCost = aiCard.energyCost || 0;
     this.opponentEnergy -= energyCost;

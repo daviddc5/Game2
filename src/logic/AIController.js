@@ -84,18 +84,18 @@ export default class AIController {
       const randomIndex = Math.floor(Math.random() * deck.length);
       cards.push(deck[randomIndex]);
     }
-    
+
     // Filter to only affordable cards
-    const affordableCards = cards.filter(card => {
+    const affordableCards = cards.filter((card) => {
       const cost = card.energyCost || 0;
       return cost <= aiEnergy;
     });
-    
+
     // If no affordable cards, return null
     if (affordableCards.length === 0) {
       return null;
     }
-    
+
     return this.chooseBestCard(affordableCards);
   }
 }

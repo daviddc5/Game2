@@ -50,8 +50,9 @@ export default class CardHand {
 
   createCard(x, y, cardData, cardIndex, rotation = 0) {
     // Check if card is affordable
-    const isAffordable = !cardData.energyCost || this.scene.playerEnergy >= cardData.energyCost;
-    
+    const isAffordable =
+      !cardData.energyCost || this.scene.playerEnergy >= cardData.energyCost;
+
     // Container for card (allows grouped transformations)
     const cardContainer = this.scene.add.container(
       x + this.CARD_WIDTH / 2,
@@ -190,7 +191,7 @@ export default class CardHand {
         if (this.scene.turnInProgress) {
           return;
         }
-        
+
         // Check if card is affordable
         if (!isAffordable) {
           // Flash red to indicate unaffordable
