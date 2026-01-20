@@ -72,7 +72,7 @@ Card Types (priority order):
 === PHASE 3: ENERGY SYSTEM (45 min) ===
 [ ] Add energy counter UI (display below portrait for player stats for us and above foes stats for foe)
 [ ] Start at 5 energy, +5 per turn, max 20
-[ ] Add energyCost to all cards:
+[ ] Add energyCost to all cards, modify colors based on energy type:
     - Counter: 2-3 energy
     - Quick: 3-4 energy
     - Normal: 4-5 energy
