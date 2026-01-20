@@ -70,7 +70,7 @@ Card Types (priority order):
 [ ] Show speed value on cards
 
 === PHASE 3: ENERGY SYSTEM (45 min) ===
-[ ] Add energy counter UI (display above portraits)
+[ ] Add energy counter UI (display below portrait for player stats for us and above foes stats for foe)
 [ ] Start at 5 energy, +5 per turn, max 20
 [ ] Add energyCost to all cards:
     - Counter: 2-3 energy

@@ -18,6 +18,7 @@ export default class BattleScene extends Phaser.Scene {
     // Create UI elements in order (top to bottom)
     this.createPortraits();
     this.createStatBars();
+    this.createEnergyDisplays();
     this.createCardHand();
     this.createStagingArea();
     this.selectedCard = null; // track which card is selected
@@ -57,6 +58,11 @@ export default class BattleScene extends Phaser.Scene {
 
     // Keep legacy stats for backward compatibility (will update UI progressively)
     this.stats = this.playerStats;
+
+    // Initialize energy system
+    this.playerEnergy = 5;
+    this.opponentEnergy = 5;
+    this.maxEnergy = 10;
 
     // Get both decks
     this.playerDeck = getDeckForCharacter(this.playerCharacter.name);
@@ -188,11 +194,11 @@ export default class BattleScene extends Phaser.Scene {
       return 0;
     });
 
-    // Opponent stats (below portrait at top)
+    // Opponent stats (below portrait at top, pushed down)
     this.opponentStatGroup = new StatBarGroup(
       this,
       20,
-      180,
+      220,
       sortedOpponentStats,
       false
     );
@@ -217,6 +223,45 @@ export default class BattleScene extends Phaser.Scene {
       ...this.playerStatGroup.getAllTexts(),
       ...this.opponentStatGroup.getAllTexts(),
     };
+  }
+
+  createEnergyDisplays() {
+    // Opponent energy (next to portrait, in line with stats)
+    const opponentEnergyY = 160; // In line with top of stats
+    this.opponentEnergyText = this.add
+      .text(20, opponentEnergyY, this.getEnergyString(this.opponentEnergy), {
+        fontSize: "20px",
+        color: "#00d4ff",
+        fontStyle: "bold",
+      })
+      .setOrigin(0, 0.5);
+
+    // Player energy (higher up, closer to stats)
+    const playerEnergyY = 690; // More separation from stats
+    this.playerEnergyText = this.add
+      .text(520, playerEnergyY, this.getEnergyString(this.playerEnergy), {
+        fontSize: "20px",
+        color: "#00d4ff",
+        fontStyle: "bold",
+      })
+      .setOrigin(0, 0.5);
+  }
+
+  getEnergyString(energy) {
+    const filled = "⬢".repeat(Math.min(energy, this.maxEnergy));
+    const empty = "⬡".repeat(Math.max(0, this.maxEnergy - energy));
+    return `Energy: ${filled}${empty} ${energy}/${this.maxEnergy}`;
+  }
+
+  updateEnergyDisplay() {
+    if (this.playerEnergyText) {
+      this.playerEnergyText.setText(this.getEnergyString(this.playerEnergy));
+    }
+    if (this.opponentEnergyText) {
+      this.opponentEnergyText.setText(
+        this.getEnergyString(this.opponentEnergy)
+      );
+    }
   }
 
   createCardHand() {
