@@ -62,7 +62,7 @@ export default class BattleScene extends Phaser.Scene {
     // Initialize energy system
     this.playerEnergy = 5;
     this.opponentEnergy = 5;
-    this.maxEnergy = 10;
+    this.maxEnergy = 20;
 
     // Get both decks
     this.playerDeck = getDeckForCharacter(this.playerCharacter.name);
@@ -905,6 +905,11 @@ export default class BattleScene extends Phaser.Scene {
     this.isSelectingCard = false;
     this.turnInProgress = false;
     this.turnNumber++;
+
+    // Increment energy (+5 per turn, max 20)
+    this.playerEnergy = Math.min(this.playerEnergy + 5, this.maxEnergy);
+    this.opponentEnergy = Math.min(this.opponentEnergy + 5, this.maxEnergy);
+    this.updateEnergyDisplay();
 
     // Draw new card
     const newCard = drawCards(this.playerDeck, 1)[0];
