@@ -203,7 +203,7 @@ export default class BattleScene extends Phaser.Scene {
       20,
       220,
       sortedOpponentStats,
-      false
+      false,
     );
     this.opponentStatGroup.create();
 
@@ -213,7 +213,7 @@ export default class BattleScene extends Phaser.Scene {
       520,
       460,
       sortedPlayerStats,
-      true
+      true,
     );
     this.playerStatGroup.create();
 
@@ -260,7 +260,7 @@ export default class BattleScene extends Phaser.Scene {
     }
     if (this.opponentEnergyText) {
       this.opponentEnergyText.setText(
-        this.getEnergyString(this.opponentEnergy)
+        this.getEnergyString(this.opponentEnergy),
       );
     }
   }
@@ -631,28 +631,28 @@ export default class BattleScene extends Phaser.Scene {
       effectLines.push(
         `${this.playerCharacter.statLabels.investigation}: ${card.selfEffects.investigation > 0 ? "+" : ""}${
           card.selfEffects.investigation
-        }`
+        }`,
       );
     }
     if (card.selfEffects.morale !== 0) {
       effectLines.push(
         `${this.playerCharacter.statLabels.morale}: ${card.selfEffects.morale > 0 ? "+" : ""}${
           card.selfEffects.morale
-        }`
+        }`,
       );
     }
     if (card.selfEffects.publicOpinion !== 0) {
       effectLines.push(
         `${this.playerCharacter.statLabels.publicOpinion}: ${card.selfEffects.publicOpinion > 0 ? "+" : ""}${
           card.selfEffects.publicOpinion
-        }`
+        }`,
       );
     }
     if (card.selfEffects.pressure !== 0) {
       effectLines.push(
         `${this.playerCharacter.statLabels.pressure}: ${card.selfEffects.pressure > 0 ? "+" : ""}${
           card.selfEffects.pressure
-        }`
+        }`,
       );
     }
 
@@ -661,28 +661,28 @@ export default class BattleScene extends Phaser.Scene {
       effectLines.push(
         `${this.opponentCharacter.statLabels.investigation}: ${card.opponentEffects.investigation > 0 ? "+" : ""}${
           card.opponentEffects.investigation
-        }`
+        }`,
       );
     }
     if (card.opponentEffects.morale !== 0) {
       effectLines.push(
         `${this.opponentCharacter.statLabels.morale}: ${card.opponentEffects.morale > 0 ? "+" : ""}${
           card.opponentEffects.morale
-        }`
+        }`,
       );
     }
     if (card.opponentEffects.publicOpinion !== 0) {
       effectLines.push(
         `${this.opponentCharacter.statLabels.publicOpinion}: ${card.opponentEffects.publicOpinion > 0 ? "+" : ""}${
           card.opponentEffects.publicOpinion
-        }`
+        }`,
       );
     }
     if (card.opponentEffects.pressure !== 0) {
       effectLines.push(
         `${this.opponentCharacter.statLabels.pressure}: ${card.opponentEffects.pressure > 0 ? "+" : ""}${
           card.opponentEffects.pressure
-        }`
+        }`,
       );
     }
 
@@ -847,7 +847,7 @@ export default class BattleScene extends Phaser.Scene {
       this.opponentDeck,
       this.stats,
       this.isPlayerTurn,
-      this.opponentEnergy
+      this.opponentEnergy,
     );
 
     if (!aiCard) {
@@ -1021,11 +1021,11 @@ export default class BattleScene extends Phaser.Scene {
     if (playerCard) {
       this.playerStats = GameLogic.applyEffects(
         this.playerStats,
-        playerCard.selfEffects
+        playerCard.selfEffects,
       );
       this.opponentStats = GameLogic.applyEffects(
         this.opponentStats,
-        playerCard.opponentEffects
+        playerCard.opponentEffects,
       );
     }
 
@@ -1033,11 +1033,11 @@ export default class BattleScene extends Phaser.Scene {
     if (aiCard) {
       this.opponentStats = GameLogic.applyEffects(
         this.opponentStats,
-        aiCard.selfEffects
+        aiCard.selfEffects,
       );
       this.playerStats = GameLogic.applyEffects(
         this.playerStats,
-        aiCard.opponentEffects
+        aiCard.opponentEffects,
       );
     }
 

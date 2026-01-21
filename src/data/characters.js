@@ -10,13 +10,13 @@ export const characters = {
       investigation: "Investigation",
       morale: "Team Morale",
       publicOpinion: "Public Pressure",
-      pressure: "Suspicion Level"
+      pressure: "Suspicion Level",
     },
     statColors: {
-      investigation: { color: 0x00ff00, isGreen: true },        // Green - want high
-      morale: { color: 0x00ff00, isGreen: true },          // Green - want high
+      investigation: { color: 0x00ff00, isGreen: true }, // Green - want high
+      morale: { color: 0x00ff00, isGreen: true }, // Green - want high
       publicOpinion: { color: 0xff4444, isGreen: false }, // Red - vigilante support is bad
-      pressure: { color: 0xff4444, isGreen: false }       // Red - suspicion on case is bad
+      pressure: { color: 0xff4444, isGreen: false }, // Red - suspicion on case is bad
     },
     positiveStats: ["investigation"],
     negativeStats: ["morale"],
@@ -40,13 +40,13 @@ export const characters = {
       investigation: "Evidence Against",
       morale: "Confidence",
       publicOpinion: "Public Support",
-      pressure: "Investigation Heat"
+      pressure: "Investigation Heat",
     },
     statColors: {
-      investigation: { color: 0xff4444, isGreen: false },       // Red - evidence against him is bad
-      morale: { color: 0x00ff00, isGreen: true },          // Green - confidence is good
+      investigation: { color: 0xff4444, isGreen: false }, // Red - evidence against him is bad
+      morale: { color: 0x00ff00, isGreen: true }, // Green - confidence is good
       publicOpinion: { color: 0x00ff00, isGreen: true }, // Green - public support is good
-      pressure: { color: 0xff4444, isGreen: false }       // Red - being investigated is bad
+      pressure: { color: 0xff4444, isGreen: false }, // Red - being investigated is bad
     },
     positiveStats: ["publicOpinion"],
     negativeStats: ["pressure"],

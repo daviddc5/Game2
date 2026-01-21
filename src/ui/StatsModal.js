@@ -9,8 +9,11 @@ export default class StatsModal {
     // Don't open if already visible
     if (this.isVisible) return;
 
-    const isPlayer = target === 'player';
-    const portraitKey = character.name === "Independent Detective" ? "detective-neutral" : "killer-neutral";
+    const isPlayer = target === "player";
+    const portraitKey =
+      character.name === "Independent Detective"
+        ? "detective-neutral"
+        : "killer-neutral";
     const themeColor = isPlayer ? 0x00aaff : 0xff4444;
     const themeColorHex = isPlayer ? "#00aaff" : "#ff4444";
 
@@ -23,7 +26,7 @@ export default class StatsModal {
     this.modalObjects.push(overlay);
 
     // Close on tap outside (on overlay)
-    overlay.on('pointerdown', () => {
+    overlay.on("pointerdown", () => {
       this.close();
     });
 
@@ -143,15 +146,15 @@ export default class StatsModal {
       .setDepth(3005);
     this.modalObjects.push(closeX);
 
-    closeButton.on('pointerdown', () => {
+    closeButton.on("pointerdown", () => {
       this.close();
     });
 
     // Hover effect on close button
-    closeButton.on('pointerover', () => {
+    closeButton.on("pointerover", () => {
       closeButton.setFillStyle(0xff6666);
     });
-    closeButton.on('pointerout', () => {
+    closeButton.on("pointerout", () => {
       closeButton.setFillStyle(0xff4444);
     });
 
@@ -160,7 +163,7 @@ export default class StatsModal {
 
   close() {
     if (this.modalObjects.length > 0) {
-      this.modalObjects.forEach(obj => obj.destroy());
+      this.modalObjects.forEach((obj) => obj.destroy());
       this.modalObjects = [];
     }
     this.isVisible = false;
