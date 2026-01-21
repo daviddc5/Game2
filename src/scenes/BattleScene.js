@@ -905,17 +905,76 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   revealBothCards(aiCard) {
-    // Clear face-down placeholders
-    if (this.playerStagedCard) this.playerStagedCard.destroy();
-    if (this.playerStagedCardBack) this.playerStagedCardBack.destroy();
-    if (this.opponentStagedCard) this.opponentStagedCard.destroy();
-    if (this.opponentStagedCardBack) this.opponentStagedCardBack.destroy();
+    // Flip animation for player's card
+    if (this.playerStagedCard && this.playerStagedCardBack) {
+      this.tweens.add({
+        targets: [this.playerStagedCard, this.playerStagedCardBack],
+        scaleX: 0,
+        duration: 200,
+        ease: "Power2",
+        onComplete: () => {
+          // Destroy face-down placeholders after flip
+          if (this.playerStagedCard) this.playerStagedCard.destroy();
+          if (this.playerStagedCardBack) this.playerStagedCardBack.destroy();
 
+          // Create revealed player card
+          this.createRevealedPlayerCard();
+
+          // Flip in animation for revealed card
+          this.revealedPlayerCardObjects.forEach((obj) => {
+            obj.setScale(0, 1);
+            this.tweens.add({
+              targets: obj,
+              scaleX: 1,
+              duration: 200,
+              ease: "Power2",
+            });
+          });
+        },
+      });
+    }
+
+    // Flip animation for opponent's card
+    if (this.opponentStagedCard && this.opponentStagedCardBack) {
+      this.tweens.add({
+        targets: [this.opponentStagedCard, this.opponentStagedCardBack],
+        scaleX: 0,
+        duration: 200,
+        ease: "Power2",
+        onComplete: () => {
+          // Destroy face-down placeholders after flip
+          if (this.opponentStagedCard) this.opponentStagedCard.destroy();
+          if (this.opponentStagedCardBack)
+            this.opponentStagedCardBack.destroy();
+
+          // Create revealed opponent card
+          this.createRevealedOpponentCard(aiCard);
+
+          // Flip in animation for revealed card
+          this.revealedOpponentCardObjects.forEach((obj) => {
+            obj.setScale(0, 1);
+            this.tweens.add({
+              targets: obj,
+              scaleX: 1,
+              duration: 200,
+              ease: "Power2",
+            });
+          });
+        },
+      });
+    }
+
+    // Apply card effects after flip animations complete
+    this.time.delayedCall(500, () => {
+      const playerCard = this.selectedCard ? this.selectedCard.card : null;
+      this.applyBothCardEffects(playerCard, aiCard);
+    });
+  }
+
+  createRevealedPlayerCard() {
     // Clear any previously revealed cards
     this.revealedPlayerCardObjects.forEach((obj) => obj.destroy());
     this.revealedPlayerCardObjects = [];
-    this.revealedOpponentCardObjects.forEach((obj) => obj.destroy());
-    this.revealedOpponentCardObjects = [];
 
     // Check if player passed (no selectedCard means player passed)
     const playerPassed = !this.selectedCard;
@@ -976,6 +1035,12 @@ export default class BattleScene extends Phaser.Scene {
         .setDepth(101);
       this.revealedPlayerCardObjects.push(playerCardDesc);
     }
+  }
+
+  createRevealedOpponentCard(aiCard) {
+    // Clear any previously revealed cards
+    this.revealedOpponentCardObjects.forEach((obj) => obj.destroy());
+    this.revealedOpponentCardObjects = [];
 
     // Show AI's card or PASS indicator
     if (!aiCard) {
@@ -1033,12 +1098,6 @@ export default class BattleScene extends Phaser.Scene {
         .setDepth(101);
       this.revealedOpponentCardObjects.push(aiCardDesc);
     }
-
-    // Apply card effects (if any)
-    this.time.delayedCall(1500, () => {
-      const playerCard = playerPassed ? null : this.selectedCard.card;
-      this.applyBothCardEffects(playerCard, aiCard);
-    });
   }
 
   applyBothCardEffects(playerCard, aiCard) {
