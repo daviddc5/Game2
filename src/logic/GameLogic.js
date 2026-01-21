@@ -20,11 +20,11 @@ export default class GameLogic {
 
   static checkWinConditions(stats) {
     // Check L win condition
-    if (stats.evidence >= 100) {
+    if (stats.investigation >= 100) {
       return {
         gameOver: true,
         winner: "Detective L",
-        reason: "Evidence reached 100!",
+        reason: "Investigation complete!",
       };
     }
 
@@ -38,20 +38,20 @@ export default class GameLogic {
     }
 
     // Check Kira win condition
-    if (stats.justiceInfluence >= 100) {
+    if (stats.publicOpinion >= 100) {
       return {
         gameOver: true,
         winner: "Kira",
-        reason: "Justice Influence reached 100!",
+        reason: "Public Opinion reached 100!",
       };
     }
 
     // Check Kira loss condition
-    if (stats.suspicion >= 100) {
+    if (stats.pressure >= 100) {
       return {
         gameOver: true,
         winner: "Detective L",
-        reason: "Kira's Suspicion too high!",
+        reason: "Pressure too high!",
       };
     }
 

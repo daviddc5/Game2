@@ -46,17 +46,17 @@ export default class BattleScene extends Phaser.Scene {
 
     // Initialize separate stat values for each player
     this.playerStats = {
-      evidence: 50,
+      investigation: 50,
       morale: 50,
-      justiceInfluence: 50,
-      suspicion: 50,
+      publicOpinion: 50,
+      pressure: 50,
     };
 
     this.opponentStats = {
-      evidence: 50,
+      investigation: 50,
       morale: 50,
-      justiceInfluence: 50,
-      suspicion: 50,
+      publicOpinion: 50,
+      pressure: 50,
     };
 
     // Keep legacy stats for backward compatibility (will update UI progressively)
@@ -132,10 +132,10 @@ export default class BattleScene extends Phaser.Scene {
     // Get stat configurations from character data
     const playerStatConfigs = [
       {
-        key: "evidence",
-        label: this.playerCharacter.statLabels.evidence,
-        color: this.playerCharacter.statColors.evidence.color,
-        isPositive: this.playerCharacter.statColors.evidence.isGreen,
+        key: "investigation",
+        label: this.playerCharacter.statLabels.investigation,
+        color: this.playerCharacter.statColors.investigation.color,
+        isPositive: this.playerCharacter.statColors.investigation.isGreen,
       },
       {
         key: "morale",
@@ -144,25 +144,25 @@ export default class BattleScene extends Phaser.Scene {
         isPositive: this.playerCharacter.statColors.morale.isGreen,
       },
       {
-        key: "justiceInfluence",
-        label: this.playerCharacter.statLabels.justiceInfluence,
-        color: this.playerCharacter.statColors.justiceInfluence.color,
-        isPositive: this.playerCharacter.statColors.justiceInfluence.isGreen,
+        key: "publicOpinion",
+        label: this.playerCharacter.statLabels.publicOpinion,
+        color: this.playerCharacter.statColors.publicOpinion.color,
+        isPositive: this.playerCharacter.statColors.publicOpinion.isGreen,
       },
       {
-        key: "suspicion",
-        label: this.playerCharacter.statLabels.suspicion,
-        color: this.playerCharacter.statColors.suspicion.color,
-        isPositive: this.playerCharacter.statColors.suspicion.isGreen,
+        key: "pressure",
+        label: this.playerCharacter.statLabels.pressure,
+        color: this.playerCharacter.statColors.pressure.color,
+        isPositive: this.playerCharacter.statColors.pressure.isGreen,
       },
     ];
 
     const opponentStatConfigs = [
       {
-        key: "evidence",
-        label: this.opponentCharacter.statLabels.evidence,
-        color: this.opponentCharacter.statColors.evidence.color,
-        isPositive: this.opponentCharacter.statColors.evidence.isGreen,
+        key: "investigation",
+        label: this.opponentCharacter.statLabels.investigation,
+        color: this.opponentCharacter.statColors.investigation.color,
+        isPositive: this.opponentCharacter.statColors.investigation.isGreen,
       },
       {
         key: "morale",
@@ -171,16 +171,16 @@ export default class BattleScene extends Phaser.Scene {
         isPositive: this.opponentCharacter.statColors.morale.isGreen,
       },
       {
-        key: "justiceInfluence",
-        label: this.opponentCharacter.statLabels.justiceInfluence,
-        color: this.opponentCharacter.statColors.justiceInfluence.color,
-        isPositive: this.opponentCharacter.statColors.justiceInfluence.isGreen,
+        key: "publicOpinion",
+        label: this.opponentCharacter.statLabels.publicOpinion,
+        color: this.opponentCharacter.statColors.publicOpinion.color,
+        isPositive: this.opponentCharacter.statColors.publicOpinion.isGreen,
       },
       {
-        key: "suspicion",
-        label: this.opponentCharacter.statLabels.suspicion,
-        color: this.opponentCharacter.statColors.suspicion.color,
-        isPositive: this.opponentCharacter.statColors.suspicion.isGreen,
+        key: "pressure",
+        label: this.opponentCharacter.statLabels.pressure,
+        color: this.opponentCharacter.statColors.pressure.color,
+        isPositive: this.opponentCharacter.statColors.pressure.isGreen,
       },
     ];
 
@@ -627,61 +627,61 @@ export default class BattleScene extends Phaser.Scene {
     // Format and display effects - show both self and opponent effects
     const effectLines = [];
     effectLines.push("━━━ You ━━━");
-    if (card.selfEffects.evidence !== 0) {
+    if (card.selfEffects.investigation !== 0) {
       effectLines.push(
-        `Evidence: ${card.selfEffects.evidence > 0 ? "+" : ""}${
-          card.selfEffects.evidence
+        `${this.playerCharacter.statLabels.investigation}: ${card.selfEffects.investigation > 0 ? "+" : ""}${
+          card.selfEffects.investigation
         }`
       );
     }
     if (card.selfEffects.morale !== 0) {
       effectLines.push(
-        `Morale: ${card.selfEffects.morale > 0 ? "+" : ""}${
+        `${this.playerCharacter.statLabels.morale}: ${card.selfEffects.morale > 0 ? "+" : ""}${
           card.selfEffects.morale
         }`
       );
     }
-    if (card.selfEffects.justiceInfluence !== 0) {
+    if (card.selfEffects.publicOpinion !== 0) {
       effectLines.push(
-        `Justice: ${card.selfEffects.justiceInfluence > 0 ? "+" : ""}${
-          card.selfEffects.justiceInfluence
+        `${this.playerCharacter.statLabels.publicOpinion}: ${card.selfEffects.publicOpinion > 0 ? "+" : ""}${
+          card.selfEffects.publicOpinion
         }`
       );
     }
-    if (card.selfEffects.suspicion !== 0) {
+    if (card.selfEffects.pressure !== 0) {
       effectLines.push(
-        `Suspicion: ${card.selfEffects.suspicion > 0 ? "+" : ""}${
-          card.selfEffects.suspicion
+        `${this.playerCharacter.statLabels.pressure}: ${card.selfEffects.pressure > 0 ? "+" : ""}${
+          card.selfEffects.pressure
         }`
       );
     }
 
     effectLines.push("━━━ Foe ━━━");
-    if (card.opponentEffects.evidence !== 0) {
+    if (card.opponentEffects.investigation !== 0) {
       effectLines.push(
-        `Evidence: ${card.opponentEffects.evidence > 0 ? "+" : ""}${
-          card.opponentEffects.evidence
+        `${this.opponentCharacter.statLabels.investigation}: ${card.opponentEffects.investigation > 0 ? "+" : ""}${
+          card.opponentEffects.investigation
         }`
       );
     }
     if (card.opponentEffects.morale !== 0) {
       effectLines.push(
-        `Morale: ${card.opponentEffects.morale > 0 ? "+" : ""}${
+        `${this.opponentCharacter.statLabels.morale}: ${card.opponentEffects.morale > 0 ? "+" : ""}${
           card.opponentEffects.morale
         }`
       );
     }
-    if (card.opponentEffects.justiceInfluence !== 0) {
+    if (card.opponentEffects.publicOpinion !== 0) {
       effectLines.push(
-        `Justice: ${card.opponentEffects.justiceInfluence > 0 ? "+" : ""}${
-          card.opponentEffects.justiceInfluence
+        `${this.opponentCharacter.statLabels.publicOpinion}: ${card.opponentEffects.publicOpinion > 0 ? "+" : ""}${
+          card.opponentEffects.publicOpinion
         }`
       );
     }
-    if (card.opponentEffects.suspicion !== 0) {
+    if (card.opponentEffects.pressure !== 0) {
       effectLines.push(
-        `Suspicion: ${card.opponentEffects.suspicion > 0 ? "+" : ""}${
-          card.opponentEffects.suspicion
+        `${this.opponentCharacter.statLabels.pressure}: ${card.opponentEffects.pressure > 0 ? "+" : ""}${
+          card.opponentEffects.pressure
         }`
       );
     }
@@ -1098,10 +1098,10 @@ export default class BattleScene extends Phaser.Scene {
 
   getStatLabel(statKey) {
     const labels = {
-      evidence: "Evidence",
+      investigation: "Investigation",
       morale: "Morale",
-      justiceInfluence: "Justice",
-      suspicion: "Suspicion",
+      publicOpinion: "Public Opinion",
+      pressure: "Pressure",
     };
     return labels[statKey] || statKey;
   }

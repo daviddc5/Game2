@@ -72,7 +72,7 @@ export default class StatsModal {
 
     // Display all 4 stats with bars using character-specific labels and colors
     // Sort stats: green (positive) first, then red (negative)
-    const statKeys = ["evidence", "morale", "justiceInfluence", "suspicion"];
+    const statKeys = ["investigation", "morale", "publicOpinion", "pressure"];
     const sortedStats = statKeys.sort((a, b) => {
       const aIsGreen = character.statColors[a].isGreen;
       const bIsGreen = character.statColors[b].isGreen;

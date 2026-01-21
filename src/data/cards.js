@@ -3,21 +3,39 @@
 
 export const lCards = [
   {
+    id: "l_defensive_stance",
+    name: "Defensive Stance",
+    description: "Brace for the vigilante's attack",
+    energyCost: 2,
+    selfEffects: {
+      investigation: 0,
+      morale: 3,
+      publicOpinion: 0,
+      pressure: 0,
+    },
+    opponentEffects: {
+      investigation: 0,
+      morale: 0,
+      publicOpinion: 0,
+      pressure: 0,
+    },
+  },
+  {
     id: "l_data_cross_match",
     name: "Data Cross-Match",
     description: "Analyze patterns in the data",
     energyCost: 6,
     selfEffects: {
-      evidence: 8, // Boost your investigation
+      investigation: 10, // Boost your investigation
       morale: 0,
-      justiceInfluence: 0,
-      suspicion: 0,
+      publicOpinion: 0,
+      pressure: 0,
     },
     opponentEffects: {
-      evidence: 5, // Gather evidence against them
+      investigation: 6, // Gather evidence against them
       morale: 0,
-      justiceInfluence: 0,
-      suspicion: 0,
+      publicOpinion: 0,
+      pressure: 0,
     },
   },
   {
@@ -26,16 +44,16 @@ export const lCards = [
     description: "Set a clever trap for the vigilante",
     energyCost: 5,
     selfEffects: {
-      evidence: 6,
+      investigation: 8,
       morale: 0,
-      justiceInfluence: 0,
-      suspicion: 0,
+      publicOpinion: 0,
+      pressure: 0,
     },
     opponentEffects: {
-      evidence: 0,
-      morale: -4, // Shake their confidence
-      justiceInfluence: 0,
-      suspicion: 4, // Increase heat on them
+      investigation: 0,
+      morale: -5, // Shake their confidence
+      publicOpinion: 0,
+      pressure: 5, // Increase heat on them
     },
   },
   {
@@ -44,16 +62,16 @@ export const lCards = [
     description: "Boost team morale publicly",
     energyCost: 5,
     selfEffects: {
-      evidence: 0,
-      morale: 10, // Boost your team morale
-      justiceInfluence: 0,
-      suspicion: 0,
+      investigation: 0,
+      morale: 12, // Boost your team morale
+      publicOpinion: 0,
+      pressure: 0,
     },
     opponentEffects: {
-      evidence: 0,
+      investigation: 0,
       morale: 0,
-      justiceInfluence: -5, // Reduce vigilante public support
-      suspicion: 0,
+      publicOpinion: -8, // Reduce vigilante public support
+      pressure: 0,
     },
   },
   {
@@ -62,16 +80,16 @@ export const lCards = [
     description: "Monitor suspects intensively",
     energyCost: 5,
     selfEffects: {
-      evidence: 6,
+      investigation: 8,
       morale: 0,
-      justiceInfluence: 0,
-      suspicion: 0,
+      publicOpinion: 0,
+      pressure: 0,
     },
     opponentEffects: {
-      evidence: 3,
+      investigation: 4,
       morale: 0,
-      justiceInfluence: 0,
-      suspicion: 3, // Put pressure on them
+      publicOpinion: 0,
+      pressure: 5,
     },
   },
   {
@@ -80,34 +98,34 @@ export const lCards = [
     description: "Question a key witness",
     energyCost: 4,
     selfEffects: {
-      evidence: 5,
+      investigation: 6,
       morale: 0,
-      justiceInfluence: 0,
-      suspicion: 0,
+      publicOpinion: 0,
+      pressure: 0,
     },
     opponentEffects: {
-      evidence: 2,
+      investigation: 3,
       morale: 0,
-      justiceInfluence: 0,
-      suspicion: 3,
+      publicOpinion: 0,
+      pressure: 4,
     },
   },
   {
-    id: "l_task_force_rally",
+    id: "l_logical_trap",
     name: "Task Force Rally",
     description: "Rally the team together",
     energyCost: 4,
     selfEffects: {
-      evidence: 3,
-      morale: 8,
-      justiceInfluence: 0,
-      suspicion: 0,
+      investigation: 4,
+      morale: 9,
+      publicOpinion: 0,
+      pressure: 0,
     },
     opponentEffects: {
-      evidence: 0,
-      morale: -3,
-      justiceInfluence: 0,
-      suspicion: 0,
+      investigation: 0,
+      morale: -4,
+      publicOpinion: 0,
+      pressure: 0,
     },
   },
   {
@@ -116,16 +134,16 @@ export const lCards = [
     description: "Reassure the team and public",
     energyCost: 4,
     selfEffects: {
-      evidence: 0,
-      morale: 8,
-      justiceInfluence: 0,
-      suspicion: 0,
+      investigation: 0,
+      morale: 10,
+      publicOpinion: 0,
+      pressure: 0,
     },
     opponentEffects: {
-      evidence: 0,
+      investigation: 0,
       morale: 0,
-      justiceInfluence: -6,
-      suspicion: 0,
+      publicOpinion: -7,
+      pressure: 0,
     },
   },
   {
@@ -134,16 +152,16 @@ export const lCards = [
     description: "Expose flaws in vigilante justice",
     energyCost: 6,
     selfEffects: {
-      evidence: 3,
+      investigation: 5,
       morale: 0,
-      justiceInfluence: 0,
-      suspicion: 0,
+      publicOpinion: 0,
+      pressure: 0,
     },
     opponentEffects: {
-      evidence: 0,
+      investigation: 0,
       morale: 0,
-      justiceInfluence: -8, // Reduce their public support
-      suspicion: 0,
+      publicOpinion: -10,
+      pressure: 0,
     },
   },
   {
@@ -152,181 +170,199 @@ export const lCards = [
     description: "Challenge the vigilante's public support",
     energyCost: 3,
     selfEffects: {
-      evidence: 0,
-      morale: 0,
-      justiceInfluence: 0,
-      suspicion: 0,
+      investigation: 2,
+      morale: 2,
+      publicOpinion: 0,
+      pressure: 0,
     },
     opponentEffects: {
-      evidence: 0,
+      investigation: 0,
       morale: 0,
-      justiceInfluence: -10,
-      suspicion: 0,
+      publicOpinion: -5,
+      pressure: 0,
     },
   },
 ];
 
 export const kiraCards = [
   {
-    id: "kira_righteous_act",
-    name: "Righteous Act",
-    description: "Execute a major criminal",
-    energyCost: 7,
+    id: "kira_lay_low",
+    name: "Lay Low",
+    description: "Hide and avoid detection",
+    energyCost: 2,
     selfEffects: {
-      evidence: 0,
+      investigation: 0,
       morale: 0,
-      justiceInfluence: 12, // Boost your public support
-      suspicion: 0,
+      publicOpinion: 0,
+      pressure: -4,
     },
     opponentEffects: {
-      evidence: 0,
-      morale: -5, // Demoralize detective team
-      justiceInfluence: 0,
-      suspicion: 0,
-    },
-  },
-  {
-    id: "kira_eliminate_witness",
-    name: "Eliminate Witness",
-    description: "Remove someone who knows too much",
-    energyCost: 8,
-    selfEffects: {
-      evidence: -8, // Reduce evidence against you
+      investigation: 0,
       morale: 0,
-      justiceInfluence: 0,
-      suspicion: -6, // Reduce investigation heat
-    },
-    opponentEffects: {
-      evidence: -5, // Destroy their evidence
-      morale: 0,
-      justiceInfluence: 0,
-      suspicion: 0,
-    },
-  },
-  {
-    id: "kira_media_manipulation",
-    name: "Media Manipulation",
-    description: "Control the narrative",
-    energyCost: 7,
-    selfEffects: {
-      evidence: 0,
-      morale: 0,
-      justiceInfluence: 8, // Boost public support
-      suspicion: -10, // Reduce investigation heat
-    },
-    opponentEffects: {
-      evidence: 0,
-      morale: 0,
-      justiceInfluence: 5, // Public pressure increases
-      suspicion: 0,
+      publicOpinion: 0,
+      pressure: 0,
     },
   },
   {
     id: "kira_intimidation",
     name: "Intimidation",
     description: "Threaten those investigating",
-    energyCost: 4,
+    energyCost: 3,
     selfEffects: {
-      evidence: -6,
+      investigation: -4,
       morale: 0,
-      justiceInfluence: 0,
-      suspicion: 0,
+      publicOpinion: 0,
+      pressure: 0,
     },
     opponentEffects: {
-      evidence: -3,
-      morale: -4, // Scare the team
-      justiceInfluence: 0,
-      suspicion: 0,
+      investigation: -3,
+      morale: -4,
+      publicOpinion: 0,
+      pressure: 0,
     },
   },
   {
     id: "kira_strategic_kill",
     name: "Strategic Kill",
     description: "Make a calculated move",
-    energyCost: 5,
+    energyCost: 4,
     selfEffects: {
-      evidence: 0,
-      morale: 8, // Boost confidence
-      justiceInfluence: 6, // Gain public support
-      suspicion: 0,
+      investigation: 0,
+      morale: 10,
+      publicOpinion: 8,
+      pressure: 0,
     },
     opponentEffects: {
-      evidence: 0,
+      investigation: 0,
       morale: 0,
-      justiceInfluence: 3, // Public pressure increases
-      suspicion: 0,
+      publicOpinion: 5,
+      pressure: 0,
     },
   },
   {
     id: "kira_cover_tracks",
     name: "Cover Tracks",
     description: "Hide your involvement",
-    energyCost: 5,
+    energyCost: 4,
     selfEffects: {
-      evidence: -5,
+      investigation: -7,
       morale: 0,
-      justiceInfluence: 0,
-      suspicion: -8,
+      publicOpinion: 0,
+      pressure: -9,
     },
     opponentEffects: {
-      evidence: -3,
+      investigation: -5,
       morale: 0,
-      justiceInfluence: 0,
-      suspicion: 0,
-    },
-  },
-  {
-    id: "kira_mass_judgment",
-    name: "Mass Judgment",
-    description: "Execute multiple criminals at once",
-    energyCost: 8,
-    selfEffects: {
-      evidence: 0,
-      morale: 6,
-      justiceInfluence: 10,
-      suspicion: 4,
-    },
-    opponentEffects: {
-      evidence: 0,
-      morale: -6,
-      justiceInfluence: 5,
-      suspicion: 0,
-    },
-  },
-  {
-    id: "kira_destroy_evidence",
-    name: "Destroy Evidence",
-    description: "Eliminate critical proof against you",
-    energyCost: 9,
-    selfEffects: {
-      evidence: -12,
-      morale: 0,
-      justiceInfluence: 0,
-      suspicion: 5,
-    },
-    opponentEffects: {
-      evidence: -8,
-      morale: 0,
-      justiceInfluence: 0,
-      suspicion: 0,
+      publicOpinion: 0,
+      pressure: 0,
     },
   },
   {
     id: "kira_plant_false_leads",
     name: "Plant False Leads",
     description: "Mislead the investigation",
-    energyCost: 6,
+    energyCost: 5,
     selfEffects: {
-      evidence: -8,
+      investigation: -10,
       morale: 0,
-      justiceInfluence: 4,
-      suspicion: 0,
+      publicOpinion: 6,
+      pressure: 0,
     },
     opponentEffects: {
-      evidence: -5,
+      investigation: -6,
       morale: 0,
-      justiceInfluence: 0,
-      suspicion: 0,
+      publicOpinion: 0,
+      pressure: 0,
+    },
+  },
+  {
+    id: "kira_righteous_act",
+    name: "Righteous Act",
+    description: "Execute a major criminal",
+    energyCost: 6,
+    selfEffects: {
+      investigation: 0,
+      morale: 0,
+      publicOpinion: 14,
+      pressure: 0,
+    },
+    opponentEffects: {
+      investigation: 0,
+      morale: -6,
+      publicOpinion: 0,
+      pressure: 0,
+    },
+  },
+  {
+    id: "kira_media_manipulation",
+    name: "Media Manipulation",
+    description: "Control the narrative",
+    energyCost: 6,
+    selfEffects: {
+      investigation: 0,
+      morale: 0,
+      publicOpinion: 10,
+      pressure: -10,
+    },
+    opponentEffects: {
+      investigation: 0,
+      morale: 0,
+      publicOpinion: 6,
+      pressure: 0,
+    },
+  },
+  {
+    id: "kira_eliminate_witness",
+    name: "Eliminate Witness",
+    description: "Remove someone who knows too much",
+    energyCost: 7,
+    selfEffects: {
+      investigation: -10,
+      morale: 0,
+      publicOpinion: 0,
+      pressure: -8,
+    },
+    opponentEffects: {
+      investigation: -6,
+      morale: 0,
+      publicOpinion: 0,
+      pressure: 0,
+    },
+  },
+  {
+    id: "kira_mass_judgment",
+    name: "Mass Judgment",
+    description: "Execute multiple criminals at once",
+    energyCost: 7,
+    selfEffects: {
+      investigation: 0,
+      morale: 8,
+      publicOpinion: 12,
+      pressure: 5,
+    },
+    opponentEffects: {
+      investigation: 0,
+      morale: -7,
+      publicOpinion: 6,
+      pressure: 0,
+    },
+  },
+  {
+    id: "kira_destroy_evidence",
+    name: "Destroy Evidence",
+    description: "Eliminate critical proof against you",
+    energyCost: 8,
+    selfEffects: {
+      investigation: -14,
+      morale: 0,
+      publicOpinion: 0,
+      pressure: 6,
+    },
+    opponentEffects: {
+      investigation: -10,
+      morale: 0,
+      publicOpinion: 0,
+      pressure: 0,
     },
   },
 ];

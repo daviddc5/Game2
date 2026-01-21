@@ -7,21 +7,21 @@ export const characters = {
     displayName: "Detective",
     portrait: "detective-neutral.png",
     statLabels: {
-      evidence: "Investigation",
+      investigation: "Investigation",
       morale: "Team Morale",
-      justiceInfluence: "Public Pressure",
-      suspicion: "Suspicion Level"
+      publicOpinion: "Public Pressure",
+      pressure: "Suspicion Level"
     },
     statColors: {
-      evidence: { color: 0x00ff00, isGreen: true },        // Green - want high
+      investigation: { color: 0x00ff00, isGreen: true },        // Green - want high
       morale: { color: 0x00ff00, isGreen: true },          // Green - want high
-      justiceInfluence: { color: 0xff4444, isGreen: false }, // Red - vigilante support is bad
-      suspicion: { color: 0xff4444, isGreen: false }       // Red - suspicion on case is bad
+      publicOpinion: { color: 0xff4444, isGreen: false }, // Red - vigilante support is bad
+      pressure: { color: 0xff4444, isGreen: false }       // Red - suspicion on case is bad
     },
-    positiveStats: ["evidence"],
+    positiveStats: ["investigation"],
     negativeStats: ["morale"],
     winCondition: {
-      stat: "evidence",
+      stat: "investigation",
       threshold: 100,
       message: "The detective exposes the truth with overwhelming evidence!",
     },
@@ -37,26 +37,26 @@ export const characters = {
     displayName: "Vigilante",
     portrait: "killer-neutral.png",
     statLabels: {
-      evidence: "Evidence Against",
+      investigation: "Evidence Against",
       morale: "Confidence",
-      justiceInfluence: "Public Support",
-      suspicion: "Investigation Heat"
+      publicOpinion: "Public Support",
+      pressure: "Investigation Heat"
     },
     statColors: {
-      evidence: { color: 0xff4444, isGreen: false },       // Red - evidence against him is bad
+      investigation: { color: 0xff4444, isGreen: false },       // Red - evidence against him is bad
       morale: { color: 0x00ff00, isGreen: true },          // Green - confidence is good
-      justiceInfluence: { color: 0x00ff00, isGreen: true }, // Green - public support is good
-      suspicion: { color: 0xff4444, isGreen: false }       // Red - being investigated is bad
+      publicOpinion: { color: 0x00ff00, isGreen: true }, // Green - public support is good
+      pressure: { color: 0xff4444, isGreen: false }       // Red - being investigated is bad
     },
-    positiveStats: ["justiceInfluence"],
-    negativeStats: ["suspicion"],
+    positiveStats: ["publicOpinion"],
+    negativeStats: ["pressure"],
     winCondition: {
-      stat: "justiceInfluence",
+      stat: "publicOpinion",
       threshold: 100,
       message: "The vigilante's new world order is complete!",
     },
     loseCondition: {
-      stat: "suspicion",
+      stat: "pressure",
       threshold: 100,
       message: "The vigilante's identity is exposed!",
     },
