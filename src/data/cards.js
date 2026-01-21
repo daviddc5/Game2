@@ -7,6 +7,8 @@ export const lCards = [
     name: "Defensive Stance",
     description: "Brace for the vigilante's attack",
     energyCost: 2,
+    cardType: "COUNTER",
+    speed: 10,
     selfEffects: {
       investigation: 0,
       morale: 3,
@@ -25,6 +27,8 @@ export const lCards = [
     name: "Data Cross-Match",
     description: "Analyze patterns in the data",
     energyCost: 6,
+    cardType: "POWER",
+    speed: 3,
     selfEffects: {
       investigation: 10, // Boost your investigation
       morale: 0,
@@ -43,6 +47,8 @@ export const lCards = [
     name: "Logical Trap",
     description: "Set a clever trap for the vigilante",
     energyCost: 5,
+    cardType: "NORMAL",
+    speed: 5,
     selfEffects: {
       investigation: 8,
       morale: 0,
@@ -61,6 +67,8 @@ export const lCards = [
     name: "Press Interview",
     description: "Boost team morale publicly",
     energyCost: 5,
+    cardType: "NORMAL",
+    speed: 5,
     selfEffects: {
       investigation: 0,
       morale: 12, // Boost your team morale
@@ -79,6 +87,8 @@ export const lCards = [
     name: "Surveillance Sweep",
     description: "Monitor suspects intensively",
     energyCost: 5,
+    cardType: "NORMAL",
+    speed: 4,
     selfEffects: {
       investigation: 8,
       morale: 0,
@@ -97,6 +107,8 @@ export const lCards = [
     name: "Interrogation",
     description: "Question a key witness",
     energyCost: 4,
+    cardType: "QUICK",
+    speed: 8,
     selfEffects: {
       investigation: 6,
       morale: 0,
@@ -115,6 +127,8 @@ export const lCards = [
     name: "Task Force Rally",
     description: "Rally the team together",
     energyCost: 4,
+    cardType: "QUICK",
+    speed: 7,
     selfEffects: {
       investigation: 4,
       morale: 9,
@@ -133,6 +147,8 @@ export const lCards = [
     name: "Public Statement",
     description: "Reassure the team and public",
     energyCost: 4,
+    cardType: "QUICK",
+    speed: 9,
     selfEffects: {
       investigation: 0,
       morale: 10,
@@ -151,6 +167,8 @@ export const lCards = [
     name: "Discredit Vigilante",
     description: "Expose flaws in vigilante justice",
     energyCost: 6,
+    cardType: "POWER",
+    speed: 2,
     selfEffects: {
       investigation: 5,
       morale: 0,
@@ -169,6 +187,8 @@ export const lCards = [
     name: "Counter Propaganda",
     description: "Challenge the vigilante's public support",
     energyCost: 3,
+    cardType: "QUICK",
+    speed: 9,
     selfEffects: {
       investigation: 2,
       morale: 2,
@@ -190,6 +210,8 @@ export const kiraCards = [
     name: "Lay Low",
     description: "Hide and avoid detection",
     energyCost: 2,
+    cardType: "COUNTER",
+    speed: 10,
     selfEffects: {
       investigation: 0,
       morale: 0,
@@ -208,6 +230,8 @@ export const kiraCards = [
     name: "Intimidation",
     description: "Threaten those investigating",
     energyCost: 3,
+    cardType: "QUICK",
+    speed: 8,
     selfEffects: {
       investigation: -4,
       morale: 0,
@@ -226,6 +250,8 @@ export const kiraCards = [
     name: "Strategic Kill",
     description: "Make a calculated move",
     energyCost: 4,
+    cardType: "QUICK",
+    speed: 7,
     selfEffects: {
       investigation: 0,
       morale: 10,
@@ -244,6 +270,8 @@ export const kiraCards = [
     name: "Cover Tracks",
     description: "Hide your involvement",
     energyCost: 4,
+    cardType: "QUICK",
+    speed: 9,
     selfEffects: {
       investigation: -7,
       morale: 0,
@@ -262,6 +290,8 @@ export const kiraCards = [
     name: "Plant False Leads",
     description: "Mislead the investigation",
     energyCost: 5,
+    cardType: "NORMAL",
+    speed: 6,
     selfEffects: {
       investigation: -10,
       morale: 0,
@@ -280,6 +310,8 @@ export const kiraCards = [
     name: "Righteous Act",
     description: "Execute a major criminal",
     energyCost: 6,
+    cardType: "POWER",
+    speed: 3,
     selfEffects: {
       investigation: 0,
       morale: 0,
@@ -298,6 +330,8 @@ export const kiraCards = [
     name: "Media Manipulation",
     description: "Control the narrative",
     energyCost: 6,
+    cardType: "POWER",
+    speed: 1,
     selfEffects: {
       investigation: 0,
       morale: 0,
@@ -316,6 +350,8 @@ export const kiraCards = [
     name: "Eliminate Witness",
     description: "Remove someone who knows too much",
     energyCost: 7,
+    cardType: "POWER",
+    speed: 2,
     selfEffects: {
       investigation: -10,
       morale: 0,
@@ -334,6 +370,8 @@ export const kiraCards = [
     name: "Mass Judgment",
     description: "Execute multiple criminals at once",
     energyCost: 7,
+    cardType: "POWER",
+    speed: 1,
     selfEffects: {
       investigation: 0,
       morale: 8,
@@ -352,6 +390,8 @@ export const kiraCards = [
     name: "Destroy Evidence",
     description: "Eliminate critical proof against you",
     energyCost: 8,
+    cardType: "POWER",
+    speed: 2,
     selfEffects: {
       investigation: -14,
       morale: 0,
@@ -367,13 +407,25 @@ export const kiraCards = [
   },
 ];
 
-// Helper function to get energy cost color
-export function getEnergyCostColor(cost) {
-  if (cost <= 3) return "#00ff00"; // Green - Counter
-  if (cost <= 4) return "#00ccff"; // Cyan - Quick
-  if (cost <= 5) return "#ffff00"; // Yellow - Normal
-  if (cost <= 7) return "#ff9900"; // Orange - Power
-  return "#ff0000"; // Red - Ultimate
+// Helper function to get card type border color
+export function getCardTypeBorderColor(cardType) {
+  switch (cardType) {
+    case "COUNTER":
+      return 0xff0000; // Red
+    case "QUICK":
+      return 0x0088ff; // Blue
+    case "NORMAL":
+      return 0x00ff00; // Green
+    case "POWER":
+      return 0xffd700; // Gold
+    default:
+      return 0xffffff; // White fallback
+  }
+}
+
+// Helper function to get card type name
+export function getCardTypeName(cardType) {
+  return cardType || "NORMAL";
 }
 
 // Helper function to get the correct deck for a character

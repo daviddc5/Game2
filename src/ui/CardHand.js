@@ -1,6 +1,8 @@
 /**
  * CardHand - Manages card display and interaction with poker-style effects
  */
+import { getCardTypeBorderColor } from "../data/cards.js";
+
 export default class CardHand {
   constructor(scene) {
     this.scene = scene;
@@ -63,7 +65,7 @@ export default class CardHand {
     // Container for card (allows grouped transformations)
     const cardContainer = this.scene.add.container(
       x + this.CARD_WIDTH / 2,
-      y + this.CARD_HEIGHT / 2
+      y + this.CARD_HEIGHT / 2,
     );
     cardContainer.setRotation(rotation);
     cardContainer.setDepth(cardIndex); // Lower index cards behind higher ones
@@ -80,12 +82,16 @@ export default class CardHand {
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: isAffordable });
 
-    // Card border with gradient effect (dimmed if unaffordable)
-    const borderColor = isAffordable ? 0xd4af37 : 0x555555;
+    // Card border with type-based color (dimmed if unaffordable)
+    const typeBorderColor = getCardTypeBorderColor(cardData.cardType);
+    const borderColor = isAffordable ? typeBorderColor : 0x555555;
     const cardBorder = this.scene.add
       .rectangle(0, 0, this.CARD_WIDTH, this.CARD_HEIGHT)
       .setOrigin(0.5)
-      .setStrokeStyle(3, borderColor); // Gold or gray border
+      .setStrokeStyle(4, borderColor); // Thicker border for card type
+
+    // Store type color on border object for later reference
+    cardBorder.setData("typeColor", typeBorderColor);
 
     // Inner border for depth
     const innerBorder = this.scene.add
@@ -118,23 +124,25 @@ export default class CardHand {
       })
       .setOrigin(0.5);
 
-    // Energy cost display with color coding
-    let costColor = "#00ff00"; // Default green
-    if (cardData.energyCost) {
-      if (cardData.energyCost <= 3) costColor = "#00ff00"; // Green - Counter
-      else if (cardData.energyCost <= 4) costColor = "#00ccff"; // Cyan - Quick
-      else if (cardData.energyCost <= 5)
-        costColor = "#ffff00"; // Yellow - Normal
-      else if (cardData.energyCost <= 7)
-        costColor = "#ff9900"; // Orange - Power
-      else costColor = "#ff0000"; // Red - Ultimate
-    }
-
+    // Energy cost and speed display (side by side at bottom)
+    const costColor = isAffordable ? "#ffffff" : "#666666";
     const costText = this.scene.add
-      .text(0, 70, `⬢ ${cardData.energyCost || 0}`, {
+      .text(-30, 70, `⬢ ${cardData.energyCost || 0}`, {
         fontFamily: "Arial, sans-serif",
         fontSize: "22px",
         color: costColor,
+        align: "center",
+        fontStyle: "bold",
+      })
+      .setOrigin(0.5);
+
+    // Speed display (next to energy cost)
+    const speedColor = isAffordable ? "#ffd700" : "#666666";
+    const speedText = this.scene.add
+      .text(30, 70, `S ${cardData.speed || 0}`, {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "22px",
+        color: speedColor,
         align: "center",
         fontStyle: "bold",
       })
@@ -149,6 +157,7 @@ export default class CardHand {
       nameText,
       descText,
       costText,
+      speedText,
     ]);
 
     // Poker-style hover animations
@@ -226,13 +235,14 @@ export default class CardHand {
         // Lock this card in elevated state
         this.scene.lockedCardIndex = cardIndex;
 
-        // Ensure card is elevated and green
+        // Ensure card is elevated with brighter background
         cardContainer.setY(y + this.CARD_HEIGHT / 2 - this.HOVER_LIFT);
         cardContainer.setScale(this.HOVER_SCALE);
         cardContainer.setRotation(0);
         cardContainer.setDepth(100);
-        cardBg.setFillStyle(0x2a5a2a); // Green tint
-        cardBorder.setStrokeStyle(3, 0x00ff00); // Green border
+        cardBg.setFillStyle(0x3a3a3a); // Lighter background when selected
+        // Keep original type border color
+        cardBorder.setStrokeStyle(4, typeBorderColor);
 
         // Call the callback directly (selectCard) which will reposition buttons
         this.onCardPlayed(cardData, cardIndex);
@@ -272,7 +282,9 @@ export default class CardHand {
       });
       cardContainer.setDepth(cardIndex);
       cardBg.setFillStyle(0x2a2a2a);
-      cardBorder.setStrokeStyle(3, 0xd4af37); // Reset to gold
+      // Restore original type border color
+      const originalTypeColor = cardBorder.getData("typeColor") || 0xffffff;
+      cardBorder.setStrokeStyle(4, originalTypeColor);
     }
 
     this.scene.lockedCardIndex = null;
