@@ -1439,17 +1439,28 @@ export default class BattleScene extends Phaser.Scene {
 
   updateStatBars() {
     // Use the StatBarGroup's animated update method
-    Object.keys(this.stats).forEach((statKey) => {
-      const value = this.stats[statKey];
-
-      // Update through stat groups for animation
+    Object.keys(this.playerStats).forEach((statKey) => {
+      const newValue = this.playerStats[statKey];
+      const oldValue = this.playerStatGroup.bars[statKey]?.bar?.getData('currentValue');
+      
       if (this.playerStatGroup.bars[statKey]) {
-        this.playerStatGroup.updateStat(statKey, value);
-      }
-      if (this.opponentStatGroup.bars[statKey]) {
-        this.opponentStatGroup.updateStat(statKey, value);
+        this.playerStatGroup.bars[statKey].bar.setData('currentValue', newValue);
+        this.playerStatGroup.updateStat(statKey, newValue, oldValue);
       }
     });
+
+    Object.keys(this.opponentStats).forEach((statKey) => {
+      const newValue = this.opponentStats[statKey];
+      const oldValue = this.opponentStatGroup.bars[statKey]?.bar?.getData('currentValue');
+      
+      if (this.opponentStatGroup.bars[statKey]) {
+        this.opponentStatGroup.bars[statKey].bar.setData('currentValue', newValue);
+        this.opponentStatGroup.updateStat(statKey, newValue, oldValue);
+      }
+    });
+
+    // Update legacy stats reference
+    this.stats = this.playerStats;
   }
 
   endAITurn() {
