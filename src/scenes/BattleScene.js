@@ -1232,7 +1232,14 @@ export default class BattleScene extends Phaser.Scene {
       firstIsPlayer = false;
     }
 
-    // Apply first card
+    // Check if first card cancels the second (requires both COUNTER type and specific flag)
+    let secondCardCancelled = false;
+    if (firstCard && secondCard && firstCard.cardType === "COUNTER" && firstCard.cancels === true) {
+      secondCardCancelled = true;
+      this.showCancellationEffect(!firstIsPlayer); // Cancel the opponent's card
+    }
+
+    // Apply first card effects
     if (firstCard) {
       if (firstIsPlayer) {
         this.playerStats = GameLogic.applyEffects(
@@ -1253,37 +1260,112 @@ export default class BattleScene extends Phaser.Scene {
           firstCard.opponentEffects,
         );
       }
+      
+      // Update UI after first card
+      this.stats = this.playerStats;
+      this.updateStatBars();
     }
 
-    // Apply second card (if exists)
+    // Apply second card after delay (if exists and not cancelled)
     if (secondCard) {
-      if (!firstIsPlayer) {
-        // Second card is player's
-        this.playerStats = GameLogic.applyEffects(
-          this.playerStats,
-          secondCard.selfEffects,
-        );
-        this.opponentStats = GameLogic.applyEffects(
-          this.opponentStats,
-          secondCard.opponentEffects,
-        );
-      } else {
-        // Second card is AI's
-        this.opponentStats = GameLogic.applyEffects(
-          this.opponentStats,
-          secondCard.selfEffects,
-        );
-        this.playerStats = GameLogic.applyEffects(
-          this.playerStats,
-          secondCard.opponentEffects,
-        );
-      }
+      this.time.delayedCall(800, () => {
+        if (secondCardCancelled) {
+          console.log("Second card was cancelled by COUNTER!");
+          // Still proceed to next turn even if cancelled
+        } else {
+          // Apply second card effects
+          if (!firstIsPlayer) {
+            // Second card is player's
+            this.playerStats = GameLogic.applyEffects(
+              this.playerStats,
+              secondCard.selfEffects,
+            );
+            this.opponentStats = GameLogic.applyEffects(
+              this.opponentStats,
+              secondCard.opponentEffects,
+            );
+          } else {
+            // Second card is AI's
+            this.opponentStats = GameLogic.applyEffects(
+              this.opponentStats,
+              secondCard.selfEffects,
+            );
+            this.playerStats = GameLogic.applyEffects(
+              this.playerStats,
+              secondCard.opponentEffects,
+            );
+          }
+          
+          // Update UI after second card
+          this.stats = this.playerStats;
+          this.updateStatBars();
+        }
+
+        // Check win/loss and proceed to next turn
+        this.finalizeTurn();
+      });
+      return; // Exit early, delay will handle the rest
     }
 
-    // Update legacy stats reference
-    this.stats = this.playerStats; // Update UI
-    this.updateStatBars();
+    // If no second card, proceed immediately
+    this.finalizeTurn();
+  }
 
+  showCancellationEffect(isPlayerCancelled) {
+    const targetY = isPlayerCancelled ? 600 : 310;
+    const targetObjects = isPlayerCancelled
+      ? this.revealedPlayerCardObjects
+      : this.revealedOpponentCardObjects;
+
+    // Add red X overlay
+    const cancelX = this.add
+      .text(375, targetY, "✖", {
+        fontSize: "120px",
+        color: "#ff0000",
+        fontStyle: "bold",
+        stroke: "#000000",
+        strokeThickness: 6,
+      })
+      .setOrigin(0.5)
+      .setDepth(103)
+      .setAlpha(0);
+    targetObjects.push(cancelX);
+
+    // Fade in and pulse the X
+    this.tweens.add({
+      targets: cancelX,
+      alpha: 1,
+      scale: 1.2,
+      duration: 300,
+      yoyo: true,
+      repeat: 1,
+      ease: 'Power2'
+    });
+
+    // Add "CANCELLED!" text
+    const textY = isPlayerCancelled ? targetY + 130 : targetY - 130;
+    const cancelText = this.add
+      .text(375, textY, "CANCELLED!", {
+        fontSize: "20px",
+        color: "#ff0000",
+        fontStyle: "bold",
+        stroke: "#000000",
+        strokeThickness: 4,
+      })
+      .setOrigin(0.5)
+      .setDepth(103)
+      .setAlpha(0);
+    targetObjects.push(cancelText);
+
+    this.tweens.add({
+      targets: cancelText,
+      alpha: 1,
+      duration: 300,
+      ease: 'Power2'
+    });
+  }
+
+  finalizeTurn() {
     // Check win/loss
     if (this.checkGameOver()) {
       return;
