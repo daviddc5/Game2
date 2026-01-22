@@ -505,6 +505,16 @@ export default class BattleScene extends Phaser.Scene {
   handlePass() {
     if (this.turnInProgress || !this.isPlayerTurn) return;
 
+    // Clear previous revealed cards (including glow effects)
+    if (this.revealedPlayerCardObjects) {
+      this.revealedPlayerCardObjects.forEach((obj) => obj.destroy());
+      this.revealedPlayerCardObjects = [];
+    }
+    if (this.revealedOpponentCardObjects) {
+      this.revealedOpponentCardObjects.forEach((obj) => obj.destroy());
+      this.revealedOpponentCardObjects = [];
+    }
+
     // Hide pass button
     this.passButtonBg.setVisible(false);
     this.passButtonText.setVisible(false);
@@ -828,6 +838,16 @@ export default class BattleScene extends Phaser.Scene {
       return;
     }
 
+    // Clear previous revealed cards (including glow effects)
+    if (this.revealedPlayerCardObjects) {
+      this.revealedPlayerCardObjects.forEach((obj) => obj.destroy());
+      this.revealedPlayerCardObjects = [];
+    }
+    if (this.revealedOpponentCardObjects) {
+      this.revealedOpponentCardObjects.forEach((obj) => obj.destroy());
+      this.revealedOpponentCardObjects = [];
+    }
+
     // Close enlarged view if open
     this.closeEnlargedCardView();
 
@@ -967,7 +987,87 @@ export default class BattleScene extends Phaser.Scene {
     // Apply card effects after flip animations complete
     this.time.delayedCall(500, () => {
       const playerCard = this.selectedCard ? this.selectedCard.card : null;
-      this.applyBothCardEffects(playerCard, aiCard);
+      // Highlight which card resolves first
+      this.highlightFasterCard(playerCard, aiCard);
+      // Then apply effects after highlight is shown
+      this.time.delayedCall(800, () => {
+        this.applyBothCardEffects(playerCard, aiCard);
+      });
+    });
+  }
+
+  highlightFasterCard(playerCard, aiCard) {
+    // Use GameLogic to determine which card resolves first
+    const resolutionOrder = GameLogic.determineResolutionOrder(playerCard, aiCard);
+    
+    if (resolutionOrder === 'player') {
+      this.addPriorityHighlight(true);
+    } else if (resolutionOrder === 'ai') {
+      this.addPriorityHighlight(false);
+    }
+    // If 'none', don't highlight anything
+  }
+
+  addPriorityHighlight(isPlayer) {
+    const targetY = isPlayer ? 600 : 310;
+    const targetObjects = isPlayer
+      ? this.revealedPlayerCardObjects
+      : this.revealedOpponentCardObjects;
+
+    // Add multiple glow layers for a stronger effect
+    // Outer glow
+    const outerGlow = this.add
+      .rectangle(375, targetY, 170, 230, 0xffd700, 0.4)
+      .setOrigin(0.5)
+      .setDepth(99);
+    targetObjects.push(outerGlow);
+
+    // Middle glow
+    const middleGlow = this.add
+      .rectangle(375, targetY, 160, 220, 0xffd700, 0.5)
+      .setOrigin(0.5)
+      .setDepth(99);
+    targetObjects.push(middleGlow);
+
+    // Inner glow
+    const innerGlow = this.add
+      .rectangle(375, targetY, 150, 210, 0xffff00, 0.3)
+      .setOrigin(0.5)
+      .setDepth(99);
+    targetObjects.push(innerGlow);
+
+    // Add pulsing animation to all glow layers
+    this.tweens.add({
+      targets: [outerGlow, middleGlow, innerGlow],
+      alpha: 0.8,
+      duration: 400,
+      yoyo: true,
+      repeat: 2,
+      ease: 'Sine.easeInOut'
+    });
+
+    // Add "RESOLVES FIRST" text above/below the card
+    const textY = isPlayer ? targetY - 120 : targetY + 120;
+    const priorityText = this.add
+      .text(375, textY, "⚡ RESOLVES FIRST ⚡", {
+        fontSize: "16px",
+        color: "#ffd700",
+        fontStyle: "bold",
+        stroke: "#000000",
+        strokeThickness: 3,
+      })
+      .setOrigin(0.5)
+      .setDepth(102);
+    targetObjects.push(priorityText);
+
+    // Pulse the text
+    this.tweens.add({
+      targets: priorityText,
+      scale: 1.1,
+      duration: 400,
+      yoyo: true,
+      repeat: 2,
+      ease: 'Sine.easeInOut'
     });
   }
 
