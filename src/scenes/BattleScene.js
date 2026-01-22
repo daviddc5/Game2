@@ -72,7 +72,7 @@ export default class BattleScene extends Phaser.Scene {
     this.opponentDeck = getDeckForCharacter(this.opponentCharacter.name);
 
     // Draw initial hands
-    this.hand = drawCards(this.playerDeck, 3);
+    this.hand = drawCards(this.playerDeck, 4);
 
     // Initialize AI controller
     this.aiController = new AIController(this.opponentCharacter, this.stats);
@@ -1201,12 +1201,22 @@ export default class BattleScene extends Phaser.Scene {
     this.updateEnergyDisplay();
 
     // Draw new card (max 4 cards)
-    const newCard = drawCards(this.playerDeck, 1)[0];
-    if (newCard && this.hand.length < 4) {
-      this.hand.push(newCard);
-      this.cardHand.setCards(this.hand);
-      this.cardHand.render();
-    }
+    // const newCard = drawCards(this.playerDeck, 1)[0];
+    // if (newCard && this.hand.length < 4) {
+    //   this.hand.push(newCard);
+    //   this.cardHand.setCards(this.hand);
+    //   this.cardHand.render();
+    // }
+
+    const newCards = drawCards(this.playerDeck, 2);
+    newCards.forEach((card) => {
+      if (card && this.hand.length < 3) {
+        this.hand.push(card);
+      }
+    });
+
+    this.cardHand.setCards(this.hand);
+    this.cardHand.render();
 
     // Update PASS button visibility
     this.updatePassButtonVisibility();
