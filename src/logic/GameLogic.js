@@ -57,4 +57,42 @@ export default class GameLogic {
 
     return { gameOver: false };
   }
+
+  /**
+   * Determines which card resolves first based on card type and speed
+   * @param {Object} playerCard - The player's card
+   * @param {Object} aiCard - The AI's card
+   * @returns {string} 'player', 'ai', or 'none'
+   */
+  static determineResolutionOrder(playerCard, aiCard) {
+    // If both passed, return none
+    if (!playerCard && !aiCard) return 'none';
+    
+    // If only one card played, that one resolves
+    if (!playerCard) return 'ai';
+    if (!aiCard) return 'player';
+
+    // Check for COUNTER cards - they always resolve first
+    const playerIsCounter = playerCard.cardType === "COUNTER";
+    const aiIsCounter = aiCard.cardType === "COUNTER";
+
+    if (playerIsCounter && !aiIsCounter) {
+      return 'player';
+    } else if (aiIsCounter && !playerIsCounter) {
+      return 'ai';
+    }
+
+    // If both are counters OR neither are counters, compare speeds
+    const playerSpeed = playerCard.speed || 0;
+    const aiSpeed = aiCard.speed || 0;
+
+    if (playerSpeed > aiSpeed) {
+      return 'player';
+    } else if (aiSpeed > playerSpeed) {
+      return 'ai';
+    } else {
+      // Same speed - player goes first (tie breaker)
+      return 'player';
+    }
+  }
 }

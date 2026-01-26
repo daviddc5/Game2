@@ -59,13 +59,17 @@ export default class StatBarGroup {
       .rectangle(this.x + 2, barY, (value / 100) * barWidth, barHeight, color)
       .setOrigin(0, 0.5);
 
-    // Store reference
+    // Store current value for change detection
+    bar.setData('currentValue', value);
+
+    // Store reference with isPositive flag
     this.bars[key] = {
       bar,
       color,
       x: this.x + 2,
       y: barY,
       maxWidth: barWidth,
+      isPositive: isPositive, // Track whether this stat is positive or negative
     };
 
     // Value text (inside the bar, right aligned)
@@ -81,9 +85,15 @@ export default class StatBarGroup {
     this.texts[key] = valueText;
   }
 
-  updateStat(key, newValue) {
+  updateStat(key, newValue, oldValue) {
     const barData = this.bars[key];
     if (!barData) return;
+
+    // Show floating stat change number
+    if (oldValue !== undefined && oldValue !== newValue) {
+      const change = newValue - oldValue;
+      this.showStatChange(key, change);
+    }
 
     // Animate bar width change
     this.scene.tweens.add({
@@ -95,6 +105,56 @@ export default class StatBarGroup {
 
     // Update text
     this.texts[key].setText(newValue);
+  }
+
+  showStatChange(key, change) {
+    if (change === 0) return;
+
+    const barData = this.bars[key];
+    if (!barData) return;
+
+    // Calculate position for floating text
+    const startX = this.x + barData.maxWidth / 2;
+    const startY = barData.bar.y;
+
+    // Format text
+    const changeText = change > 0 ? `+${change}` : `${change}`;
+    
+    // Determine color based on whether stat is positive and whether change is increase/decrease
+    // For positive stats (green): increase = green, decrease = red
+    // For negative stats (red): increase = red, decrease = green
+    let textColor;
+    if (barData.isPositive) {
+      // Positive stat (like Investigation): more is good
+      textColor = change > 0 ? "#00ff00" : "#ff4444";
+    } else {
+      // Negative stat (like Pressure): more is bad
+      textColor = change > 0 ? "#ff4444" : "#00ff00";
+    }
+
+    // Create floating text
+    const floatingText = this.scene.add
+      .text(startX, startY, changeText, {
+        fontSize: "20px",
+        color: textColor,
+        fontStyle: "bold",
+        stroke: "#000000",
+        strokeThickness: 3,
+      })
+      .setOrigin(0.5)
+      .setDepth(200);
+
+    // Animate floating up and fade out
+    this.scene.tweens.add({
+      targets: floatingText,
+      y: startY - 40,
+      alpha: 0,
+      duration: 800,
+      ease: "Power2",
+      onComplete: () => {
+        floatingText.destroy();
+      },
+    });
   }
 
   getAllBars() {

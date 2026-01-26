@@ -89,8 +89,8 @@ HIGH (MVP) - CORE GAMEPLAY OVERHAUL
 ✅ Flip animation for reveal
 ✅ Highlight which card resolves first
 ✅ Apply effects in priority order with delay
-[ ] Show cancellation effects (if counter cancels card)
-[ ] Floating stat change numbers
+✅ Show cancellation effects (if counter cancels card)
+✅ Floating stat change numbers
 
 === PHASE 5: IMPROVED HAND & DRAW (30 min) ===
 ✅ Start with 5 cards instead of 3

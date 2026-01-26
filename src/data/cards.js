@@ -4,11 +4,12 @@
 export const lCards = [
   {
     id: "l_defensive_stance",
-    name: "Defensive Stance",
-    description: "Brace for the vigilante's attack",
+    name: "Counter Strategy",
+    description: "Anticipate and counter the opponent's move",
     energyCost: 2,
     cardType: "COUNTER",
     speed: 10,
+    cancels: true,
     selfEffects: {
       investigation: 0,
       morale: 3,
@@ -207,11 +208,12 @@ export const lCards = [
 export const kiraCards = [
   {
     id: "kira_lay_low",
-    name: "Lay Low",
-    description: "Hide and avoid detection",
+    name: "Evasive Counter",
+    description: "Slip away and counter the detective's approach",
     energyCost: 2,
     cardType: "COUNTER",
     speed: 10,
+    cancels: true,
     selfEffects: {
       investigation: 0,
       morale: 0,

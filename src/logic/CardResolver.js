@@ -20,6 +20,17 @@ export default class CardResolver {
     let updatedPlayerStats = { ...playerStats };
     let updatedOpponentStats = { ...opponentStats };
 
+    // Check if first card cancels the second (COUNTER cards with cancels flag)
+    let secondCardCancelled = false;
+    if (
+      firstCard &&
+      secondCard &&
+      firstCard.cardType === "COUNTER" &&
+      firstCard.cancels === true
+    ) {
+      secondCardCancelled = true;
+    }
+
     // Highlight and apply first card
     if (firstCard) {
       await this.highlightAndApply(
@@ -61,42 +72,48 @@ export default class CardResolver {
       await this.wait(800);
     }
 
-    // Apply second card
+    // Apply second card (or show cancellation)
     if (secondCard) {
-      await this.highlightAndApply(
-        secondCard,
-        !firstIsPlayer,
-        updatedPlayerStats,
-        updatedOpponentStats,
-        scene,
-        false, // isFirst
-      );
-
-      if (!firstIsPlayer) {
-        updatedPlayerStats = GameLogic.applyEffects(
-          updatedPlayerStats,
-          secondCard.selfEffects,
-        );
-        updatedOpponentStats = GameLogic.applyEffects(
-          updatedOpponentStats,
-          secondCard.opponentEffects,
-        );
+      if (secondCardCancelled) {
+        // Show cancellation effect instead of resolving
+        scene.showCancellationEffect(!firstIsPlayer);
+        await this.wait(1000); // Wait to show cancellation
       } else {
-        updatedOpponentStats = GameLogic.applyEffects(
-          updatedOpponentStats,
-          secondCard.selfEffects,
-        );
-        updatedPlayerStats = GameLogic.applyEffects(
+        await this.highlightAndApply(
+          secondCard,
+          !firstIsPlayer,
           updatedPlayerStats,
-          secondCard.opponentEffects,
+          updatedOpponentStats,
+          scene,
+          false, // isFirst
         );
-      }
 
-      // Update stats after second card
-      scene.playerStats = updatedPlayerStats;
-      scene.opponentStats = updatedOpponentStats;
-      scene.stats = scene.playerStats;
-      scene.updateStatBars();
+        if (!firstIsPlayer) {
+          updatedPlayerStats = GameLogic.applyEffects(
+            updatedPlayerStats,
+            secondCard.selfEffects,
+          );
+          updatedOpponentStats = GameLogic.applyEffects(
+            updatedOpponentStats,
+            secondCard.opponentEffects,
+          );
+        } else {
+          updatedOpponentStats = GameLogic.applyEffects(
+            updatedOpponentStats,
+            secondCard.selfEffects,
+          );
+          updatedPlayerStats = GameLogic.applyEffects(
+            updatedPlayerStats,
+            secondCard.opponentEffects,
+          );
+        }
+
+        // Update stats after second card
+        scene.playerStats = updatedPlayerStats;
+        scene.opponentStats = updatedOpponentStats;
+        scene.stats = scene.playerStats;
+        scene.updateStatBars();
+      }
     }
 
     return {
