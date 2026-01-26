@@ -999,11 +999,14 @@ export default class BattleScene extends Phaser.Scene {
 
   highlightFasterCard(playerCard, aiCard) {
     // Use GameLogic to determine which card resolves first
-    const resolutionOrder = GameLogic.determineResolutionOrder(playerCard, aiCard);
-    
-    if (resolutionOrder === 'player') {
+    const resolutionOrder = GameLogic.determineResolutionOrder(
+      playerCard,
+      aiCard,
+    );
+
+    if (resolutionOrder === "player") {
       this.addPriorityHighlight(true);
-    } else if (resolutionOrder === 'ai') {
+    } else if (resolutionOrder === "ai") {
       this.addPriorityHighlight(false);
     }
     // If 'none', don't highlight anything
@@ -1044,7 +1047,7 @@ export default class BattleScene extends Phaser.Scene {
       duration: 400,
       yoyo: true,
       repeat: 2,
-      ease: 'Sine.easeInOut'
+      ease: "Sine.easeInOut",
     });
 
     // Add "RESOLVES FIRST" text above/below the card
@@ -1068,7 +1071,7 @@ export default class BattleScene extends Phaser.Scene {
       duration: 400,
       yoyo: true,
       repeat: 2,
-      ease: 'Sine.easeInOut'
+      ease: "Sine.easeInOut",
     });
   }
 
@@ -1248,7 +1251,7 @@ export default class BattleScene extends Phaser.Scene {
       duration: 300,
       yoyo: true,
       repeat: 1,
-      ease: 'Power2'
+      ease: "Power2",
     });
 
     // Add "CANCELLED!" text
@@ -1270,7 +1273,7 @@ export default class BattleScene extends Phaser.Scene {
       targets: cancelText,
       alpha: 1,
       duration: 300,
-      ease: 'Power2'
+      ease: "Power2",
     });
   }
 
@@ -1350,20 +1353,28 @@ export default class BattleScene extends Phaser.Scene {
     // Use the StatBarGroup's animated update method
     Object.keys(this.playerStats).forEach((statKey) => {
       const newValue = this.playerStats[statKey];
-      const oldValue = this.playerStatGroup.bars[statKey]?.bar?.getData('currentValue');
-      
+      const oldValue =
+        this.playerStatGroup.bars[statKey]?.bar?.getData("currentValue");
+
       if (this.playerStatGroup.bars[statKey]) {
-        this.playerStatGroup.bars[statKey].bar.setData('currentValue', newValue);
+        this.playerStatGroup.bars[statKey].bar.setData(
+          "currentValue",
+          newValue,
+        );
         this.playerStatGroup.updateStat(statKey, newValue, oldValue);
       }
     });
 
     Object.keys(this.opponentStats).forEach((statKey) => {
       const newValue = this.opponentStats[statKey];
-      const oldValue = this.opponentStatGroup.bars[statKey]?.bar?.getData('currentValue');
-      
+      const oldValue =
+        this.opponentStatGroup.bars[statKey]?.bar?.getData("currentValue");
+
       if (this.opponentStatGroup.bars[statKey]) {
-        this.opponentStatGroup.bars[statKey].bar.setData('currentValue', newValue);
+        this.opponentStatGroup.bars[statKey].bar.setData(
+          "currentValue",
+          newValue,
+        );
         this.opponentStatGroup.updateStat(statKey, newValue, oldValue);
       }
     });
