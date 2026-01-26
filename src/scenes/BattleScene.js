@@ -249,6 +249,24 @@ export default class BattleScene extends Phaser.Scene {
         fontStyle: "bold",
       })
       .setOrigin(0, 0.5);
+
+    // Opponent deck counter (below energy)
+    this.opponentDeckCounterText = this.add
+      .text(20, opponentEnergyY + 35, `Deck: ${this.opponentDeck.length}`, {
+        fontSize: "18px",
+        color: "#aaaaaa",
+        fontStyle: "bold",
+      })
+      .setOrigin(0, 0.5);
+
+    // Player deck counter (below energy)
+    this.playerDeckCounterText = this.add
+      .text(520, playerEnergyY + 35, `Deck: ${this.playerDeck.length}`, {
+        fontSize: "18px",
+        color: "#aaaaaa",
+        fontStyle: "bold",
+      })
+      .setOrigin(0, 0.5);
   }
 
   getEnergyString(energy) {
@@ -263,6 +281,15 @@ export default class BattleScene extends Phaser.Scene {
       this.opponentEnergyText.setText(
         this.getEnergyString(this.opponentEnergy),
       );
+    }
+  }
+
+  updateDeckCounter() {
+    if (this.playerDeckCounterText) {
+      this.playerDeckCounterText.setText(`Deck: ${this.playerDeck.length}`);
+    }
+    if (this.opponentDeckCounterText) {
+      this.opponentDeckCounterText.setText(`Deck: ${this.opponentDeck.length}`);
     }
   }
 
@@ -1312,6 +1339,9 @@ export default class BattleScene extends Phaser.Scene {
     this.cardHand.setCards(this.hand);
     this.cardHand.render();
 
+    // Update deck counter
+    this.updateDeckCounter();
+
     // Update PASS button visibility
     this.updatePassButtonVisibility();
   }
@@ -1401,6 +1431,9 @@ export default class BattleScene extends Phaser.Scene {
     // AI draws 3 random cards to choose from
     const aiCards = drawCards(this.opponentDeck, 3);
     if (aiCards.length === 0) return;
+
+    // Update deck counter after AI draws
+    this.updateDeckCounter();
 
     // Choose the best card based on AI logic
     const bestCard = this.chooseBestAICard(aiCards);

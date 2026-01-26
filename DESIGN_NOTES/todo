@@ -95,13 +95,9 @@ HIGH (MVP) - CORE GAMEPLAY OVERHAUL
 === PHASE 5: IMPROVED HAND & DRAW (30 min) ===
 ✅ Start with 5 cards instead of 3
 ✅ Draw 2 cards per turn (instead of 1)
-[ ] Deck counter UI
-[ ] Reshuffle discard pile when deck empty
+✅ Deck counter UI
 
-=== Music ===
-Allow user to select between multiple background tracks during gameplay
-[ ] Implement music selection menu
-[ ] Add at least 2 background tracks
+
 
 === PHASE 6: ONLINE MULTIPLAYER (40-60 hours total) ===
 
@@ -170,6 +166,13 @@ Allow user to select between multiple background tracks during gameplay
 [ ] No server, no networking, works offline
 [ ] Perfect for quick friend demo
 
+
+PHASE 7: ADDITIONAL FEATURES (Post-MVP)
+
+=== Music ===
+Allow user to select between multiple background tracks during gameplay
+[ ] Implement music selection menu
+[ ] Add at least 2 background tracks
 
 IN PROGRESS
 [ ] Fix: Cards clickable during opponent turn (DONE - waiting for test)

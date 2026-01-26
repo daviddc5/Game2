@@ -442,6 +442,11 @@ export function getDeckForCharacter(character) {
 
 // Helper function to draw random cards from a deck
 export function drawCards(deck, count = 3) {
-  const shuffled = [...deck].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, count);
+  const drawnCards = [];
+  for (let i = 0; i < count && deck.length > 0; i++) {
+    const randomIndex = Math.floor(Math.random() * deck.length);
+    drawnCards.push(deck[randomIndex]);
+    deck.splice(randomIndex, 1); // Remove the card from the deck
+  }
+  return drawnCards;
 }
