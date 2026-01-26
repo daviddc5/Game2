@@ -1198,6 +1198,7 @@ export default class BattleScene extends Phaser.Scene {
         .setOrigin(0.5)
         .setDepth(101);
       this.revealedOpponentCardObjects.push(aiCardDesc);
+    }
   }
 
   async applyBothCardEffects(playerCard, aiCard) {
