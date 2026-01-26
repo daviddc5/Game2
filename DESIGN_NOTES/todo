@@ -97,12 +97,10 @@ HIGH (MVP) - CORE GAMEPLAY OVERHAUL
 ✅ Draw 2 cards per turn (instead of 1)
 ✅ Deck counter UI
 
-
-
 === PHASE 6: ONLINE MULTIPLAYER (40-60 hours total) ===
 
 === Backend Setup (8-12 hours) ===
-[ ] Create /server folder, install express + socket.io + cors
+✅ Create /server folder, install express + socket.io + cors
 [ ] Set up Express server on port 3001 with CORS
 [ ] Configure Socket.io connection handlers
 [ ] Create matchmaking queue (FIFO array, pair when 2 players)
@@ -158,13 +156,6 @@ HIGH (MVP) - CORE GAMEPLAY OVERHAUL
 **ESTIMATED TOTAL: 45-70 hours (1-2 weeks full-time, 3-4 weeks part-time)**
 
 **Cost: $0-5/month for first few months with free tier**
-
-=== ALTERNATIVE: Hot-Seat Local Multiplayer (2-4 hours) ===
-[ ] Add "Pass & Play" mode in menu
-[ ] Both players use same device, take turns
-[ ] "Pass Device" screen hides opponent's hand
-[ ] No server, no networking, works offline
-[ ] Perfect for quick friend demo
 
 
 PHASE 7: ADDITIONAL FEATURES (Post-MVP)
