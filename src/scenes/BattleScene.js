@@ -6,6 +6,7 @@ import CardHand from "../ui/CardHand.js";
 import StatsModal from "../ui/StatsModal.js";
 import GameLogic from "../logic/GameLogic.js";
 import AIController from "../logic/AIController.js";
+import CardResolver from "../logic/CardResolver.js";
 export default class BattleScene extends Phaser.Scene {
   constructor() {
     super({ key: "BattleScene" });
@@ -1100,89 +1101,15 @@ export default class BattleScene extends Phaser.Scene {
     }
   }
 
-  applyBothCardEffects(playerCard, aiCard) {
-    // Determine resolution order based on speed (higher speed goes first)
-    let firstCard = null;
-    let secondCard = null;
-    let firstIsPlayer = true;
-
-    if (playerCard && aiCard) {
-      const playerSpeed = playerCard.speed || 0;
-      const aiSpeed = aiCard.speed || 0;
-
-      if (playerSpeed > aiSpeed) {
-        firstCard = playerCard;
-        secondCard = aiCard;
-        firstIsPlayer = true;
-      } else if (aiSpeed > playerSpeed) {
-        firstCard = aiCard;
-        secondCard = playerCard;
-        firstIsPlayer = false;
-      } else {
-        // Same speed - player goes first
-        firstCard = playerCard;
-        secondCard = aiCard;
-        firstIsPlayer = true;
-      }
-    } else if (playerCard) {
-      firstCard = playerCard;
-      firstIsPlayer = true;
-    } else if (aiCard) {
-      firstCard = aiCard;
-      firstIsPlayer = false;
-    }
-
-    // Apply first card
-    if (firstCard) {
-      if (firstIsPlayer) {
-        this.playerStats = GameLogic.applyEffects(
-          this.playerStats,
-          firstCard.selfEffects,
-        );
-        this.opponentStats = GameLogic.applyEffects(
-          this.opponentStats,
-          firstCard.opponentEffects,
-        );
-      } else {
-        this.opponentStats = GameLogic.applyEffects(
-          this.opponentStats,
-          firstCard.selfEffects,
-        );
-        this.playerStats = GameLogic.applyEffects(
-          this.playerStats,
-          firstCard.opponentEffects,
-        );
-      }
-    }
-
-    // Apply second card (if exists)
-    if (secondCard) {
-      if (!firstIsPlayer) {
-        // Second card is player's
-        this.playerStats = GameLogic.applyEffects(
-          this.playerStats,
-          secondCard.selfEffects,
-        );
-        this.opponentStats = GameLogic.applyEffects(
-          this.opponentStats,
-          secondCard.opponentEffects,
-        );
-      } else {
-        // Second card is AI's
-        this.opponentStats = GameLogic.applyEffects(
-          this.opponentStats,
-          secondCard.selfEffects,
-        );
-        this.playerStats = GameLogic.applyEffects(
-          this.playerStats,
-          secondCard.opponentEffects,
-        );
-      }
-    }
-
-    // Update legacy stats reference
-    this.stats = this.playerStats; // Update UI
-    this.updateStatBars();
+  async applyBothCardEffects(playerCard, aiCard) {
+    // Use CardResolver with delay for sequential resolution
+    await CardResolver.resolveCardsWithDelay(
+      playerCard,
+      aiCard,
+      this.playerStats,
+      this.opponentStats,
+      this
+    );
 
     // Check win/loss
     if (this.checkGameOver()) {

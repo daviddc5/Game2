@@ -87,16 +87,14 @@ HIGH (MVP) - CORE GAMEPLAY OVERHAUL
 === PHASE 4: VISUAL FEEDBACK (30 min) ===
 ✅ Show both cards face-down in center area
 ✅ Flip animation for reveal
-[ ] Highlight which card resolves first
-[ ] Apply effects in priority order with delay
+✅ Highlight which card resolves first
+✅ Apply effects in priority order with delay
 [ ] Show cancellation effects (if counter cancels card)
 [ ] Floating stat change numbers
 
 === PHASE 5: IMPROVED HAND & DRAW (30 min) ===
-[ ] Start with 5 cards instead of 3
-[ ] Draw 2 cards per turn (instead of 1)
-[ ] Max hand size: 10 cards
-[ ] Show "discard" phase if over max
+✅ Start with 5 cards instead of 3
+✅ Draw 2 cards per turn (instead of 1)
 [ ] Deck counter UI
 [ ] Reshuffle discard pile when deck empty
 
