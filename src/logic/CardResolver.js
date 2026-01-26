@@ -28,7 +28,7 @@ export default class CardResolver {
         updatedPlayerStats,
         updatedOpponentStats,
         scene,
-        true // isFirst
+        true, // isFirst
       );
 
       if (firstIsPlayer) {
@@ -69,7 +69,7 @@ export default class CardResolver {
         updatedPlayerStats,
         updatedOpponentStats,
         scene,
-        false // isFirst
+        false, // isFirst
       );
 
       if (!firstIsPlayer) {
@@ -144,7 +144,7 @@ export default class CardResolver {
     playerStats,
     opponentStats,
     scene,
-    isFirst = true
+    isFirst = true,
   ) {
     const cardObjects = isPlayer
       ? scene.revealedPlayerCardObjects
