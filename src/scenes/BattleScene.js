@@ -1108,7 +1108,7 @@ export default class BattleScene extends Phaser.Scene {
       aiCard,
       this.playerStats,
       this.opponentStats,
-      this
+      this,
     );
 
     // Check win/loss

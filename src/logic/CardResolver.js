@@ -12,7 +12,7 @@ export default class CardResolver {
     aiCard,
     playerStats,
     opponentStats,
-    scene
+    scene,
   ) {
     const { firstCard, secondCard, firstIsPlayer } =
       this.determineResolutionOrder(playerCard, aiCard);
@@ -27,26 +27,27 @@ export default class CardResolver {
         firstIsPlayer,
         updatedPlayerStats,
         updatedOpponentStats,
-        scene
+        scene,
+        true // isFirst
       );
 
       if (firstIsPlayer) {
         updatedPlayerStats = GameLogic.applyEffects(
           updatedPlayerStats,
-          firstCard.selfEffects
+          firstCard.selfEffects,
         );
         updatedOpponentStats = GameLogic.applyEffects(
           updatedOpponentStats,
-          firstCard.opponentEffects
+          firstCard.opponentEffects,
         );
       } else {
         updatedOpponentStats = GameLogic.applyEffects(
           updatedOpponentStats,
-          firstCard.selfEffects
+          firstCard.selfEffects,
         );
         updatedPlayerStats = GameLogic.applyEffects(
           updatedPlayerStats,
-          firstCard.opponentEffects
+          firstCard.opponentEffects,
         );
       }
 
@@ -67,26 +68,27 @@ export default class CardResolver {
         !firstIsPlayer,
         updatedPlayerStats,
         updatedOpponentStats,
-        scene
+        scene,
+        false // isFirst
       );
 
       if (!firstIsPlayer) {
         updatedPlayerStats = GameLogic.applyEffects(
           updatedPlayerStats,
-          secondCard.selfEffects
+          secondCard.selfEffects,
         );
         updatedOpponentStats = GameLogic.applyEffects(
           updatedOpponentStats,
-          secondCard.opponentEffects
+          secondCard.opponentEffects,
         );
       } else {
         updatedOpponentStats = GameLogic.applyEffects(
           updatedOpponentStats,
-          secondCard.selfEffects
+          secondCard.selfEffects,
         );
         updatedPlayerStats = GameLogic.applyEffects(
           updatedPlayerStats,
-          secondCard.opponentEffects
+          secondCard.opponentEffects,
         );
       }
 
@@ -97,7 +99,10 @@ export default class CardResolver {
       scene.updateStatBars();
     }
 
-    return { playerStats: updatedPlayerStats, opponentStats: updatedOpponentStats };
+    return {
+      playerStats: updatedPlayerStats,
+      opponentStats: updatedOpponentStats,
+    };
   }
 
   static determineResolutionOrder(playerCard, aiCard) {
@@ -133,17 +138,24 @@ export default class CardResolver {
     return { firstCard, secondCard, firstIsPlayer };
   }
 
-  static async highlightAndApply(card, isPlayer, playerStats, opponentStats, scene) {
+  static async highlightAndApply(
+    card,
+    isPlayer,
+    playerStats,
+    opponentStats,
+    scene,
+    isFirst = true
+  ) {
     const cardObjects = isPlayer
       ? scene.revealedPlayerCardObjects
       : scene.revealedOpponentCardObjects;
 
     // Determine position for text
     const textY = isPlayer ? 700 : 210;
-    
-    // Add "RESOLVING!" text above/below the card
+
+    // Add "RESOLVES FIRST" or "RESOLVES SECOND" text above/below the card
     const resolvingText = scene.add
-      .text(375, textY, "⚡ RESOLVING! ⚡", {
+      .text(375, textY, isFirst ? "RESOLVES FIRST" : "RESOLVES SECOND", {
         fontSize: "28px",
         color: "#ffff00",
         fontStyle: "bold",
