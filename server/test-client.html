@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Server Test Client</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #1a1a1a;
+      color: #fff;
+    }
+    .status {
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      background: #333;
+    }
+    .connected { background: #2d5016; }
+    .disconnected { background: #501616; }
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+    button:hover { background: #45a049; }
+    input {
+      padding: 10px;
+      margin: 5px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #555;
+      background: #333;
+      color: white;
+    }
+    #log {
+      background: #000;
+      padding: 15px;
+      margin-top: 20px;
+      border-radius: 5px;
+      height: 400px;
+      overflow-y: auto;
+      font-family: monospace;
+      font-size: 14px;
+    }
+    .log-entry {
+      margin: 5px 0;
+      padding: 5px;
+    }
+    .log-info { color: #5bc0de; }
+    .log-success { color: #5cb85c; }
+    .log-error { color: #d9534f; }
+  </style>
+</head>
+<body>
+  <h1>🎮 Multiplayer Server Test</h1>
+  
+  <div id="status" class="status disconnected">
+    ❌ Not connected
+  </div>
+
+  <div>
+    <input type="text" id="username" placeholder="Enter username" value="TestPlayer">
+    <select id="character">
+      <option value="Independent Detective">Detective L</option>
+      <option value="Vigilante">Kira</option>
+    </select>
+  </div>
+
+  <div>
+    <button onclick="connect()">Connect to Server</button>
+    <button onclick="findMatch()">Find Match</button>
+    <button onclick="pingServer()">Ping Server</button>
+    <button onclick="clearLog()">Clear Log</button>
+  </div>
+
+  <div id="log"></div>
+
+  <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+  <script>
+    let socket = null;
+    
+    function log(message, type = 'info') {
+      const logDiv = document.getElementById('log');
+      const entry = document.createElement('div');
+      entry.className = `log-entry log-${type}`;
+      entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      logDiv.appendChild(entry);
+      logDiv.scrollTop = logDiv.scrollHeight;
+    }
+
+    function updateStatus(connected) {
+      const statusDiv = document.getElementById('status');
+      if (connected) {
+        statusDiv.className = 'status connected';
+        statusDiv.textContent = '✅ Connected to server';
+      } else {
+        statusDiv.className = 'status disconnected';
+        statusDiv.textContent = '❌ Not connected';
+      }
+    }
+
+    function connect() {
+      if (socket && socket.connected) {
+        log('Already connected!', 'error');
+        return;
+      }
+
+      log('Connecting to server...', 'info');
+      socket = io('http://localhost:3001');
+
+      socket.on('connect', () => {
+        log(`Connected! Socket ID: ${socket.id}`, 'success');
+        updateStatus(true);
+      });
+
+      socket.on('disconnect', () => {
+        log('Disconnected from server', 'error');
+        updateStatus(false);
+        socket = null;
+      });
+
+      socket.on('pong', (data) => {
+        log(`Pong received: ${data.message}`, 'success');
+      });
+
+      socket.on('matchFound', (data) => {
+        log(`🎉 MATCH FOUND!`, 'success');
+        log(`Room ID: ${data.roomId}`, 'info');
+        log(`You are Player ${data.playerNumber}`, 'info');
+        log(`Opponent: ${data.opponent.username} (${data.opponent.character})`, 'info');
+      });
+
+      socket.on('opponentDisconnected', () => {
+        log('⚠️ Opponent disconnected!', 'error');
+      });
+    }
+
+    function findMatch() {
+      if (!socket || !socket.connected) {
+        log('Not connected! Click "Connect to Server" first', 'error');
+        return;
+      }
+
+      const username = document.getElementById('username').value;
+      const character = document.getElementById('character').value;
+
+      log(`Looking for match as ${username} (${character})...`, 'info');
+      socket.emit('findMatch', { username, character });
+    }
+
+    function pingServer() {
+      if (!socket || !socket.connected) {
+        log('Not connected! Click "Connect to Server" first', 'error');
+        return;
+      }
+
+      log('Sending ping...', 'info');
+      socket.emit('ping');
+    }
+
+    function clearLog() {
+      document.getElementById('log').innerHTML = '';
+    }
+
+    // Auto-connect on load
+    window.onload = () => {
+      log('Test client loaded. Click "Connect to Server" to begin.', 'info');
+    };
+  </script>
+</body>
+</html>

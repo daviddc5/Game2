@@ -101,10 +101,10 @@ HIGH (MVP) - CORE GAMEPLAY OVERHAUL
 
 === Backend Setup (8-12 hours) ===
 ✅ Create /server folder, install express + socket.io + cors
-[ ] Set up Express server on port 3001 with CORS
-[ ] Configure Socket.io connection handlers
-[ ] Create matchmaking queue (FIFO array, pair when 2 players)
-[ ] Create game rooms Map (roomId → game state)
+✅ Set up Express server on port 3001 with CORS
+✅ Configure Socket.io connection handlers
+✅ Create matchmaking queue (FIFO array, pair when 2 players)
+✅ Create game rooms Map (roomId → game state)
 [ ] Server-side card validation:
     - Is card in player's hand?
     - Is it player's turn to play?
