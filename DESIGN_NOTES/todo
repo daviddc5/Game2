@@ -105,19 +105,28 @@ HIGH (MVP) - CORE GAMEPLAY OVERHAUL
 ✅ Configure Socket.io connection handlers
 ✅ Create matchmaking queue (FIFO array, pair when 2 players)
 ✅ Create game rooms Map (roomId → game state)
-[ ] Server-side card validation:
-    - Is card in player's hand?
+✅ Server-side card validation:
     - Is it player's turn to play?
     - Has player already played this turn?
-[ ] Handle disconnections (opponent wins if player leaves)
+✅ Handle disconnections (opponent wins if player leaves)
+✅ Socket event: 'selectCard' with validation
+✅ Socket event: 'bothCardsSelected' emitted when both play
+✅ Refactor server into modular structure (index.js + socketHandlers.js)
+✅ Create test-client.html for browser testing
+✅ Comprehensive server logging for card selection flow
+✅ Test and validate full card selection workflow
 
-=== Game State Synchronization (10-15 hours) ===
-[ ] Socket events: 'findMatch', 'selectCard', 'bothCardsSelected', 'gameOver'
-[ ] Server shuffles decks, draws hands (don't trust client)
-[ ] Server validates and processes both card plays
-[ ] Server calculates stat changes and win/loss
-[ ] Emit game state updates to both clients
-[ ] Track turn state server-side
+=== Game State Synchronization (2-4 hours) ===
+[ ] Import card database to server (lCards, kiraCards from cards.js)
+[ ] Server shuffles decks on game start
+[ ] Server deals initial hands (5 cards each)
+[ ] Server validates card is in player's hand
+[ ] Server calculates stat changes from card effects
+[ ] Server determines win/loss conditions
+[ ] Track full game state server-side (stats, decks, hands, energy)
+[ ] Emit complete game state updates to both clients
+[ ] Handle turn progression and energy increments
+[ ] Implement card draw (2 cards per turn)
 
 === Frontend Network Layer (8-12 hours) ===
 [ ] Create NetworkManager.js (socket.io-client)
