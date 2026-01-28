@@ -128,7 +128,7 @@ HIGH (MVP) - CORE GAMEPLAY OVERHAUL
 [ ] Handle turn progression and energy increments
 [ ] Implement card draw (2 cards per turn)
 
-=== Frontend Network Layer (8-12 hours) ===
+=== Frontend Network Layer (3-5 hours) ===
 [ ] Create NetworkManager.js (socket.io-client)
 [ ] Connect to server, emit/listen for events
 [ ] Refactor BattleScene with isMultiplayer flag
@@ -137,7 +137,7 @@ HIGH (MVP) - CORE GAMEPLAY OVERHAUL
 [ ] Update UI from server game state (don't calculate locally)
 [ ] Show "Waiting for opponent..." UI
 
-=== Multiplayer Lobby UI (4-6 hours) ===
+=== Multiplayer Lobby UI (1-2 hours) ===
 [ ] Create MultiplayerLobbyScene
 [ ] Username input + character selection
 [ ] "Find Match" button → matchmaking queue
@@ -145,29 +145,79 @@ HIGH (MVP) - CORE GAMEPLAY OVERHAUL
 [ ] Connection status indicator
 [ ] Handle match found → transition to BattleScene
 
-=== Google Cloud Deployment (10-15 hours) ===
-[ ] Create GCP project, enable billing
-[ ] Install gcloud CLI, authenticate
-[ ] Write Dockerfile for Node.js server
-[ ] Deploy to Cloud Run: gcloud run deploy
-[ ] Set up Firestore for user stats (optional)
+=== Google Cloud Deployment (3-5 hours) ===
+[ ] Create GCP project, enable billing (or use Render.com free tier)
+[ ] Install gcloud CLI/Render CLI, authenticate
+[ ] Write Dockerfile for Node.js server (if using Cloud Run)
+[ ] Deploy to Cloud Run/Render: gcloud run deploy or git push
 [ ] Configure environment variables (CORS, production URL)
 [ ] Update frontend to use production server URL
-[ ] Test WebSocket/long-polling on Cloud Run
-[ ] Set up monitoring, logging, billing alerts
+[ ] Deploy frontend to Vercel/Netlify (free)
+[ ] Test WebSocket/long-polling in production
+[ ] Set up monitoring, logging
 
-=== Testing & Bug Fixes (5-10 hours) ===
+=== Testing & Bug Fixes (2-4 hours) ===
 [ ] Test locally with 2 browser windows
 [ ] Test production with 2 devices (phone + laptop)
 [ ] Handle edge cases: refresh, timeout, spam clicks
 [ ] Latency testing and optimization
 
-**ESTIMATED TOTAL: 45-70 hours (1-2 weeks full-time, 3-4 weeks part-time)**
+**ESTIMATED TOTAL AT YOUR PACE: 13-22 hours (1-2 days full-time, 1 week part-time)**
 
 **Cost: $0-5/month for first few months with free tier**
 
 
-PHASE 7: ADDITIONAL FEATURES (Post-MVP)
+=== PHASE 7: USER PERSISTENCE (FUTURE - Optional) ===
+
+=== Firebase/Supabase Integration (6-10 hours) ===
+[ ] Choose platform: Firebase Auth + Firestore OR Supabase (Postgres + Auth)
+[ ] Set up project and API keys
+[ ] Implement user authentication:
+    - [ ] Email/password sign up and login
+    - [ ] OAuth (Google, GitHub) optional
+    - [ ] Store user sessions
+[ ] Create database schema:
+    - [ ] Users table (id, username, email, created_at)
+    - [ ] Matches table (id, player1_id, player2_id, winner_id, timestamp)
+    - [ ] User stats (wins, losses, total_matches, rating)
+[ ] Implement match history:
+    - [ ] Save match results to database
+    - [ ] Query user's match history
+    - [ ] Display match history in UI
+[ ] Implement leaderboard:
+    - [ ] Query top players by wins/rating
+    - [ ] Display leaderboard scene
+    - [ ] Update rankings after each match
+[ ] Add user profiles:
+    - [ ] Display username, stats, match history
+    - [ ] Allow username changes (with validation)
+[ ] Security rules/Row Level Security:
+    - [ ] Users can only modify their own data
+    - [ ] Match results only writable by server
+    - [ ] Public read access for leaderboards
+
+**Why Firebase:**
+✅ Easy authentication (Firebase Auth)
+✅ Real-time updates (Firestore)
+✅ Free tier: 50K reads, 20K writes per day
+✅ Good for prototypes
+❌ Vendor lock-in
+❌ Can get expensive at scale
+
+**Why Supabase:**
+✅ Open source (can self-host)
+✅ Postgres (more powerful queries)
+✅ Free tier: 500MB database, 2GB bandwidth
+✅ Row Level Security built-in
+✅ Cheaper at scale
+❌ Slightly more complex setup
+
+**Recommendation: Start with Supabase** (better long-term, still easy to use)
+
+**Note:** This is NOT needed for MVP. You can launch without accounts and add this later when you have real users.
+
+
+PHASE 8: ADDITIONAL FEATURES (Post-MVP)
 
 === Music ===
 Allow user to select between multiple background tracks during gameplay
