@@ -1,4 +1,5 @@
 // Socket event handlers for multiplayer game
+import { lCards, kiraCards } from "./cards.js";
 
 export function setupSocketHandlers(io, matchmakingQueue, gameRooms) {
   io.on("connection", (socket) => {
