@@ -156,18 +156,30 @@
             `Opponent: ${data.opponent.username} (${data.opponent.character})`,
             "info",
           );
-          
+
           // Display initial game state
           if (data.gameState) {
             log(`--- INITIAL GAME STATE ---`, "success");
-            log(`🖐️  Your hand (${data.gameState.yourHand.length} cards):`, "info");
+            log(
+              `🖐️  Your hand (${data.gameState.yourHand.length} cards):`,
+              "info",
+            );
             data.gameState.yourHand.forEach((card, i) => {
-              log(`   ${i+1}. ${card.name} (${card.cardType}, ${card.energyCost} energy)`, "info");
+              log(
+                `   ${i + 1}. ${card.name} (${card.cardType}, ${card.energyCost} energy)`,
+                "info",
+              );
             });
             log(`⚡ Your energy: ${data.gameState.yourEnergy}`, "info");
             log(`🃏 Your deck: ${data.gameState.yourDeckSize} cards`, "info");
-            log(`📊 Your stats: Inv:${data.gameState.yourStats.investigation} Morale:${data.gameState.yourStats.morale} Opinion:${data.gameState.yourStats.publicOpinion} Pressure:${data.gameState.yourStats.pressure}`, "info");
-            log(`🎯 Opponent deck: ${data.gameState.opponentDeckSize} cards, hand: ${data.gameState.opponentHandSize} cards`, "info");
+            log(
+              `📊 Your stats: Inv:${data.gameState.yourStats.investigation} Morale:${data.gameState.yourStats.morale} Opinion:${data.gameState.yourStats.publicOpinion} Pressure:${data.gameState.yourStats.pressure}`,
+              "info",
+            );
+            log(
+              `🎯 Opponent deck: ${data.gameState.opponentDeckSize} cards, hand: ${data.gameState.opponentHandSize} cards`,
+              "info",
+            );
           }
         });
 
