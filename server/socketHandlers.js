@@ -167,13 +167,24 @@ function tryMatchmaking(io, matchmakingQueue, gameRooms) {
 
     const room = createGameRoom(player1, player2, gameRooms);
 
-    // Notify both players
+    // Notify both players with initial game state
     io.to(player1.socketId).emit("matchFound", {
       roomId: room.roomId,
       playerNumber: 1,
       opponent: {
         username: player2.username,
         character: player2.character,
+      },
+      gameState: {
+        yourHand: room.player1.hand,
+        yourStats: room.player1.stats,
+        yourEnergy: room.player1.energy,
+        yourDeckSize: room.player1.deck.length,
+        opponentStats: room.player2.stats,
+        opponentEnergy: room.player2.energy,
+        opponentDeckSize: room.player2.deck.length,
+        opponentHandSize: room.player2.hand.length,
+        turn: room.gameState.turn,
       },
     });
 
@@ -184,10 +195,46 @@ function tryMatchmaking(io, matchmakingQueue, gameRooms) {
         username: player1.username,
         character: player1.character,
       },
+      gameState: {
+        yourHand: room.player2.hand,
+        yourStats: room.player2.stats,
+        yourEnergy: room.player2.energy,
+        yourDeckSize: room.player2.deck.length,
+        opponentStats: room.player1.stats,
+        opponentEnergy: room.player1.energy,
+        opponentDeckSize: room.player1.deck.length,
+        opponentHandSize: room.player1.hand.length,
+        turn: room.gameState.turn,
+      },
     });
 
     console.log(`✅ Match made! Room: ${room.roomId}`);
   }
+}
+
+// Helper: Shuffle array (Fisher-Yates algorithm)
+function shuffleArray(array) {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+// Helper: Create shuffled deck for a character
+function createDeck(character) {
+  const deckCards = character === "Independent Detective" ? lCards : kiraCards;
+  return shuffleArray(deckCards);
+}
+
+// Helper: Draw cards from deck
+function drawCards(deck, count) {
+  const drawn = [];
+  for (let i = 0; i < count && deck.length > 0; i++) {
+    drawn.push(deck.pop());
+  }
+  return drawn;
 }
 
 // Helper: Generate unique room ID
@@ -199,17 +246,50 @@ function generateRoomId() {
 function createGameRoom(player1, player2, gameRooms) {
   const roomId = generateRoomId();
 
+  // Create and shuffle decks for both players
+  const player1Deck = createDeck(player1.character);
+  const player2Deck = createDeck(player2.character);
+
+  // Deal initial hands (5 cards each)
+  const player1Hand = drawCards(player1Deck, 5);
+  const player2Hand = drawCards(player2Deck, 5);
+
+  console.log(`🃏 Player 1 deck: ${player1Deck.length} cards remaining`);
+  console.log(`🃏 Player 2 deck: ${player2Deck.length} cards remaining`);
+  console.log(`🖐️  Player 1 hand: ${player1Hand.length} cards`);
+  console.log(`🖐️  Player 2 hand: ${player2Hand.length} cards`);
+
   const room = {
     roomId,
     player1: {
       socketId: player1.socketId,
       character: player1.character,
       username: player1.username || "Player 1",
+      deck: player1Deck,
+      hand: player1Hand,
+      stats: {
+        investigation: 0,
+        morale: 50,
+        publicOpinion: 50,
+        pressure: 0,
+      },
+      energy: 5,
+      maxEnergy: 20,
     },
     player2: {
       socketId: player2.socketId,
       character: player2.character,
       username: player2.username || "Player 2",
+      deck: player2Deck,
+      hand: player2Hand,
+      stats: {
+        investigation: 0,
+        morale: 50,
+        publicOpinion: 50,
+        pressure: 0,
+      },
+      energy: 5,
+      maxEnergy: 20,
     },
     gameState: {
       turn: 1,

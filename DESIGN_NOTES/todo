@@ -125,7 +125,7 @@ HIGH (MVP) - CORE GAMEPLAY OVERHAUL
 [ ] Server determines win/loss conditions
 [ ] Track full game state server-side (stats, decks, hands, energy)
 [ ] Emit complete game state updates to both clients
-[ ] Handle turn progression and energy increments
+[ ] Handle turn progression and energy incrementDs
 [ ] Implement card draw (2 cards per turn)
 
 === Frontend Network Layer (3-5 hours) ===
