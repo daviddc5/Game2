@@ -204,13 +204,18 @@
         }
 
         // Test with a random card ID
-        const testCards = ['l_logical_trap', 'l_data_cross_match', 'k_intimidation'];
-        const randomCard = testCards[Math.floor(Math.random() * testCards.length)];
-        
+        const testCards = [
+          "l_logical_trap",
+          "l_data_cross_match",
+          "k_intimidation",
+        ];
+        const randomCard =
+          testCards[Math.floor(Math.random() * testCards.length)];
+
         log(`Selecting card: ${randomCard}`, "info");
-        socket.emit("selectCard", { 
-          roomId: currentRoomId, 
-          cardId: randomCard 
+        socket.emit("selectCard", {
+          roomId: currentRoomId,
+          cardId: randomCard,
         });
       }
 

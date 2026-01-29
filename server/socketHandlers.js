@@ -29,7 +29,7 @@ export function setupSocketHandlers(io, matchmakingQueue, gameRooms) {
       console.log(`   Socket: ${socket.id}`);
       console.log(`   Room: ${roomId}`);
       console.log(`   Card: ${cardId}`);
-      
+
       const room = gameRooms.get(roomId);
 
       if (!room) {
@@ -75,10 +75,14 @@ export function setupSocketHandlers(io, matchmakingQueue, gameRooms) {
       // Store the card selection
       if (isPlayer1) {
         room.gameState.player1Card = cardId;
-        console.log(`✅ Player1 (${room.player1.username}) selected: ${cardId}`);
+        console.log(
+          `✅ Player1 (${room.player1.username}) selected: ${cardId}`,
+        );
       } else {
         room.gameState.player2Card = cardId;
-        console.log(`✅ Player2 (${room.player2.username}) selected: ${cardId}`);
+        console.log(
+          `✅ Player2 (${room.player2.username}) selected: ${cardId}`,
+        );
       }
 
       // Check if both players have played
