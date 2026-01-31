@@ -3,16 +3,24 @@
   "version": "0.1.0",
   "description": "Simultaneous card battle game with energy management and priority-based combat. Predict your opponent's move and counter it in this strategic 1v1 duel!",
   "main": "index.js",
- "scripts": {
-  "dev": "vite",
-  "build": "vite build",
-  "preview": "vite preview"
-},
-  "keywords": ["card game", "strategy", "phaser", "simultaneous turns", "pvp", "energy system"],
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [
+    "card game",
+    "strategy",
+    "phaser",
+    "simultaneous turns",
+    "pvp",
+    "energy system"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "phaser": "^3.90.0"
+    "phaser": "^3.90.0",
+    "socket.io-client": "^4.8.3"
   },
   "devDependencies": {
     "vite": "^7.2.7"

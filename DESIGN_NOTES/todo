@@ -129,6 +129,12 @@ HIGH (MVP) - CORE GAMEPLAY OVERHAUL
 ✅ Implement card draw (2 cards per turn)
 ✅ Add comprehensive server and client logging
 ✅ Test full game flow through multiple turns
+✅ Character-aware win condition scoring (positive/negative stats differ per character)
+✅ Proper win reason messages (shows which stat reached threshold or final score)
+✅ Auto-pass system for out-of-cards players (allows opponent to finish remaining cards)
+✅ Asymmetric endgame handling (game continues until BOTH players are out of cards)
+✅ Card balance pass (boosted L's investigation gains, reduced Kira's publicOpinion/investigation manipulation)
+✅ Frontend and backend card values synchronized
 
 === Frontend Network Layer (3-5 hours) ===
 [ ] Create NetworkManager.js (socket.io-client)

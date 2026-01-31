@@ -316,4 +316,25 @@ export default class CardHand {
     if (!container) return null;
     return { x: container.x, y: container.y };
   }
+
+  // Disable all card interactions (for multiplayer when waiting)
+  disableInteractions() {
+    this.cardObjects.forEach((container) => {
+      container.disableInteractive();
+    });
+  }
+
+  // Re-enable card interactions
+  enableInteractions() {
+    this.cardObjects.forEach((container) => {
+      // Only re-enable if container exists and hasn't been destroyed
+      if (container && container.scene) {
+        try {
+          container.setInteractive({ useHandCursor: true });
+        } catch (e) {
+          // Silently ignore if already interactive or destroyed
+        }
+      }
+    });
+  }
 }

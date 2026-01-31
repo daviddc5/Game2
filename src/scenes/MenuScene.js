@@ -18,9 +18,21 @@ export default class MenuScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
+    // Multiplayer button
+    const multiplayerButton = this.add
+      .text(centerX, 360, "🌐 MULTIPLAYER", {
+        fontFamily: "DeathNote",
+        fontSize: "48px",
+        color: "#ffffff",
+        padding: { x: 60, y: 20 },
+        backgroundColor: "#0066cc",
+      })
+      .setOrigin(0.5)
+      .setInteractive();
+
     //Choose Character text
     this.add
-      .text(centerX, 440, "Choose Your Character", {
+      .text(centerX, 520, "Single Player", {
         fontFamily: "DeathNote",
         fontSize: "40px",
         color: "#cccccc",
@@ -29,7 +41,7 @@ export default class MenuScene extends Phaser.Scene {
 
     // Detective button (stacked vertically for mobile)
     const detectiveButton = this.add
-      .text(centerX, 640, "Independent Detective", {
+      .text(centerX, 680, "Independent Detective", {
         fontFamily: "DeathNote",
         fontSize: "48px",
         color: "#ffffff",
@@ -42,7 +54,7 @@ export default class MenuScene extends Phaser.Scene {
 
     // Vigilante button (below Detective button for vertical layout)
     const vigilanteButton = this.add
-      .text(centerX, 840, "Vigilante", {
+      .text(centerX, 880, "Vigilante", {
         fontFamily: "DeathNote",
         fontSize: "56px",
         color: "#ffffff",
@@ -53,6 +65,17 @@ export default class MenuScene extends Phaser.Scene {
       .setOrigin(0.5)
       .setInteractive();
 
+    // Button hover effects
+    multiplayerButton.on("pointerover", () => {
+      multiplayerButton.setBackgroundColor("#0088ff");
+    });
+    multiplayerButton.on("pointerout", () => {
+      multiplayerButton.setBackgroundColor("#0066cc");
+    });
+    multiplayerButton.on("pointerdown", () => {
+      this.scene.start("MultiplayerLobbyScene");
+    });
+
     // Button hover effects - blue for Detective, red for Vigilante
     detectiveButton.on("pointerover", () => {
       detectiveButton.setBackgroundColor("#00aaff");
@@ -61,7 +84,7 @@ export default class MenuScene extends Phaser.Scene {
       detectiveButton.setBackgroundColor("transparent");
     });
     detectiveButton.on("pointerdown", () =>
-      this.startGame("Independent Detective")
+      this.startGame("Independent Detective"),
     );
 
     vigilanteButton.on("pointerover", () => {
