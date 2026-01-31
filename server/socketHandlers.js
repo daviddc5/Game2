@@ -213,8 +213,10 @@ export function setupSocketHandlers(io, matchmakingQueue, gameRooms) {
 
         // Check if BOTH players are out of cards (hand + deck = 0)
         if (
-          room.player1.hand.length === 0 && room.player1.deck.length === 0 &&
-          room.player2.hand.length === 0 && room.player2.deck.length === 0
+          room.player1.hand.length === 0 &&
+          room.player1.deck.length === 0 &&
+          room.player2.hand.length === 0 &&
+          room.player2.deck.length === 0
         ) {
           console.log(
             `\n⚠️ Both players out of cards! Triggering end-game scoring...`,
@@ -454,8 +456,10 @@ function checkWinCondition(room) {
 
   // Win if BOTH players out of cards - calculate overall score
   if (
-    room.player1.hand.length === 0 && room.player1.deck.length === 0 &&
-    room.player2.hand.length === 0 && room.player2.deck.length === 0
+    room.player1.hand.length === 0 &&
+    room.player1.deck.length === 0 &&
+    room.player2.hand.length === 0 &&
+    room.player2.deck.length === 0
   ) {
     // Score = sum of positive stats - sum of negative stats
     let p1Score = 0;
