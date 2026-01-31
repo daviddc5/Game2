@@ -102,6 +102,7 @@
     <script>
       let socket = null;
       let currentRoomId = null;
+      let currentHand = []; // Track current hand
 
       function log(message, type = "info") {
         const logDiv = document.getElementById("log");
@@ -159,6 +160,7 @@
 
           // Display initial game state
           if (data.gameState) {
+            currentHand = data.gameState.yourHand; // Store hand
             log(`--- INITIAL GAME STATE ---`, "success");
             log(
               `🖐️  Your hand (${data.gameState.yourHand.length} cards):`,
@@ -166,7 +168,7 @@
             );
             data.gameState.yourHand.forEach((card, i) => {
               log(
-                `   ${i + 1}. ${card.name} (${card.cardType}, ${card.energyCost} energy)`,
+                `   ${i + 1}. ${card.name} (${card.cardType}, ${card.energyCost} energy) - ID: ${card.id}`,
                 "info",
               );
             });
@@ -191,7 +193,80 @@
           log(`⏳ Opponent selected a card (waiting...)`, "info");
         });
 
+        socket.on("turnComplete", (data) => {
+          log(`\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`, "success");
+          log(`🎴 TURN ${data.gameState.turn - 1} COMPLETE!`, "success");
+          log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`, "success");
+          log(
+            `Your card: ${data.yourCard.name} (${data.yourCard.cardType})`,
+            "info",
+          );
+          log(
+            `Opponent card: ${data.opponentCard.name} (${data.opponentCard.cardType})`,
+            "info",
+          );
+
+          log(`\n📊 UPDATED STATS:`, "success");
+          log(
+            `Your stats: Inv:${data.gameState.yourStats.investigation} Morale:${data.gameState.yourStats.morale} Opinion:${data.gameState.yourStats.publicOpinion} Pressure:${data.gameState.yourStats.pressure}`,
+            "info",
+          );
+          log(
+            `Opponent stats: Inv:${data.gameState.opponentStats.investigation} Morale:${data.gameState.opponentStats.morale} Opinion:${data.gameState.opponentStats.publicOpinion} Pressure:${data.gameState.opponentStats.pressure}`,
+            "info",
+          );
+
+          log(`\n⚡ ENERGY:`, "success");
+          log(`Your energy: ${data.gameState.yourEnergy}`, "info");
+          log(`Opponent energy: ${data.gameState.opponentEnergy}`, "info");
+
+          currentHand = data.gameState.yourHand; // Update hand
+          log(
+            `\n🖐️ YOUR NEW HAND (${data.gameState.yourHand.length} cards):`,
+            "success",
+          );
+          data.gameState.yourHand.forEach((card, i) => {
+            log(
+              `   ${i + 1}. ${card.name} (${card.cardType}, ${card.energyCost} energy) - ID: ${card.id}`,
+              "info",
+            );
+          });
+
+          log(`\n🃏 DECKS:`, "success");
+          log(
+            `Your deck: ${data.gameState.yourDeckSize} cards remaining`,
+            "info",
+          );
+          log(
+            `Opponent deck: ${data.gameState.opponentDeckSize} cards, hand: ${data.gameState.opponentHandSize} cards`,
+            "info",
+          );
+          log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`, "success");
+        });
+
+        socket.on("gameOver", (data) => {
+          log(
+            `\n🏆🏆🏆 GAME OVER! 🏆🏆🏆`,
+            data.winner === "you" ? "success" : "error",
+          );
+          log(
+            `Result: ${data.winner === "you" ? "YOU WIN!" : "YOU LOSE!"}`,
+            data.winner === "you" ? "success" : "error",
+          );
+          log(`Reason: ${data.reason}`, "info");
+          log(`\nFinal Stats:`, "info");
+          log(
+            `Your stats: Inv:${data.finalStats.yourStats.investigation} Morale:${data.finalStats.yourStats.morale} Opinion:${data.finalStats.yourStats.publicOpinion} Pressure:${data.finalStats.yourStats.pressure}`,
+            "info",
+          );
+          log(
+            `Opponent stats: Inv:${data.finalStats.opponentStats.investigation} Morale:${data.finalStats.opponentStats.morale} Opinion:${data.finalStats.opponentStats.publicOpinion} Pressure:${data.finalStats.opponentStats.pressure}`,
+            "info",
+          );
+        });
+
         socket.on("bothCardsSelected", (data) => {
+          // This event is now replaced by turnComplete, but keep for backwards compatibility
           log(`🎴 BOTH CARDS SELECTED!`, "success");
           log(`Your card: ${data.yourCard}`, "info");
           log(`Opponent card: ${data.opponentCard}`, "info");
@@ -228,19 +303,23 @@
           return;
         }
 
-        // Test with a random card ID
-        const testCards = [
-          "l_logical_trap",
-          "l_data_cross_match",
-          "k_intimidation",
-        ];
-        const randomCard =
-          testCards[Math.floor(Math.random() * testCards.length)];
+        if (!currentHand || currentHand.length === 0) {
+          log("No cards in hand! Find a match first.", "error");
+          return;
+        }
 
-        log(`Selecting card: ${randomCard}`, "info");
+        // Select a random card from the actual hand
+        const randomCard = currentHand[Math.floor(Math.random() * currentHand.length)];
+        
+        if (!randomCard || !randomCard.id) {
+          log("Error: Invalid card selected!", "error");
+          return;
+        }
+
+        log(`Selecting card: ${randomCard.name} (ID: ${randomCard.id})`, "info");
         socket.emit("selectCard", {
           roomId: currentRoomId,
-          cardId: randomCard,
+          cardId: randomCard.id,
         });
       }
 

@@ -46,6 +46,7 @@ export function setupSocketHandlers(io, matchmakingQueue, gameRooms) {
       // Determine which player
       const isPlayer1 = room.player1.socketId === socket.id;
       const isPlayer2 = room.player2.socketId === socket.id;
+      const currentPlayer = isPlayer1 ? room.player1 : room.player2;
 
       console.log(`   Is Player1? ${isPlayer1} (${room.player1.socketId})`);
       console.log(`   Is Player2? ${isPlayer2} (${room.player2.socketId})`);
@@ -55,6 +56,15 @@ export function setupSocketHandlers(io, matchmakingQueue, gameRooms) {
         socket.emit("error", { message: "You are not in this game" });
         return;
       }
+
+      // Validate card is in player's hand
+      const cardInHand = currentPlayer.hand.find((c) => c.id === cardId);
+      if (!cardInHand) {
+        console.log(`❌ Card ${cardId} not in player's hand`);
+        socket.emit("error", { message: "Card not in your hand" });
+        return;
+      }
+      console.log(`✓ Card validated: ${cardInHand.name}`);
 
       // Check if player already played
       if (isPlayer1 && room.gameState.player1Card) {
@@ -75,13 +85,15 @@ export function setupSocketHandlers(io, matchmakingQueue, gameRooms) {
       // Store the card selection
       if (isPlayer1) {
         room.gameState.player1Card = cardId;
+        room.gameState.player1CardObject = cardInHand;
         console.log(
-          `✅ Player1 (${room.player1.username}) selected: ${cardId}`,
+          `✅ Player1 (${room.player1.username}) selected: ${cardInHand.name}`,
         );
       } else {
         room.gameState.player2Card = cardId;
+        room.gameState.player2CardObject = cardInHand;
         console.log(
-          `✅ Player2 (${room.player2.username}) selected: ${cardId}`,
+          `✅ Player2 (${room.player2.username}) selected: ${cardInHand.name}`,
         );
       }
 
@@ -89,26 +101,160 @@ export function setupSocketHandlers(io, matchmakingQueue, gameRooms) {
       if (room.gameState.player1Card && room.gameState.player2Card) {
         room.gameState.bothCardsPlayed = true;
         console.log(`🎴🎴 BOTH CARDS SELECTED!`);
-        console.log(`   Player1: ${room.gameState.player1Card}`);
-        console.log(`   Player2: ${room.gameState.player2Card}`);
+        console.log(`   Player1: ${room.gameState.player1CardObject.name}`);
+        console.log(`   Player2: ${room.gameState.player2CardObject.name}`);
         console.log(`   Turn completed: ${room.gameState.turn}`);
 
-        // Notify both players that both cards are selected
-        io.to(room.player1.socketId).emit("bothCardsSelected", {
-          yourCard: room.gameState.player1Card,
-          opponentCard: room.gameState.player2Card,
+        // Remove cards from hands
+        room.player1.hand = room.player1.hand.filter(
+          (c) => c.id !== room.gameState.player1Card,
+        );
+        room.player2.hand = room.player2.hand.filter(
+          (c) => c.id !== room.gameState.player2Card,
+        );
+        console.log(`   Cards removed from hands`);
+
+        // Calculate and apply stat changes
+        const p1Card = room.gameState.player1CardObject;
+        const p2Card = room.gameState.player2CardObject;
+
+        console.log(`\n📊 CALCULATING STAT CHANGES:`);
+
+        // Apply Player 1's card effects
+        console.log(`   Player1 plays ${p1Card.name}:`);
+        console.log(`     Self effects:`, p1Card.selfEffects);
+        console.log(`     Opponent effects:`, p1Card.opponentEffects);
+
+        Object.keys(p1Card.selfEffects).forEach((stat) => {
+          room.player1.stats[stat] += p1Card.selfEffects[stat];
         });
-        io.to(room.player2.socketId).emit("bothCardsSelected", {
-          yourCard: room.gameState.player2Card,
-          opponentCard: room.gameState.player1Card,
+        Object.keys(p1Card.opponentEffects).forEach((stat) => {
+          room.player2.stats[stat] += p1Card.opponentEffects[stat];
+        });
+
+        // Apply Player 2's card effects
+        console.log(`   Player2 plays ${p2Card.name}:`);
+        console.log(`     Self effects:`, p2Card.selfEffects);
+        console.log(`     Opponent effects:`, p2Card.opponentEffects);
+
+        Object.keys(p2Card.selfEffects).forEach((stat) => {
+          room.player2.stats[stat] += p2Card.selfEffects[stat];
+        });
+        Object.keys(p2Card.opponentEffects).forEach((stat) => {
+          room.player1.stats[stat] += p2Card.opponentEffects[stat];
+        });
+
+        console.log(`\n📊 NEW STATS:`);
+        console.log(`   Player1:`, room.player1.stats);
+        console.log(`   Player2:`, room.player2.stats);
+
+        // Check win conditions
+        const winner = checkWinCondition(room);
+        if (winner) {
+          console.log(`\n🏆 GAME OVER! ${winner} wins!`);
+
+          io.to(room.player1.socketId).emit("gameOver", {
+            winner: winner === "player1" ? "you" : "opponent",
+            reason:
+              winner === "player1"
+                ? "Investigation reached 100!"
+                : "Opponent reached 100 investigation!",
+            finalStats: {
+              yourStats: room.player1.stats,
+              opponentStats: room.player2.stats,
+            },
+          });
+
+          io.to(room.player2.socketId).emit("gameOver", {
+            winner: winner === "player2" ? "you" : "opponent",
+            reason:
+              winner === "player2"
+                ? "Investigation reached 100!"
+                : "Opponent reached 100 investigation!",
+            finalStats: {
+              yourStats: room.player2.stats,
+              opponentStats: room.player1.stats,
+            },
+          });
+
+          // Clean up room
+          gameRooms.delete(roomId);
+          console.log(`   Room ${roomId} deleted`);
+          return;
+        }
+
+        // Draw cards for next turn (2 each)
+        const p1DrawnCards = drawCards(room.player1.deck, 2);
+        const p2DrawnCards = drawCards(room.player2.deck, 2);
+        room.player1.hand.push(...p1DrawnCards);
+        room.player2.hand.push(...p2DrawnCards);
+
+        console.log(`\n🃏 CARD DRAW:`);
+        console.log(
+          `   Player1 drew ${p1DrawnCards.length} cards, hand: ${room.player1.hand.length}, deck: ${room.player1.deck.length}`,
+        );
+        console.log(
+          `   Player2 drew ${p2DrawnCards.length} cards, hand: ${room.player2.hand.length}, deck: ${room.player2.deck.length}`,
+        );
+
+        // Increment energy
+        room.player1.energy = Math.min(
+          room.player1.energy + 5,
+          room.player1.maxEnergy,
+        );
+        room.player2.energy = Math.min(
+          room.player2.energy + 5,
+          room.player2.maxEnergy,
+        );
+        console.log(
+          `   Energy: P1=${room.player1.energy}, P2=${room.player2.energy}`,
+        );
+
+        // Increment turn
+        room.gameState.turn++;
+        console.log(`   ➡️  Next turn: ${room.gameState.turn}`);
+
+        // Emit full game state to both players
+        io.to(room.player1.socketId).emit("turnComplete", {
+          yourCard: p1Card,
+          opponentCard: p2Card,
+          gameState: {
+            yourHand: room.player1.hand,
+            yourStats: room.player1.stats,
+            yourEnergy: room.player1.energy,
+            yourDeckSize: room.player1.deck.length,
+            opponentStats: room.player2.stats,
+            opponentEnergy: room.player2.energy,
+            opponentDeckSize: room.player2.deck.length,
+            opponentHandSize: room.player2.hand.length,
+            turn: room.gameState.turn,
+          },
+        });
+
+        io.to(room.player2.socketId).emit("turnComplete", {
+          yourCard: p2Card,
+          opponentCard: p1Card,
+          gameState: {
+            yourHand: room.player2.hand,
+            yourStats: room.player2.stats,
+            yourEnergy: room.player2.energy,
+            yourDeckSize: room.player2.deck.length,
+            opponentStats: room.player1.stats,
+            opponentEnergy: room.player1.energy,
+            opponentDeckSize: room.player1.deck.length,
+            opponentHandSize: room.player1.hand.length,
+            turn: room.gameState.turn,
+          },
         });
 
         // Reset for next turn
         room.gameState.player1Card = null;
         room.gameState.player2Card = null;
+        room.gameState.player1CardObject = null;
+        room.gameState.player2CardObject = null;
         room.gameState.bothCardsPlayed = false;
-        room.gameState.turn++;
-        console.log(`   ➡️  Next turn: ${room.gameState.turn}`);
+
+        console.log(`\n✅ Turn complete, game state emitted to both players\n`);
       } else {
         // Notify player their card was accepted
         socket.emit("cardAccepted", { cardId });
@@ -210,6 +356,48 @@ function tryMatchmaking(io, matchmakingQueue, gameRooms) {
 
     console.log(`✅ Match made! Room: ${room.roomId}`);
   }
+}
+
+// Helper: Check win conditions
+function checkWinCondition(room) {
+  // Win if investigation reaches 100
+  if (room.player1.stats.investigation >= 100) {
+    return "player1";
+  }
+  if (room.player2.stats.investigation >= 100) {
+    return "player2";
+  }
+
+  // Win if opponent's morale reaches 0
+  if (room.player2.stats.morale <= 0) {
+    return "player1";
+  }
+  if (room.player1.stats.morale <= 0) {
+    return "player2";
+  }
+
+  // Win if pressure reaches 100
+  if (room.player2.stats.pressure >= 100) {
+    return "player1";
+  }
+  if (room.player1.stats.pressure >= 100) {
+    return "player2";
+  }
+
+  // Win if both players out of cards - highest investigation wins
+  if (room.player1.hand.length === 0 && room.player2.hand.length === 0 &&
+      room.player1.deck.length === 0 && room.player2.deck.length === 0) {
+    if (room.player1.stats.investigation > room.player2.stats.investigation) {
+      return "player1";
+    } else if (room.player2.stats.investigation > room.player1.stats.investigation) {
+      return "player2";
+    } else {
+      // Tie - player with higher morale wins
+      return room.player1.stats.morale >= room.player2.stats.morale ? "player1" : "player2";
+    }
+  }
+
+  return null; // No winner yet
 }
 
 // Helper: Shuffle array (Fisher-Yates algorithm)
