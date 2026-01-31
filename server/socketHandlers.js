@@ -25,7 +25,7 @@ export function setupSocketHandlers(io, matchmakingQueue, gameRooms) {
 
     // Card selection event
     socket.on("selectCard", ({ roomId, cardId }) => {
-      console.log(`🎴 Card selection attempt:`);
+      console.log(`\n🎴 Card selection attempt:`);
       console.log(`   Socket: ${socket.id}`);
       console.log(`   Room: ${roomId}`);
       console.log(`   Card: ${cardId}`);
@@ -97,6 +97,35 @@ export function setupSocketHandlers(io, matchmakingQueue, gameRooms) {
         );
       }
 
+      // Check if opponent is out of cards - if so, auto-pass for them
+      if (isPlayer1 && !room.gameState.player2Card) {
+        const p2OutOfCards =
+          room.player2.hand.length === 0 && room.player2.deck.length === 0;
+        if (p2OutOfCards) {
+          console.log(`🚫 Player2 out of cards - auto-passing`);
+          room.gameState.player2Card = "PASS";
+          room.gameState.player2CardObject = {
+            id: "PASS",
+            name: "Pass (No Cards)",
+            selfEffects: {},
+            opponentEffects: {},
+          };
+        }
+      } else if (isPlayer2 && !room.gameState.player1Card) {
+        const p1OutOfCards =
+          room.player1.hand.length === 0 && room.player1.deck.length === 0;
+        if (p1OutOfCards) {
+          console.log(`🚫 Player1 out of cards - auto-passing`);
+          room.gameState.player1Card = "PASS";
+          room.gameState.player1CardObject = {
+            id: "PASS",
+            name: "Pass (No Cards)",
+            selfEffects: {},
+            opponentEffects: {},
+          };
+        }
+      }
+
       // Check if both players have played
       if (room.gameState.player1Card && room.gameState.player2Card) {
         room.gameState.bothCardsPlayed = true;
@@ -105,13 +134,26 @@ export function setupSocketHandlers(io, matchmakingQueue, gameRooms) {
         console.log(`   Player2: ${room.gameState.player2CardObject.name}`);
         console.log(`   Turn completed: ${room.gameState.turn}`);
 
-        // Remove cards from hands
-        room.player1.hand = room.player1.hand.filter(
-          (c) => c.id !== room.gameState.player1Card,
-        );
-        room.player2.hand = room.player2.hand.filter(
-          (c) => c.id !== room.gameState.player2Card,
-        );
+        // Check if this will be the last turn BEFORE removing cards
+        const p1WillBeOut = (room.player1.hand.length === 1 || room.gameState.player1Card === "PASS") && room.player1.deck.length === 0;
+        const p2WillBeOut = (room.player2.hand.length === 1 || room.gameState.player2Card === "PASS") && room.player2.deck.length === 0;
+        const isLastTurn = p1WillBeOut && p2WillBeOut;
+        
+        if (isLastTurn) {
+          console.log(`⚠️ This is the LAST TURN - both players will be out of cards after this`);
+        }
+
+        // Remove cards from hands (don't remove PASS cards)
+        if (room.gameState.player1Card !== "PASS") {
+          room.player1.hand = room.player1.hand.filter(
+            (c) => c.id !== room.gameState.player1Card,
+          );
+        }
+        if (room.gameState.player2Card !== "PASS") {
+          room.player2.hand = room.player2.hand.filter(
+            (c) => c.id !== room.gameState.player2Card,
+          );
+        }
         console.log(`   Cards removed from hands`);
 
         // Calculate and apply stat changes
@@ -163,16 +205,15 @@ export function setupSocketHandlers(io, matchmakingQueue, gameRooms) {
         console.log(`   Player2:`, room.player2.stats);
 
         // Check win conditions
-        const winner = checkWinCondition(room);
-        if (winner) {
-          console.log(`\n🏆 GAME OVER! ${winner} wins!`);
+        const winResult = checkWinCondition(room);
+        if (winResult) {
+          console.log(
+            `\n🏆 GAME OVER! ${winResult.winner} wins! Reason: ${winResult.reason}`,
+          );
 
           io.to(room.player1.socketId).emit("gameOver", {
-            winner: winner === "player1" ? "you" : "opponent",
-            reason:
-              winner === "player1"
-                ? "Investigation reached 100!"
-                : "Opponent reached 100 investigation!",
+            winner: winResult.winner === "player1" ? "you" : "opponent",
+            reason: winResult.reason,
             finalStats: {
               yourStats: room.player1.stats,
               opponentStats: room.player2.stats,
@@ -180,11 +221,8 @@ export function setupSocketHandlers(io, matchmakingQueue, gameRooms) {
           });
 
           io.to(room.player2.socketId).emit("gameOver", {
-            winner: winner === "player2" ? "you" : "opponent",
-            reason:
-              winner === "player2"
-                ? "Investigation reached 100!"
-                : "Opponent reached 100 investigation!",
+            winner: winResult.winner === "player2" ? "you" : "opponent",
+            reason: winResult.reason,
             finalStats: {
               yourStats: room.player2.stats,
               opponentStats: room.player1.stats,
@@ -211,22 +249,23 @@ export function setupSocketHandlers(io, matchmakingQueue, gameRooms) {
           `   Player2 drew ${p2DrawnCards.length} cards, hand: ${room.player2.hand.length}, deck: ${room.player2.deck.length}`,
         );
 
-        // Check if BOTH players are out of cards (hand + deck = 0)
-        if (
-          room.player1.hand.length === 0 &&
-          room.player1.deck.length === 0 &&
-          room.player2.hand.length === 0 &&
-          room.player2.deck.length === 0
-        ) {
+        // Check card count status AFTER drawing
+        let p1OutOfCards =
+          room.player1.hand.length === 0 && room.player1.deck.length === 0;
+        let p2OutOfCards =
+          room.player2.hand.length === 0 && room.player2.deck.length === 0;
+
+        // Only end game if this was the last turn (both players played their final cards)
+        if (isLastTurn && p1OutOfCards && p2OutOfCards) {
           console.log(
             `\n⚠️ Both players out of cards! Triggering end-game scoring...`,
           );
-          const winner = checkWinCondition(room);
+          const winResult = checkWinCondition(room);
 
-          if (winner) {
+          if (winResult) {
             io.to(room.player1.socketId).emit("gameOver", {
-              winner: winner === "player1" ? "you" : "opponent",
-              reason: "Out of cards - final score calculated",
+              winner: winResult.winner === "player1" ? "you" : "opponent",
+              reason: winResult.reason,
               finalStats: {
                 yourStats: room.player1.stats,
                 opponentStats: room.player2.stats,
@@ -234,8 +273,8 @@ export function setupSocketHandlers(io, matchmakingQueue, gameRooms) {
             });
 
             io.to(room.player2.socketId).emit("gameOver", {
-              winner: winner === "player2" ? "you" : "opponent",
-              reason: "Out of cards - final score calculated",
+              winner: winResult.winner === "player2" ? "you" : "opponent",
+              reason: winResult.reason,
               finalStats: {
                 yourStats: room.player2.stats,
                 opponentStats: room.player1.stats,
@@ -246,6 +285,15 @@ export function setupSocketHandlers(io, matchmakingQueue, gameRooms) {
             console.log(`   Room ${roomId} deleted`);
             return;
           }
+        } else if (p1OutOfCards || p2OutOfCards) {
+          // One player out of cards - log it but continue
+          console.log(`\n⚠️ One player out of cards:`);
+          console.log(
+            `   Player1: hand=${room.player1.hand.length}, deck=${room.player1.deck.length}`,
+          );
+          console.log(
+            `   Player2: hand=${room.player2.hand.length}, deck=${room.player2.deck.length}`,
+          );
         }
 
         // Increment energy
@@ -304,6 +352,33 @@ export function setupSocketHandlers(io, matchmakingQueue, gameRooms) {
         room.gameState.player1CardObject = null;
         room.gameState.player2CardObject = null;
         room.gameState.bothCardsPlayed = false;
+
+        // Auto-pass for players who are out of cards (reuse variables from above)
+        if (p1OutOfCards && !p2OutOfCards) {
+          console.log(
+            `🚫 Player1 out of cards for next turn - setting auto-pass`,
+          );
+          room.gameState.player1Card = "PASS";
+          room.gameState.player1CardObject = {
+            id: "PASS",
+            name: "Pass (No Cards)",
+            selfEffects: {},
+            opponentEffects: {},
+          };
+          console.log(`   ✅ Auto-pass set: player1Card = ${room.gameState.player1Card}`);
+        } else if (p2OutOfCards && !p1OutOfCards) {
+          console.log(
+            `🚫 Player2 out of cards for next turn - setting auto-pass`,
+          );
+          room.gameState.player2Card = "PASS";
+          room.gameState.player2CardObject = {
+            id: "PASS",
+            name: "Pass (No Cards)",
+            selfEffects: {},
+            opponentEffects: {},
+          };
+          console.log(`   ✅ Auto-pass set: player2Card = ${room.gameState.player2Card}`);
+        }
 
         console.log(`\n✅ Turn complete, game state emitted to both players\n`);
       } else {
@@ -433,24 +508,30 @@ function checkWinCondition(room) {
   // Win if ANY of your positive stats reaches 100
   for (const stat of p1Stats.positive) {
     if (room.player1.stats[stat] >= 100) {
-      return "player1";
+      return {
+        winner: "player1",
+        reason: `${stat.charAt(0).toUpperCase() + stat.slice(1)} reached 100!`,
+      };
     }
   }
   for (const stat of p2Stats.positive) {
     if (room.player2.stats[stat] >= 100) {
-      return "player2";
+      return {
+        winner: "player2",
+        reason: `${stat.charAt(0).toUpperCase() + stat.slice(1)} reached 100!`,
+      };
     }
   }
 
   // Win if opponent's ANY negative stat reaches 100
   for (const stat of p2Stats.negative) {
     if (room.player2.stats[stat] >= 100) {
-      return "player1";
+      return { winner: "player1", reason: `Opponent's ${stat} reached 100!` };
     }
   }
   for (const stat of p1Stats.negative) {
     if (room.player1.stats[stat] >= 100) {
-      return "player2";
+      return { winner: "player2", reason: `Opponent's ${stat} reached 100!` };
     }
   }
 
@@ -495,16 +576,23 @@ function checkWinCondition(room) {
     );
 
     if (p1Score > p2Score) {
-      return "player1";
+      return {
+        winner: "player1",
+        reason: `Out of cards - Won by score (${p1Score} vs ${p2Score})`,
+      };
     } else if (p2Score > p1Score) {
-      return "player2";
+      return {
+        winner: "player2",
+        reason: `Out of cards - Won by score (${p2Score} vs ${p1Score})`,
+      };
     } else {
       // Perfect tie - highest investigation breaks it
       console.log(`   🔀 PERFECT TIE! Using investigation as tiebreaker`);
-      return room.player1.stats.investigation >=
-        room.player2.stats.investigation
-        ? "player1"
-        : "player2";
+      const winner =
+        room.player1.stats.investigation >= room.player2.stats.investigation
+          ? "player1"
+          : "player2";
+      return { winner, reason: `Out of cards - Tie broken by investigation` };
     }
   }
 
