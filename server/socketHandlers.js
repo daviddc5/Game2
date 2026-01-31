@@ -135,12 +135,20 @@ export function setupSocketHandlers(io, matchmakingQueue, gameRooms) {
         console.log(`   Turn completed: ${room.gameState.turn}`);
 
         // Check if this will be the last turn BEFORE removing cards
-        const p1WillBeOut = (room.player1.hand.length === 1 || room.gameState.player1Card === "PASS") && room.player1.deck.length === 0;
-        const p2WillBeOut = (room.player2.hand.length === 1 || room.gameState.player2Card === "PASS") && room.player2.deck.length === 0;
+        const p1WillBeOut =
+          (room.player1.hand.length === 1 ||
+            room.gameState.player1Card === "PASS") &&
+          room.player1.deck.length === 0;
+        const p2WillBeOut =
+          (room.player2.hand.length === 1 ||
+            room.gameState.player2Card === "PASS") &&
+          room.player2.deck.length === 0;
         const isLastTurn = p1WillBeOut && p2WillBeOut;
-        
+
         if (isLastTurn) {
-          console.log(`⚠️ This is the LAST TURN - both players will be out of cards after this`);
+          console.log(
+            `⚠️ This is the LAST TURN - both players will be out of cards after this`,
+          );
         }
 
         // Remove cards from hands (don't remove PASS cards)
@@ -365,7 +373,9 @@ export function setupSocketHandlers(io, matchmakingQueue, gameRooms) {
             selfEffects: {},
             opponentEffects: {},
           };
-          console.log(`   ✅ Auto-pass set: player1Card = ${room.gameState.player1Card}`);
+          console.log(
+            `   ✅ Auto-pass set: player1Card = ${room.gameState.player1Card}`,
+          );
         } else if (p2OutOfCards && !p1OutOfCards) {
           console.log(
             `🚫 Player2 out of cards for next turn - setting auto-pass`,
@@ -377,7 +387,9 @@ export function setupSocketHandlers(io, matchmakingQueue, gameRooms) {
             selfEffects: {},
             opponentEffects: {},
           };
-          console.log(`   ✅ Auto-pass set: player2Card = ${room.gameState.player2Card}`);
+          console.log(
+            `   ✅ Auto-pass set: player2Card = ${room.gameState.player2Card}`,
+          );
         }
 
         console.log(`\n✅ Turn complete, game state emitted to both players\n`);
