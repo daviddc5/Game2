@@ -144,7 +144,21 @@ export function setupSocketHandlers(io, matchmakingQueue, gameRooms) {
           room.player1.stats[stat] += p2Card.opponentEffects[stat];
         });
 
-        console.log(`\n📊 NEW STATS:`);
+        // Cap all stats between 0-100
+        Object.keys(room.player1.stats).forEach((stat) => {
+          room.player1.stats[stat] = Math.max(
+            0,
+            Math.min(100, room.player1.stats[stat]),
+          );
+        });
+        Object.keys(room.player2.stats).forEach((stat) => {
+          room.player2.stats[stat] = Math.max(
+            0,
+            Math.min(100, room.player2.stats[stat]),
+          );
+        });
+
+        console.log(`\n📊 NEW STATS (after capping):`);
         console.log(`   Player1:`, room.player1.stats);
         console.log(`   Player2:`, room.player2.stats);
 
@@ -196,6 +210,41 @@ export function setupSocketHandlers(io, matchmakingQueue, gameRooms) {
         console.log(
           `   Player2 drew ${p2DrawnCards.length} cards, hand: ${room.player2.hand.length}, deck: ${room.player2.deck.length}`,
         );
+
+        // Check if BOTH players are out of cards (hand + deck = 0)
+        if (
+          room.player1.hand.length === 0 && room.player1.deck.length === 0 &&
+          room.player2.hand.length === 0 && room.player2.deck.length === 0
+        ) {
+          console.log(
+            `\n⚠️ Both players out of cards! Triggering end-game scoring...`,
+          );
+          const winner = checkWinCondition(room);
+
+          if (winner) {
+            io.to(room.player1.socketId).emit("gameOver", {
+              winner: winner === "player1" ? "you" : "opponent",
+              reason: "Out of cards - final score calculated",
+              finalStats: {
+                yourStats: room.player1.stats,
+                opponentStats: room.player2.stats,
+              },
+            });
+
+            io.to(room.player2.socketId).emit("gameOver", {
+              winner: winner === "player2" ? "you" : "opponent",
+              reason: "Out of cards - final score calculated",
+              finalStats: {
+                yourStats: room.player2.stats,
+                opponentStats: room.player1.stats,
+              },
+            });
+
+            gameRooms.delete(roomId);
+            console.log(`   Room ${roomId} deleted`);
+            return;
+          }
+        }
 
         // Increment energy
         room.player1.energy = Math.min(
@@ -358,42 +407,100 @@ function tryMatchmaking(io, matchmakingQueue, gameRooms) {
   }
 }
 
+// Helper: Get positive/negative stats for a character
+function getStatTypes(character) {
+  if (character === "Independent Detective") {
+    return {
+      positive: ["investigation", "morale"],
+      negative: ["publicOpinion", "pressure"],
+    };
+  } else {
+    // Vigilante
+    return {
+      positive: ["morale", "publicOpinion"],
+      negative: ["investigation", "pressure"],
+    };
+  }
+}
+
 // Helper: Check win conditions
 function checkWinCondition(room) {
-  // Win if investigation reaches 100
-  if (room.player1.stats.investigation >= 100) {
-    return "player1";
-  }
-  if (room.player2.stats.investigation >= 100) {
-    return "player2";
-  }
+  const p1Stats = getStatTypes(room.player1.character);
+  const p2Stats = getStatTypes(room.player2.character);
 
-  // Win if opponent's morale reaches 0
-  if (room.player2.stats.morale <= 0) {
-    return "player1";
-  }
-  if (room.player1.stats.morale <= 0) {
-    return "player2";
-  }
-
-  // Win if pressure reaches 100
-  if (room.player2.stats.pressure >= 100) {
-    return "player1";
-  }
-  if (room.player1.stats.pressure >= 100) {
-    return "player2";
-  }
-
-  // Win if both players out of cards - highest investigation wins
-  if (room.player1.hand.length === 0 && room.player2.hand.length === 0 &&
-      room.player1.deck.length === 0 && room.player2.deck.length === 0) {
-    if (room.player1.stats.investigation > room.player2.stats.investigation) {
+  // Win if ANY of your positive stats reaches 100
+  for (const stat of p1Stats.positive) {
+    if (room.player1.stats[stat] >= 100) {
       return "player1";
-    } else if (room.player2.stats.investigation > room.player1.stats.investigation) {
+    }
+  }
+  for (const stat of p2Stats.positive) {
+    if (room.player2.stats[stat] >= 100) {
+      return "player2";
+    }
+  }
+
+  // Win if opponent's ANY negative stat reaches 100
+  for (const stat of p2Stats.negative) {
+    if (room.player2.stats[stat] >= 100) {
+      return "player1";
+    }
+  }
+  for (const stat of p1Stats.negative) {
+    if (room.player1.stats[stat] >= 100) {
+      return "player2";
+    }
+  }
+
+  // Win if BOTH players out of cards - calculate overall score
+  if (
+    room.player1.hand.length === 0 && room.player1.deck.length === 0 &&
+    room.player2.hand.length === 0 && room.player2.deck.length === 0
+  ) {
+    // Score = sum of positive stats - sum of negative stats
+    let p1Score = 0;
+    for (const stat of p1Stats.positive) {
+      p1Score += room.player1.stats[stat];
+    }
+    for (const stat of p1Stats.negative) {
+      p1Score -= room.player1.stats[stat];
+    }
+
+    let p2Score = 0;
+    for (const stat of p2Stats.positive) {
+      p2Score += room.player2.stats[stat];
+    }
+    for (const stat of p2Stats.negative) {
+      p2Score -= room.player2.stats[stat];
+    }
+
+    console.log(`📊 OUT OF CARDS - FINAL SCORE:`);
+    console.log(`   Player1 (${room.player1.character}): ${p1Score}`);
+    console.log(
+      `      Positive: ${p1Stats.positive.map((s) => `${s}:${room.player1.stats[s]}`).join(", ")}`,
+    );
+    console.log(
+      `      Negative: ${p1Stats.negative.map((s) => `${s}:${room.player1.stats[s]}`).join(", ")}`,
+    );
+    console.log(`   Player2 (${room.player2.character}): ${p2Score}`);
+    console.log(
+      `      Positive: ${p2Stats.positive.map((s) => `${s}:${room.player2.stats[s]}`).join(", ")}`,
+    );
+    console.log(
+      `      Negative: ${p2Stats.negative.map((s) => `${s}:${room.player2.stats[s]}`).join(", ")}`,
+    );
+
+    if (p1Score > p2Score) {
+      return "player1";
+    } else if (p2Score > p1Score) {
       return "player2";
     } else {
-      // Tie - player with higher morale wins
-      return room.player1.stats.morale >= room.player2.stats.morale ? "player1" : "player2";
+      // Perfect tie - highest investigation breaks it
+      console.log(`   🔀 PERFECT TIE! Using investigation as tiebreaker`);
+      return room.player1.stats.investigation >=
+        room.player2.stats.investigation
+        ? "player1"
+        : "player2";
     }
   }
 

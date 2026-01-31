@@ -309,14 +309,18 @@
         }
 
         // Select a random card from the actual hand
-        const randomCard = currentHand[Math.floor(Math.random() * currentHand.length)];
-        
+        const randomCard =
+          currentHand[Math.floor(Math.random() * currentHand.length)];
+
         if (!randomCard || !randomCard.id) {
           log("Error: Invalid card selected!", "error");
           return;
         }
 
-        log(`Selecting card: ${randomCard.name} (ID: ${randomCard.id})`, "info");
+        log(
+          `Selecting card: ${randomCard.name} (ID: ${randomCard.id})`,
+          "info",
+        );
         socket.emit("selectCard", {
           roomId: currentRoomId,
           cardId: randomCard.id,
