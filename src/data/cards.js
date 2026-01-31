@@ -31,13 +31,13 @@ export const lCards = [
     cardType: "POWER",
     speed: 3,
     selfEffects: {
-      investigation: 10, // Boost your investigation
+      investigation: 14, // Boost your investigation
       morale: 0,
       publicOpinion: 0,
       pressure: 0,
     },
     opponentEffects: {
-      investigation: 6, // Gather evidence against them
+      investigation: 8, // Gather evidence against them
       morale: 0,
       publicOpinion: 0,
       pressure: 0,
@@ -51,7 +51,7 @@ export const lCards = [
     cardType: "NORMAL",
     speed: 5,
     selfEffects: {
-      investigation: 8,
+      investigation: 12,
       morale: 0,
       publicOpinion: 0,
       pressure: 0,
@@ -79,7 +79,7 @@ export const lCards = [
     opponentEffects: {
       investigation: 0,
       morale: 0,
-      publicOpinion: -8, // Reduce vigilante public support
+      publicOpinion: -12, // Reduce vigilante public support
       pressure: 0,
     },
   },
@@ -91,16 +91,16 @@ export const lCards = [
     cardType: "NORMAL",
     speed: 4,
     selfEffects: {
-      investigation: 8,
+      investigation: 12,
       morale: 0,
       publicOpinion: 0,
       pressure: 0,
     },
     opponentEffects: {
-      investigation: 4,
+      investigation: 6,
       morale: 0,
       publicOpinion: 0,
-      pressure: 5,
+      pressure: 7,
     },
   },
   {
@@ -111,16 +111,16 @@ export const lCards = [
     cardType: "QUICK",
     speed: 8,
     selfEffects: {
-      investigation: 6,
+      investigation: 10,
       morale: 0,
       publicOpinion: 0,
       pressure: 0,
     },
     opponentEffects: {
-      investigation: 3,
+      investigation: 5,
       morale: 0,
       publicOpinion: 0,
-      pressure: 4,
+      pressure: 6,
     },
   },
   {
@@ -131,7 +131,7 @@ export const lCards = [
     cardType: "QUICK",
     speed: 7,
     selfEffects: {
-      investigation: 4,
+      investigation: 6,
       morale: 9,
       publicOpinion: 0,
       pressure: 0,
@@ -159,7 +159,7 @@ export const lCards = [
     opponentEffects: {
       investigation: 0,
       morale: 0,
-      publicOpinion: -7,
+      publicOpinion: -10,
       pressure: 0,
     },
   },
@@ -171,7 +171,7 @@ export const lCards = [
     cardType: "POWER",
     speed: 2,
     selfEffects: {
-      investigation: 5,
+      investigation: 8,
       morale: 0,
       publicOpinion: 0,
       pressure: 0,
@@ -179,7 +179,7 @@ export const lCards = [
     opponentEffects: {
       investigation: 0,
       morale: 0,
-      publicOpinion: -10,
+      publicOpinion: -14,
       pressure: 0,
     },
   },
@@ -191,7 +191,7 @@ export const lCards = [
     cardType: "QUICK",
     speed: 9,
     selfEffects: {
-      investigation: 2,
+      investigation: 4,
       morale: 2,
       publicOpinion: 0,
       pressure: 0,
@@ -199,7 +199,7 @@ export const lCards = [
     opponentEffects: {
       investigation: 0,
       morale: 0,
-      publicOpinion: -5,
+      publicOpinion: -8,
       pressure: 0,
     },
   },
@@ -235,13 +235,13 @@ export const kiraCards = [
     cardType: "QUICK",
     speed: 8,
     selfEffects: {
-      investigation: -4,
+      investigation: -3,
       morale: 0,
       publicOpinion: 0,
       pressure: 0,
     },
     opponentEffects: {
-      investigation: -3,
+      investigation: -2,
       morale: -4,
       publicOpinion: 0,
       pressure: 0,
@@ -257,13 +257,13 @@ export const kiraCards = [
     selfEffects: {
       investigation: 0,
       morale: 10,
-      publicOpinion: 8,
+      publicOpinion: 6,
       pressure: 0,
     },
     opponentEffects: {
       investigation: 0,
       morale: 0,
-      publicOpinion: 5,
+      publicOpinion: 3,
       pressure: 0,
     },
   },
@@ -275,13 +275,13 @@ export const kiraCards = [
     cardType: "QUICK",
     speed: 9,
     selfEffects: {
-      investigation: -7,
+      investigation: -5,
       morale: 0,
       publicOpinion: 0,
       pressure: -9,
     },
     opponentEffects: {
-      investigation: -5,
+      investigation: -3,
       morale: 0,
       publicOpinion: 0,
       pressure: 0,
@@ -295,13 +295,13 @@ export const kiraCards = [
     cardType: "NORMAL",
     speed: 6,
     selfEffects: {
-      investigation: -10,
+      investigation: -7,
       morale: 0,
       publicOpinion: 6,
       pressure: 0,
     },
     opponentEffects: {
-      investigation: -6,
+      investigation: -4,
       morale: 0,
       publicOpinion: 0,
       pressure: 0,
@@ -317,7 +317,7 @@ export const kiraCards = [
     selfEffects: {
       investigation: 0,
       morale: 0,
-      publicOpinion: 14,
+      publicOpinion: 10,
       pressure: 0,
     },
     opponentEffects: {
@@ -337,13 +337,13 @@ export const kiraCards = [
     selfEffects: {
       investigation: 0,
       morale: 0,
-      publicOpinion: 10,
+      publicOpinion: 8,
       pressure: -10,
     },
     opponentEffects: {
       investigation: 0,
       morale: 0,
-      publicOpinion: 6,
+      publicOpinion: 4,
       pressure: 0,
     },
   },
@@ -355,13 +355,13 @@ export const kiraCards = [
     cardType: "POWER",
     speed: 2,
     selfEffects: {
-      investigation: -10,
+      investigation: -7,
       morale: 0,
       publicOpinion: 0,
       pressure: -8,
     },
     opponentEffects: {
-      investigation: -6,
+      investigation: -4,
       morale: 0,
       publicOpinion: 0,
       pressure: 0,
@@ -377,13 +377,13 @@ export const kiraCards = [
     selfEffects: {
       investigation: 0,
       morale: 8,
-      publicOpinion: 12,
+      publicOpinion: 10,
       pressure: 5,
     },
     opponentEffects: {
       investigation: 0,
       morale: -7,
-      publicOpinion: 6,
+      publicOpinion: 4,
       pressure: 0,
     },
   },
@@ -395,13 +395,13 @@ export const kiraCards = [
     cardType: "POWER",
     speed: 2,
     selfEffects: {
-      investigation: -14,
+      investigation: -10,
       morale: 0,
       publicOpinion: 0,
       pressure: 6,
     },
     opponentEffects: {
-      investigation: -10,
+      investigation: -7,
       morale: 0,
       publicOpinion: 0,
       pressure: 0,
