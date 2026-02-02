@@ -579,14 +579,14 @@ function tryMatchmaking(io, matchmakingQueue, gameRooms) {
 function getStatTypes(character) {
   if (character === "Independent Detective") {
     return {
-      positive: ["investigation", "morale"],
-      negative: ["publicOpinion", "pressure"],
+      winStat: "investigation",
+      loseStat: "morale",
     };
   } else {
     // Vigilante
     return {
-      positive: ["morale", "publicOpinion"],
-      negative: ["investigation", "pressure"],
+      winStat: "publicOpinion",
+      loseStat: "pressure",
     };
   }
 }
@@ -596,89 +596,65 @@ function checkWinCondition(room) {
   const p1Stats = getStatTypes(room.player1.character);
   const p2Stats = getStatTypes(room.player2.character);
 
-  // Win if ANY of your positive stats reaches 100
-  for (const stat of p1Stats.positive) {
-    if (room.player1.stats[stat] >= 100) {
-      return {
-        winner: "player1",
-        reason: `${stat.charAt(0).toUpperCase() + stat.slice(1)} reached 100!`,
-      };
-    }
+  // Win if your win stat reaches 100
+  if (room.player1.stats[p1Stats.winStat] >= 100) {
+    return {
+      winner: "player1",
+      reason: `${p1Stats.winStat.charAt(0).toUpperCase() + p1Stats.winStat.slice(1)} reached 100!`,
+    };
   }
-  for (const stat of p2Stats.positive) {
-    if (room.player2.stats[stat] >= 100) {
-      return {
-        winner: "player2",
-        reason: `${stat.charAt(0).toUpperCase() + stat.slice(1)} reached 100!`,
-      };
-    }
+  if (room.player2.stats[p2Stats.winStat] >= 100) {
+    return {
+      winner: "player2",
+      reason: `${p2Stats.winStat.charAt(0).toUpperCase() + p2Stats.winStat.slice(1)} reached 100!`,
+    };
   }
 
-  // Win if opponent's ANY negative stat reaches 100
-  for (const stat of p2Stats.negative) {
-    if (room.player2.stats[stat] >= 100) {
-      return { winner: "player1", reason: `Opponent's ${stat} reached 100!` };
-    }
+  // Lose if your lose stat reaches 100
+  if (room.player1.stats[p1Stats.loseStat] >= 100) {
+    return {
+      winner: "player2",
+      reason: `Player1's ${p1Stats.loseStat} reached 100!`,
+    };
   }
-  for (const stat of p1Stats.negative) {
-    if (room.player1.stats[stat] >= 100) {
-      return { winner: "player2", reason: `Opponent's ${stat} reached 100!` };
-    }
+  if (room.player2.stats[p2Stats.loseStat] >= 100) {
+    return {
+      winner: "player1",
+      reason: `Player2's ${p2Stats.loseStat} reached 100!`,
+    };
   }
 
-  // Win if BOTH players out of cards - calculate overall score
+  // If BOTH players out of cards without reaching 100 - compare win stat progress
   if (
     room.player1.hand.length === 0 &&
     room.player1.deck.length === 0 &&
     room.player2.hand.length === 0 &&
     room.player2.deck.length === 0
   ) {
-    // Score = sum of positive stats - sum of negative stats
-    let p1Score = 0;
-    for (const stat of p1Stats.positive) {
-      p1Score += room.player1.stats[stat];
-    }
-    for (const stat of p1Stats.negative) {
-      p1Score -= room.player1.stats[stat];
-    }
+    const p1Progress = room.player1.stats[p1Stats.winStat];
+    const p2Progress = room.player2.stats[p2Stats.winStat];
 
-    let p2Score = 0;
-    for (const stat of p2Stats.positive) {
-      p2Score += room.player2.stats[stat];
-    }
-    for (const stat of p2Stats.negative) {
-      p2Score -= room.player2.stats[stat];
-    }
-
-    console.log(`📊 OUT OF CARDS - FINAL SCORE:`);
-    console.log(`   Player1 (${room.player1.character}): ${p1Score}`);
+    console.log(`📊 OUT OF CARDS - COMPARING WIN STAT PROGRESS:`);
     console.log(
-      `      Positive: ${p1Stats.positive.map((s) => `${s}:${room.player1.stats[s]}`).join(", ")}`,
+      `   Player1 (${room.player1.character}) ${p1Stats.winStat}: ${p1Progress}/100`,
     );
     console.log(
-      `      Negative: ${p1Stats.negative.map((s) => `${s}:${room.player1.stats[s]}`).join(", ")}`,
-    );
-    console.log(`   Player2 (${room.player2.character}): ${p2Score}`);
-    console.log(
-      `      Positive: ${p2Stats.positive.map((s) => `${s}:${room.player2.stats[s]}`).join(", ")}`,
-    );
-    console.log(
-      `      Negative: ${p2Stats.negative.map((s) => `${s}:${room.player2.stats[s]}`).join(", ")}`,
+      `   Player2 (${room.player2.character}) ${p2Stats.winStat}: ${p2Progress}/100`,
     );
 
-    if (p1Score > p2Score) {
+    if (p1Progress > p2Progress) {
       return {
         winner: "player1",
-        reason: `Out of cards - Won by score (${p1Score} vs ${p2Score})`,
+        reason: `Out of cards - Higher ${p1Stats.winStat} (${p1Progress} vs ${p2Progress})`,
       };
-    } else if (p2Score > p1Score) {
+    } else if (p2Progress > p1Progress) {
       return {
         winner: "player2",
-        reason: `Out of cards - Won by score (${p2Score} vs ${p1Score})`,
+        reason: `Out of cards - Higher ${p2Stats.winStat} (${p2Progress} vs ${p1Progress})`,
       };
     } else {
-      // Perfect tie - highest investigation breaks it
-      console.log(`   🔀 PERFECT TIE! Using investigation as tiebreaker`);
+      // Tie - use investigation as tiebreaker
+      console.log(`   🔀 TIE! Using investigation as tiebreaker`);
       const winner =
         room.player1.stats.investigation >= room.player2.stats.investigation
           ? "player1"
@@ -747,8 +723,8 @@ function createGameRoom(player1, player2, gameRooms) {
       hand: player1Hand,
       stats: {
         investigation: 0,
-        morale: 50,
-        publicOpinion: 50,
+        morale: 0,
+        publicOpinion: 0,
         pressure: 0,
       },
       energy: 5,
@@ -762,8 +738,8 @@ function createGameRoom(player1, player2, gameRooms) {
       hand: player2Hand,
       stats: {
         investigation: 0,
-        morale: 50,
-        publicOpinion: 50,
+        morale: 0,
+        publicOpinion: 0,
         pressure: 0,
       },
       energy: 5,

@@ -1645,18 +1645,19 @@ export default class BattleScene extends Phaser.Scene {
 
     if (result.gameOver) {
       console.log(`Game Over! ${result.winner} wins - ${result.reason}`);
-      this.gameOver(result.winner);
+      this.gameOver(result.winner, result.reason);
       return true;
     }
 
     return false;
   }
 
-  gameOver(winner) {
+  gameOver(winner, reason) {
     // Switch to GameOverScene and pass winner data
     this.scene.start("GameOverScene", {
       winner: winner,
       playerCharacter: this.playerCharacter.name,
+      reason: reason || "Game Over",
     });
   }
 
@@ -1988,6 +1989,16 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   showEnlargedCardView(cardData) {
+    // Use passed cardData, or fall back to hovered/selected card (for singleplayer)
+    const card = cardData || 
+                 this.hoveredCard || 
+                 (this.selectedCard ? this.selectedCard.card : null);
+    
+    if (!card) {
+      console.warn("No card data available for enlarged view");
+      return;
+    }
+
     // Dark overlay background (fullscreen)
     const overlay = this.add
       .rectangle(375, 667, 750, 1334, 0x000000, 0.95)
@@ -2016,7 +2027,7 @@ export default class BattleScene extends Phaser.Scene {
 
     // Card name
     const nameText = this.add
-      .text(cardX, cardY - 220, cardData.name, {
+      .text(cardX, cardY - 220, card.name, {
         fontFamily: "Georgia, serif",
         fontSize: "32px",
         color: "#ffffff",
@@ -2029,7 +2040,7 @@ export default class BattleScene extends Phaser.Scene {
 
     // Card description
     const descText = this.add
-      .text(cardX, cardY - 100, cardData.description, {
+      .text(cardX, cardY - 100, card.description, {
         fontFamily: "Arial, sans-serif",
         fontSize: "22px",
         color: "#cccccc",
@@ -2042,7 +2053,7 @@ export default class BattleScene extends Phaser.Scene {
 
     // Energy cost and speed display
     const energyCostText = this.add
-      .text(cardX - 100, cardY - 20, `Energy: ⬢ ${cardData.energyCost || 0}`, {
+      .text(cardX - 100, cardY - 20, `Energy: ⬢ ${card.energyCost || 0}`, {
         fontFamily: "Arial, sans-serif",
         fontSize: "24px",
         color: "#ffffff",
@@ -2053,7 +2064,7 @@ export default class BattleScene extends Phaser.Scene {
       .setDepth(2002);
 
     const speedText = this.add
-      .text(cardX + 100, cardY - 20, `Speed: S ${cardData.speed || 0}`, {
+      .text(cardX + 100, cardY - 20, `Speed: S ${card.speed || 0}`, {
         fontFamily: "Arial, sans-serif",
         fontSize: "24px",
         color: "#ffd700",
@@ -2066,61 +2077,61 @@ export default class BattleScene extends Phaser.Scene {
     // Format and display effects - show both self and opponent effects
     const effectLines = [];
     effectLines.push("━━━ You ━━━");
-    if (cardData.selfEffects.investigation !== 0) {
+    if (card.selfEffects.investigation !== 0) {
       effectLines.push(
-        `${this.playerCharacter.statLabels.investigation}: ${cardData.selfEffects.investigation > 0 ? "+" : ""}${
-          cardData.selfEffects.investigation
+        `${this.playerCharacter.statLabels.investigation}: ${card.selfEffects.investigation > 0 ? "+" : ""}${
+          card.selfEffects.investigation
         }`,
       );
     }
-    if (cardData.selfEffects.morale !== 0) {
+    if (card.selfEffects.morale !== 0) {
       effectLines.push(
-        `${this.playerCharacter.statLabels.morale}: ${cardData.selfEffects.morale > 0 ? "+" : ""}${
-          cardData.selfEffects.morale
+        `${this.playerCharacter.statLabels.morale}: ${card.selfEffects.morale > 0 ? "+" : ""}${
+          card.selfEffects.morale
         }`,
       );
     }
-    if (cardData.selfEffects.publicOpinion !== 0) {
+    if (card.selfEffects.publicOpinion !== 0) {
       effectLines.push(
-        `${this.playerCharacter.statLabels.publicOpinion}: ${cardData.selfEffects.publicOpinion > 0 ? "+" : ""}${
-          cardData.selfEffects.publicOpinion
+        `${this.playerCharacter.statLabels.publicOpinion}: ${card.selfEffects.publicOpinion > 0 ? "+" : ""}${
+          card.selfEffects.publicOpinion
         }`,
       );
     }
-    if (cardData.selfEffects.pressure !== 0) {
+    if (card.selfEffects.pressure !== 0) {
       effectLines.push(
-        `${this.playerCharacter.statLabels.pressure}: ${cardData.selfEffects.pressure > 0 ? "+" : ""}${
-          cardData.selfEffects.pressure
+        `${this.playerCharacter.statLabels.pressure}: ${card.selfEffects.pressure > 0 ? "+" : ""}${
+          card.selfEffects.pressure
         }`,
       );
     }
 
     effectLines.push("━━━ Foe ━━━");
-    if (cardData.opponentEffects.investigation !== 0) {
+    if (card.opponentEffects.investigation !== 0) {
       effectLines.push(
-        `${this.opponentCharacter.statLabels.investigation}: ${cardData.opponentEffects.investigation > 0 ? "+" : ""}${
-          cardData.opponentEffects.investigation
+        `${this.opponentCharacter.statLabels.investigation}: ${card.opponentEffects.investigation > 0 ? "+" : ""}${
+          card.opponentEffects.investigation
         }`,
       );
     }
-    if (cardData.opponentEffects.morale !== 0) {
+    if (card.opponentEffects.morale !== 0) {
       effectLines.push(
-        `${this.opponentCharacter.statLabels.morale}: ${cardData.opponentEffects.morale > 0 ? "+" : ""}${
-          cardData.opponentEffects.morale
+        `${this.opponentCharacter.statLabels.morale}: ${card.opponentEffects.morale > 0 ? "+" : ""}${
+          card.opponentEffects.morale
         }`,
       );
     }
-    if (cardData.opponentEffects.publicOpinion !== 0) {
+    if (card.opponentEffects.publicOpinion !== 0) {
       effectLines.push(
-        `${this.opponentCharacter.statLabels.publicOpinion}: ${cardData.opponentEffects.publicOpinion > 0 ? "+" : ""}${
-          cardData.opponentEffects.publicOpinion
+        `${this.opponentCharacter.statLabels.publicOpinion}: ${card.opponentEffects.publicOpinion > 0 ? "+" : ""}${
+          card.opponentEffects.publicOpinion
         }`,
       );
     }
-    if (cardData.opponentEffects.pressure !== 0) {
+    if (card.opponentEffects.pressure !== 0) {
       effectLines.push(
-        `${this.opponentCharacter.statLabels.pressure}: ${cardData.opponentEffects.pressure > 0 ? "+" : ""}${
-          cardData.opponentEffects.pressure
+        `${this.opponentCharacter.statLabels.pressure}: ${card.opponentEffects.pressure > 0 ? "+" : ""}${
+          card.opponentEffects.pressure
         }`,
       );
     }
