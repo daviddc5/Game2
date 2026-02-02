@@ -104,17 +104,17 @@ export default class BattleScene extends Phaser.Scene {
 
     // Initialize separate stat values for each player
     this.playerStats = {
-      investigation: 50,
-      morale: 50,
-      publicOpinion: 50,
-      pressure: 50,
+      investigation: 0,
+      morale: 0,
+      publicOpinion: 0,
+      pressure: 0,
     };
 
     this.opponentStats = {
-      investigation: 50,
-      morale: 50,
-      publicOpinion: 50,
-      pressure: 50,
+      investigation: 0,
+      morale: 0,
+      publicOpinion: 0,
+      pressure: 0,
     };
 
     // Keep legacy stats for backward compatibility (will update UI progressively)
