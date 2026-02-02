@@ -32,7 +32,6 @@ export default class CardHand {
     // Clear existing card visuals
     this.cardObjects.forEach((obj) => obj.destroy());
     this.cardObjects = [];
-
     const centerX = this.scene.cameras.main.width / 2;
     const numCards = this.cards.length;
 
@@ -46,7 +45,8 @@ export default class CardHand {
       const x = startX + index * cardSpacing;
 
       // Create arc effect - middle cards lower, edge cards higher
-      const normalizedPos = (index - (numCards - 1) / 2) / (numCards - 1);
+      const normalizedPos =
+        numCards === 1 ? 0 : (index - (numCards - 1) / 2) / (numCards - 1);
       const arcOffset = Math.abs(normalizedPos) * this.ARC_AMOUNT;
       const y = this.CARD_Y + arcOffset;
 

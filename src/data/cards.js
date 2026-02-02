@@ -124,7 +124,7 @@ export const lCards = [
     },
   },
   {
-    id: "l_logical_trap",
+    id: "l_task_force_rally",
     name: "Task Force Rally",
     description: "Rally the team together",
     energyCost: 4,

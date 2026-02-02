@@ -57,14 +57,36 @@ export function setupSocketHandlers(io, matchmakingQueue, gameRooms) {
         return;
       }
 
-      // Validate card is in player's hand
-      const cardInHand = currentPlayer.hand.find((c) => c.id === cardId);
-      if (!cardInHand) {
-        console.log(`❌ Card ${cardId} not in player's hand`);
-        socket.emit("error", { message: "Card not in your hand" });
-        return;
+      // Special handling for PASS card
+      let cardInHand;
+      if (cardId === "PASS") {
+        console.log(`✓ PASS card - skipping hand validation`);
+        cardInHand = {
+          id: "PASS",
+          name: "Pass",
+          selfEffects: {
+            investigation: 0,
+            morale: 0,
+            publicOpinion: 0,
+            pressure: 0,
+          },
+          opponentEffects: {
+            investigation: 0,
+            morale: 0,
+            publicOpinion: 0,
+            pressure: 0,
+          },
+        };
+      } else {
+        // Validate card is in player's hand
+        cardInHand = currentPlayer.hand.find((c) => c.id === cardId);
+        if (!cardInHand) {
+          console.log(`❌ Card ${cardId} not in player's hand`);
+          socket.emit("error", { message: "Card not in your hand" });
+          return;
+        }
+        console.log(`✓ Card validated: ${cardInHand.name}`);
       }
-      console.log(`✓ Card validated: ${cardInHand.name}`);
 
       // Check if player already played
       if (isPlayer1 && room.gameState.player1Card) {
@@ -98,6 +120,7 @@ export function setupSocketHandlers(io, matchmakingQueue, gameRooms) {
       }
 
       // Check if opponent is out of cards - if so, auto-pass for them
+      let opponentAutoPassed = false;
       if (isPlayer1 && !room.gameState.player2Card) {
         const p2OutOfCards =
           room.player2.hand.length === 0 && room.player2.deck.length === 0;
@@ -107,9 +130,20 @@ export function setupSocketHandlers(io, matchmakingQueue, gameRooms) {
           room.gameState.player2CardObject = {
             id: "PASS",
             name: "Pass (No Cards)",
-            selfEffects: {},
-            opponentEffects: {},
+            selfEffects: {
+              investigation: 0,
+              morale: 0,
+              publicOpinion: 0,
+              pressure: 0,
+            },
+            opponentEffects: {
+              investigation: 0,
+              morale: 0,
+              publicOpinion: 0,
+              pressure: 0,
+            },
           };
+          opponentAutoPassed = true;
         }
       } else if (isPlayer2 && !room.gameState.player1Card) {
         const p1OutOfCards =
@@ -120,10 +154,37 @@ export function setupSocketHandlers(io, matchmakingQueue, gameRooms) {
           room.gameState.player1CardObject = {
             id: "PASS",
             name: "Pass (No Cards)",
-            selfEffects: {},
-            opponentEffects: {},
+            selfEffects: {
+              investigation: 0,
+              morale: 0,
+              publicOpinion: 0,
+              pressure: 0,
+            },
+            opponentEffects: {
+              investigation: 0,
+              morale: 0,
+              publicOpinion: 0,
+              pressure: 0,
+            },
           };
+          opponentAutoPassed = true;
         }
+      }
+
+      // Only send cardAccepted if we're actually waiting (no auto-pass)
+      if (!opponentAutoPassed) {
+        // Notify current player that card was accepted
+        socket.emit("cardAccepted", {
+          message: "Card accepted, waiting for opponent",
+        });
+
+        // Notify opponent that this player played (show face-down card)
+        const opponentSocketId = isPlayer1
+          ? room.player2.socketId
+          : room.player1.socketId;
+        io.to(opponentSocketId).emit("opponentCardPlayed", {
+          message: "Opponent has played their card",
+        });
       }
 
       // Check if both players have played
@@ -243,9 +304,19 @@ export function setupSocketHandlers(io, matchmakingQueue, gameRooms) {
           return;
         }
 
-        // Draw cards for next turn (2 each)
-        const p1DrawnCards = drawCards(room.player1.deck, 2);
-        const p2DrawnCards = drawCards(room.player2.deck, 2);
+        // Draw cards for next turn (2 each, max hand size 4)
+        const MAX_HAND_SIZE = 4;
+        const p1DrawCount = Math.min(
+          2,
+          MAX_HAND_SIZE - room.player1.hand.length,
+        );
+        const p2DrawCount = Math.min(
+          2,
+          MAX_HAND_SIZE - room.player2.hand.length,
+        );
+
+        const p1DrawnCards = drawCards(room.player1.deck, p1DrawCount);
+        const p2DrawnCards = drawCards(room.player2.deck, p2DrawCount);
         room.player1.hand.push(...p1DrawnCards);
         room.player2.hand.push(...p2DrawnCards);
 
@@ -255,6 +326,14 @@ export function setupSocketHandlers(io, matchmakingQueue, gameRooms) {
         );
         console.log(
           `   Player2 drew ${p2DrawnCards.length} cards, hand: ${room.player2.hand.length}, deck: ${room.player2.deck.length}`,
+        );
+        console.log(
+          `   Player1 hand IDs:`,
+          room.player1.hand.map((c) => c.id),
+        );
+        console.log(
+          `   Player2 hand IDs:`,
+          room.player2.hand.map((c) => c.id),
         );
 
         // Check card count status AFTER drawing
@@ -649,9 +728,9 @@ function createGameRoom(player1, player2, gameRooms) {
   const player1Deck = createDeck(player1.character);
   const player2Deck = createDeck(player2.character);
 
-  // Deal initial hands (5 cards each)
-  const player1Hand = drawCards(player1Deck, 5);
-  const player2Hand = drawCards(player2Deck, 5);
+  // Deal initial hands (4 cards each - hand size limit)
+  const player1Hand = drawCards(player1Deck, 4);
+  const player2Hand = drawCards(player2Deck, 4);
 
   console.log(`🃏 Player 1 deck: ${player1Deck.length} cards remaining`);
   console.log(`🃏 Player 2 deck: ${player2Deck.length} cards remaining`);

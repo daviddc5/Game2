@@ -9,15 +9,17 @@ class NetworkManager {
     this.currentGameState = null;
     this.myCharacter = null; // Store our character choice
     this.opponentCharacter = null;
-    
+
     // Callbacks for different events
     this.onMatchFound = null;
     this.onTurnComplete = null;
     this.onGameOver = null;
     this.onCardAccepted = null;
+    this.onOpponentCardPlayed = null; // NEW: for showing opponent's face-down card
     this.onOpponentDisconnected = null;
     this.onConnectionError = null;
-  }  connect(serverUrl = "http://localhost:3001") {
+  }
+  connect(serverUrl = "http://localhost:3001") {
     if (this.socket && this.connected) {
       console.log("Already connected to server");
       return;
@@ -58,19 +60,35 @@ class NetworkManager {
       this.roomId = data.roomId;
       this.isPlayer1 = data.playerNumber === 1; // Convert to boolean
       this.opponentCharacter = data.opponent.character;
-      
+
       // Store the game state with proper structure
       this.currentGameState = {
-        player1Character: this.isPlayer1 ? this.myCharacter : data.opponent.character,
-        player2Character: this.isPlayer1 ? data.opponent.character : this.myCharacter,
-        player1Stats: this.isPlayer1 ? data.gameState.yourStats : data.gameState.opponentStats,
-        player2Stats: this.isPlayer1 ? data.gameState.opponentStats : data.gameState.yourStats,
+        player1Character: this.isPlayer1
+          ? this.myCharacter
+          : data.opponent.character,
+        player2Character: this.isPlayer1
+          ? data.opponent.character
+          : this.myCharacter,
+        player1Stats: this.isPlayer1
+          ? data.gameState.yourStats
+          : data.gameState.opponentStats,
+        player2Stats: this.isPlayer1
+          ? data.gameState.opponentStats
+          : data.gameState.yourStats,
         player1Hand: this.isPlayer1 ? data.gameState.yourHand : [],
         player2Hand: this.isPlayer1 ? [] : data.gameState.yourHand,
-        player1Deck: this.isPlayer1 ? data.gameState.yourDeckSize : data.gameState.opponentDeckSize,
-        player2Deck: this.isPlayer1 ? data.gameState.opponentDeckSize : data.gameState.yourDeckSize,
-        player1Energy: this.isPlayer1 ? data.gameState.yourEnergy : data.gameState.opponentEnergy,
-        player2Energy: this.isPlayer1 ? data.gameState.opponentEnergy : data.gameState.yourEnergy,
+        player1Deck: this.isPlayer1
+          ? data.gameState.yourDeckSize
+          : data.gameState.opponentDeckSize,
+        player2Deck: this.isPlayer1
+          ? data.gameState.opponentDeckSize
+          : data.gameState.yourDeckSize,
+        player1Energy: this.isPlayer1
+          ? data.gameState.yourEnergy
+          : data.gameState.opponentEnergy,
+        player2Energy: this.isPlayer1
+          ? data.gameState.opponentEnergy
+          : data.gameState.yourEnergy,
       };
 
       if (this.onMatchFound) {
@@ -85,21 +103,38 @@ class NetworkManager {
       }
     });
 
+    this.socket.on("opponentCardPlayed", (data) => {
+      console.log("👤 Opponent played a card (face-down)");
+      if (this.onOpponentCardPlayed) {
+        this.onOpponentCardPlayed(data);
+      }
+    });
+
     this.socket.on("turnComplete", (data) => {
-      console.log("🔄 Turn complete, new game state:", data);
-      
       // Transform the game state to match our internal structure
       this.currentGameState = {
         player1Character: this.currentGameState.player1Character, // Keep existing
         player2Character: this.currentGameState.player2Character,
-        player1Stats: this.isPlayer1 ? data.gameState.yourStats : data.gameState.opponentStats,
-        player2Stats: this.isPlayer1 ? data.gameState.opponentStats : data.gameState.yourStats,
+        player1Stats: this.isPlayer1
+          ? data.gameState.yourStats
+          : data.gameState.opponentStats,
+        player2Stats: this.isPlayer1
+          ? data.gameState.opponentStats
+          : data.gameState.yourStats,
         player1Hand: this.isPlayer1 ? data.gameState.yourHand : [],
         player2Hand: this.isPlayer1 ? [] : data.gameState.yourHand,
-        player1Deck: this.isPlayer1 ? data.gameState.yourDeckSize : data.gameState.opponentDeckSize,
-        player2Deck: this.isPlayer1 ? data.gameState.opponentDeckSize : data.gameState.yourDeckSize,
-        player1Energy: this.isPlayer1 ? data.gameState.yourEnergy : data.gameState.opponentEnergy,
-        player2Energy: this.isPlayer1 ? data.gameState.opponentEnergy : data.gameState.yourEnergy,
+        player1Deck: this.isPlayer1
+          ? data.gameState.yourDeckSize
+          : data.gameState.opponentDeckSize,
+        player2Deck: this.isPlayer1
+          ? data.gameState.opponentDeckSize
+          : data.gameState.yourDeckSize,
+        player1Energy: this.isPlayer1
+          ? data.gameState.yourEnergy
+          : data.gameState.opponentEnergy,
+        player2Energy: this.isPlayer1
+          ? data.gameState.opponentEnergy
+          : data.gameState.yourEnergy,
       };
 
       if (this.onTurnComplete) {

@@ -147,6 +147,11 @@ export default class BattleScene extends Phaser.Scene {
       this.showWaitingForOpponent();
     };
 
+    NetworkManager.onOpponentCardPlayed = (data) => {
+      console.log("👤 Opponent played card, showing face-down...");
+      this.showOpponentCardFaceDown();
+    };
+
     NetworkManager.onTurnComplete = (data) => {
       console.log("🔄 Turn complete from server", data);
       this.handleTurnCompleteFromServer(data);
@@ -288,11 +293,11 @@ export default class BattleScene extends Phaser.Scene {
     );
     this.opponentStatGroup.create();
 
-    // Player stats (above portrait at bottom right)
+    // Player stats (above portrait at bottom right, moved up)
     this.playerStatGroup = new StatBarGroup(
       this,
       520,
-      460,
+      380,
       sortedPlayerStats,
       true,
     );
@@ -321,7 +326,7 @@ export default class BattleScene extends Phaser.Scene {
       .setOrigin(0, 0.5);
 
     // Player energy (higher up, closer to stats)
-    const playerEnergyY = 690; // More separation from stats
+    const playerEnergyY = 650; // Moved up significantly
     this.playerEnergyText = this.add
       .text(520, playerEnergyY, this.getEnergyString(this.playerEnergy), {
         fontSize: "24px",
@@ -331,21 +336,29 @@ export default class BattleScene extends Phaser.Scene {
       .setOrigin(0, 0.5);
 
     // Opponent deck counter (below energy)
-    const opponentDeckSize = this.isMultiplayer ? this.opponentDeckSize : (this.opponentDeck ? this.opponentDeck.length : 0);
+    const opponentDeckSize = this.isMultiplayer
+      ? this.opponentDeckSize
+      : this.opponentDeck
+        ? this.opponentDeck.length
+        : 0;
     this.opponentDeckCounterText = this.add
       .text(20, opponentEnergyY + 35, `Deck: ${opponentDeckSize}`, {
         fontSize: "18px",
-        color: "#aaaaaa",
+        color: "#ffffff",
         fontStyle: "bold",
       })
       .setOrigin(0, 0.5);
 
-    // Player deck counter (below energy)
-    const playerDeckSize = this.isMultiplayer ? this.playerDeckSize : (this.playerDeck ? this.playerDeck.length : 0);
+    // Player deck counter (above energy, moved up)
+    const playerDeckSize = this.isMultiplayer
+      ? this.playerDeckSize
+      : this.playerDeck
+        ? this.playerDeck.length
+        : 0;
     this.playerDeckCounterText = this.add
-      .text(520, playerEnergyY + 35, `Deck: ${playerDeckSize}`, {
+      .text(520, playerEnergyY - 35, `Deck: ${playerDeckSize}`, {
         fontSize: "18px",
-        color: "#aaaaaa",
+        color: "#ffffff",
         fontStyle: "bold",
       })
       .setOrigin(0, 0.5);
@@ -368,11 +381,19 @@ export default class BattleScene extends Phaser.Scene {
 
   updateDeckCounter() {
     if (this.playerDeckCounterText) {
-      const playerDeckSize = this.isMultiplayer ? this.playerDeckSize : (this.playerDeck ? this.playerDeck.length : 0);
+      const playerDeckSize = this.isMultiplayer
+        ? this.playerDeckSize
+        : this.playerDeck
+          ? this.playerDeck.length
+          : 0;
       this.playerDeckCounterText.setText(`Deck: ${playerDeckSize}`);
     }
     if (this.opponentDeckCounterText) {
-      const opponentDeckSize = this.isMultiplayer ? this.opponentDeckSize : (this.opponentDeck ? this.opponentDeck.length : 0);
+      const opponentDeckSize = this.isMultiplayer
+        ? this.opponentDeckSize
+        : this.opponentDeck
+          ? this.opponentDeck.length
+          : 0;
       this.opponentDeckCounterText.setText(`Deck: ${opponentDeckSize}`);
     }
   }
@@ -620,11 +641,11 @@ export default class BattleScene extends Phaser.Scene {
     // MULTIPLAYER: Send PASS to server
     if (this.isMultiplayer) {
       console.log("🌐 Sending PASS to server");
-      
+
       // Lock the turn IMMEDIATELY
       this.turnInProgress = true;
       this.isPlayerTurn = false;
-      
+
       NetworkManager.selectCard("PASS");
 
       // Show player "passed" in staging area
@@ -645,7 +666,7 @@ export default class BattleScene extends Phaser.Scene {
       // Hide pass button
       this.passButtonBg.setVisible(false);
       this.passButtonText.setVisible(false);
-      
+
       // Disable card interactions
       if (this.cardHand) {
         this.cardHand.disableInteractions();
@@ -1000,7 +1021,7 @@ export default class BattleScene extends Phaser.Scene {
 
       // Send card ID to server
       NetworkManager.selectCard(this.selectedCard.card.id);
-      
+
       // Clear selected card immediately to prevent re-submission
       this.selectedCard = null;
 
@@ -1020,7 +1041,7 @@ export default class BattleScene extends Phaser.Scene {
 
       // DON'T remove card from hand yet - wait for server to confirm
       // The server will send updated hand in turnComplete
-      
+
       // Disable all card interactions
       this.cardHand.disableInteractions();
 
@@ -1660,6 +1681,25 @@ export default class BattleScene extends Phaser.Scene {
       .setDepth(101);
   }
 
+  showOpponentCardFaceDown() {
+    // Clear previous cards if any
+    if (this.opponentStagedCard) this.opponentStagedCard.destroy();
+    if (this.opponentStagedCardBack) this.opponentStagedCardBack.destroy();
+
+    // Show opponent's card face-down in staging area
+    this.opponentStagedCard = this.add
+      .rectangle(375, 310, 120, 160, 0x333333)
+      .setStrokeStyle(3, 0xff4444)
+      .setDepth(100);
+
+    this.opponentStagedCardBack = this.add
+      .text(375, 310, "🂠", {
+        fontSize: "100px",
+      })
+      .setOrigin(0.5)
+      .setDepth(101);
+  }
+
   showWaitingForOpponent() {
     // Show "Waiting for opponent..." text
     if (!this.waitingText) {
@@ -1697,80 +1737,24 @@ export default class BattleScene extends Phaser.Scene {
     // Hide waiting text
     this.hideWaitingForOpponent();
 
-    // Update game state from server
-    const gameState = data.gameState;
+    // Store the updated game state but DON'T apply it yet
+    this.pendingGameState = data.gameState;
+    this.pendingMyCard = data.yourCard;
+    this.pendingOpponentCard = data.opponentCard;
 
-    // Update stats
-    this.playerStats = NetworkManager.getMyStats();
-    this.opponentStats = NetworkManager.getOpponentStats();
-    this.updateStatBars();
-
-    // Update energy
-    this.playerEnergy = NetworkManager.getMyEnergy();
-    this.opponentEnergy = NetworkManager.getOpponentEnergy();
-    this.updateEnergyDisplay();
-
-    // Update hand (server sent new cards)
-    this.hand = NetworkManager.getMyHand();
-    this.cardHand.setCards(this.hand);
-    this.cardHand.render();
-
-    // Update deck sizes
-    this.playerDeckSize = NetworkManager.getMyDeckSize();
-    this.opponentDeckSize = NetworkManager.getOpponentDeckSize();
-    this.updateDeckCounter();
-
-    // Get the cards that were played
-    const myCard = data.yourCard;
-    const opponentCard = data.opponentCard;
-
-    // Show both cards (reveal animation)
-    this.revealBothCardsMultiplayer(myCard, opponentCard);
-
-    // After reveal, unlock turn
-    this.time.delayedCall(3000, () => {
-      this.turnInProgress = false;
-      this.isPlayerTurn = true; // Re-enable player input
-      this.updatePassButtonVisibility();
-      
-      // Don't need to re-enable interactions - new cards from render() are already interactive
-
-      // Clear staged cards
-      if (this.playerStagedCard) this.playerStagedCard.destroy();
-      if (this.playerStagedCardBack) this.playerStagedCardBack.destroy();
-      if (this.opponentStagedCard) this.opponentStagedCard.destroy();
-      if (this.opponentStagedCardBack) this.opponentStagedCardBack.destroy();
-      if (this.revealedPlayerCardObjects) {
-        this.revealedPlayerCardObjects.forEach((obj) => obj.destroy());
-        this.revealedPlayerCardObjects = [];
-      }
-      if (this.revealedOpponentCardObjects) {
-        this.revealedOpponentCardObjects.forEach((obj) => obj.destroy());
-        this.revealedOpponentCardObjects = [];
-      }
-    });
+    // Show both cards (reveal animation) - stats will update AFTER animations
+    this.revealBothCardsMultiplayer(data.yourCard, data.opponentCard);
   }
 
-  revealBothCardsMultiplayer(myCard, opponentCard) {
+  async revealBothCardsMultiplayer(myCard, opponentCard) {
     console.log("Revealing cards:", myCard, opponentCard);
 
-    // Show opponent's face-down card if not already shown
-    if (!this.opponentStagedCard) {
-      this.opponentStagedCard = this.add
-        .rectangle(375, 310, 120, 160, 0x333333)
-        .setStrokeStyle(3, 0xff4444)
-        .setDepth(100);
+    // Import CardResolver for proper sequential resolution
+    const CardResolver = (await import("../logic/CardResolver.js")).default;
 
-      this.opponentStagedCardBack = this.add
-        .text(375, 310, "🂠", {
-          fontSize: "100px",
-        })
-        .setOrigin(0.5)
-        .setDepth(101);
-    }
-
+    // Both face-down cards should already be shown at this point
     // Flip animation - destroy face-down, show face-up
-    this.time.delayedCall(500, () => {
+    this.time.delayedCall(500, async () => {
       // Destroy face-down cards
       if (this.playerStagedCardBack) this.playerStagedCardBack.destroy();
       if (this.opponentStagedCardBack) this.opponentStagedCardBack.destroy();
@@ -1778,6 +1762,18 @@ export default class BattleScene extends Phaser.Scene {
       // Show revealed cards
       this.showRevealedCard(myCard, 375, 600, true);
       this.showRevealedCard(opponentCard, 375, 310, false);
+
+      // Use CardResolver for sequential animation (stats will update AFTER via Next Turn button)
+      await CardResolver.resolveCardsWithDelay(
+        myCard,
+        opponentCard,
+        this.playerStats,
+        this.opponentStats,
+        this,
+      );
+
+      // After animations complete, show Next Turn button
+      this.showNextTurnButton();
     });
   }
 
@@ -1807,6 +1803,22 @@ export default class BattleScene extends Phaser.Scene {
       .rectangle(x, y, 120, 140, typeColor, 0.3)
       .setDepth(103);
     cardObjects.push(typeRect);
+
+    // Make the card clickable to view enlarged
+    cardBg.setInteractive({ useHandCursor: true });
+    cardBg.on("pointerdown", () => {
+      this.showEnlargedCardView(cardData);
+    });
+
+    nameText.setInteractive({ useHandCursor: true });
+    nameText.on("pointerdown", () => {
+      this.showEnlargedCardView(cardData);
+    });
+
+    typeRect.setInteractive({ useHandCursor: true });
+    typeRect.on("pointerdown", () => {
+      this.showEnlargedCardView(cardData);
+    });
 
     // Store for cleanup
     if (isPlayer) {
@@ -1840,6 +1852,7 @@ export default class BattleScene extends Phaser.Scene {
     NetworkManager.onTurnComplete = null;
     NetworkManager.onGameOver = null;
     NetworkManager.onCardAccepted = null;
+    NetworkManager.onOpponentCardPlayed = null;
     NetworkManager.onOpponentDisconnected = null;
 
     this.scene.start("GameOverScene", {
@@ -1866,6 +1879,7 @@ export default class BattleScene extends Phaser.Scene {
       NetworkManager.onTurnComplete = null;
       NetworkManager.onGameOver = null;
       NetworkManager.onCardAccepted = null;
+      NetworkManager.onOpponentCardPlayed = null;
       NetworkManager.onOpponentDisconnected = null;
 
       this.scene.start("GameOverScene", {
@@ -1873,6 +1887,282 @@ export default class BattleScene extends Phaser.Scene {
         playerCharacter: this.playerCharacter.name,
         reason: "Opponent disconnected",
       });
+    });
+  }
+
+  showNextTurnButton() {
+    // Create Next Turn button
+    const buttonY = this.cameras.main.height / 2 + 180;
+
+    this.nextTurnButton = this.add
+      .text(this.cameras.main.width / 2, buttonY, "NEXT TURN", {
+        fontFamily: "DeathNote",
+        fontSize: "32px",
+        color: "#ffffff",
+        backgroundColor: "#ff0000",
+        padding: { x: 20, y: 10 },
+      })
+      .setOrigin(0.5)
+      .setDepth(200)
+      .setInteractive({ useHandCursor: true });
+
+    // Pulsing animation
+    this.tweens.add({
+      targets: this.nextTurnButton,
+      scale: { from: 1, to: 1.1 },
+      duration: 500,
+      yoyo: true,
+      repeat: -1,
+    });
+
+    this.nextTurnButton.on("pointerdown", () => {
+      this.applyPendingGameState();
+    });
+
+    this.nextTurnButton.on("pointerover", () => {
+      this.nextTurnButton.setStyle({ backgroundColor: "#cc0000" });
+    });
+
+    this.nextTurnButton.on("pointerout", () => {
+      this.nextTurnButton.setStyle({ backgroundColor: "#ff0000" });
+    });
+  }
+
+  applyPendingGameState() {
+    if (!this.pendingGameState) return;
+
+    // Destroy Next Turn button
+    if (this.nextTurnButton) {
+      this.tweens.killTweensOf(this.nextTurnButton);
+      this.nextTurnButton.destroy();
+      this.nextTurnButton = null;
+    }
+
+    // NOW apply the stats from the server
+    this.playerStats = NetworkManager.getMyStats();
+    this.opponentStats = NetworkManager.getOpponentStats();
+    this.updateStatBars();
+
+    // Update energy
+    this.playerEnergy = NetworkManager.getMyEnergy();
+    this.opponentEnergy = NetworkManager.getOpponentEnergy();
+    this.updateEnergyDisplay();
+
+    // Update hand (server sent new cards)
+    this.hand = NetworkManager.getMyHand();
+    this.cardHand.setCards(this.hand);
+    this.cardHand.render();
+
+    // Update deck sizes
+    this.playerDeckSize = NetworkManager.getMyDeckSize();
+    this.opponentDeckSize = NetworkManager.getOpponentDeckSize();
+    this.updateDeckCounter();
+
+    // Clean up revealed cards
+    if (this.revealedPlayerCardObjects) {
+      this.revealedPlayerCardObjects.forEach((obj) => obj.destroy());
+      this.revealedPlayerCardObjects = [];
+    }
+    if (this.revealedOpponentCardObjects) {
+      this.revealedOpponentCardObjects.forEach((obj) => obj.destroy());
+      this.revealedOpponentCardObjects = [];
+    }
+
+    // Clear pending state
+    this.pendingGameState = null;
+    this.pendingMyCard = null;
+    this.pendingOpponentCard = null;
+
+    // Re-enable turn
+    this.turnInProgress = false;
+    this.isPlayerTurn = true;
+    this.updatePassButtonVisibility();
+
+    // AUTO-PASS: If player has no cards left, automatically pass
+    if (this.isMultiplayer && this.hand.length === 0) {
+      console.log("🚫 No cards left - auto-passing");
+      console.log("   Hand length:", this.hand.length);
+      console.log("   Deck size:", this.playerDeckSize);
+      this.handlePass();
+    }
+  }
+
+  showEnlargedCardView(cardData) {
+    // Dark overlay background (fullscreen)
+    const overlay = this.add
+      .rectangle(375, 667, 750, 1334, 0x000000, 0.95)
+      .setOrigin(0.5)
+      .setDepth(2000)
+      .setInteractive(); // Block clicks behind it
+
+    // Enlarged card container (fullscreen, centered)
+    const cardWidth = 700;
+    const cardHeight = 1000;
+    const cardX = 375;
+    const cardY = 600; // Centered vertically
+
+    // Card background
+    const cardBg = this.add
+      .rectangle(cardX, cardY, cardWidth, cardHeight, 0x2a2a2a)
+      .setOrigin(0.5)
+      .setDepth(2001);
+
+    // Card border
+    const cardBorder = this.add
+      .rectangle(cardX, cardY, cardWidth, cardHeight)
+      .setOrigin(0.5)
+      .setStrokeStyle(4, 0xd4af37)
+      .setDepth(2001);
+
+    // Card name
+    const nameText = this.add
+      .text(cardX, cardY - 220, cardData.name, {
+        fontFamily: "Georgia, serif",
+        fontSize: "32px",
+        color: "#ffffff",
+        align: "center",
+        wordWrap: { width: cardWidth - 40 },
+        fontStyle: "bold",
+      })
+      .setOrigin(0.5)
+      .setDepth(2002);
+
+    // Card description
+    const descText = this.add
+      .text(cardX, cardY - 100, cardData.description, {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "22px",
+        color: "#cccccc",
+        align: "center",
+        wordWrap: { width: cardWidth - 60 },
+        lineSpacing: 8,
+      })
+      .setOrigin(0.5)
+      .setDepth(2002);
+
+    // Energy cost and speed display
+    const energyCostText = this.add
+      .text(cardX - 100, cardY - 20, `Energy: ⬢ ${cardData.energyCost || 0}`, {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "24px",
+        color: "#ffffff",
+        align: "center",
+        fontStyle: "bold",
+      })
+      .setOrigin(0.5)
+      .setDepth(2002);
+
+    const speedText = this.add
+      .text(cardX + 100, cardY - 20, `Speed: S ${cardData.speed || 0}`, {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "24px",
+        color: "#ffd700",
+        align: "center",
+        fontStyle: "bold",
+      })
+      .setOrigin(0.5)
+      .setDepth(2002);
+
+    // Format and display effects - show both self and opponent effects
+    const effectLines = [];
+    effectLines.push("━━━ You ━━━");
+    if (cardData.selfEffects.investigation !== 0) {
+      effectLines.push(
+        `${this.playerCharacter.statLabels.investigation}: ${cardData.selfEffects.investigation > 0 ? "+" : ""}${
+          cardData.selfEffects.investigation
+        }`,
+      );
+    }
+    if (cardData.selfEffects.morale !== 0) {
+      effectLines.push(
+        `${this.playerCharacter.statLabels.morale}: ${cardData.selfEffects.morale > 0 ? "+" : ""}${
+          cardData.selfEffects.morale
+        }`,
+      );
+    }
+    if (cardData.selfEffects.publicOpinion !== 0) {
+      effectLines.push(
+        `${this.playerCharacter.statLabels.publicOpinion}: ${cardData.selfEffects.publicOpinion > 0 ? "+" : ""}${
+          cardData.selfEffects.publicOpinion
+        }`,
+      );
+    }
+    if (cardData.selfEffects.pressure !== 0) {
+      effectLines.push(
+        `${this.playerCharacter.statLabels.pressure}: ${cardData.selfEffects.pressure > 0 ? "+" : ""}${
+          cardData.selfEffects.pressure
+        }`,
+      );
+    }
+
+    effectLines.push("━━━ Foe ━━━");
+    if (cardData.opponentEffects.investigation !== 0) {
+      effectLines.push(
+        `${this.opponentCharacter.statLabels.investigation}: ${cardData.opponentEffects.investigation > 0 ? "+" : ""}${
+          cardData.opponentEffects.investigation
+        }`,
+      );
+    }
+    if (cardData.opponentEffects.morale !== 0) {
+      effectLines.push(
+        `${this.opponentCharacter.statLabels.morale}: ${cardData.opponentEffects.morale > 0 ? "+" : ""}${
+          cardData.opponentEffects.morale
+        }`,
+      );
+    }
+    if (cardData.opponentEffects.publicOpinion !== 0) {
+      effectLines.push(
+        `${this.opponentCharacter.statLabels.publicOpinion}: ${cardData.opponentEffects.publicOpinion > 0 ? "+" : ""}${
+          cardData.opponentEffects.publicOpinion
+        }`,
+      );
+    }
+    if (cardData.opponentEffects.pressure !== 0) {
+      effectLines.push(
+        `${this.opponentCharacter.statLabels.pressure}: ${cardData.opponentEffects.pressure > 0 ? "+" : ""}${
+          cardData.opponentEffects.pressure
+        }`,
+      );
+    }
+
+    const effectsText = this.add
+      .text(cardX, cardY + 100, effectLines.join("\n"), {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "22px",
+        color: "#ffd700",
+        align: "center",
+        fontStyle: "bold",
+        lineSpacing: 8,
+      })
+      .setOrigin(0.5)
+      .setDepth(2002);
+
+    // Close instruction
+    const closeText = this.add
+      .text(cardX, cardY + 380, "Click anywhere to close", {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "20px",
+        color: "#888888",
+      })
+      .setOrigin(0.5)
+      .setDepth(2002);
+
+    // Store all elements for cleanup
+    const allElements = [
+      overlay,
+      cardBg,
+      cardBorder,
+      nameText,
+      descText,
+      energyCostText,
+      speedText,
+      effectsText,
+      closeText,
+    ];
+
+    // Click to close
+    overlay.on("pointerdown", () => {
+      allElements.forEach((element) => element.destroy());
     });
   }
 }
