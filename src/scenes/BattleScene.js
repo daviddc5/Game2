@@ -1657,6 +1657,7 @@ export default class BattleScene extends Phaser.Scene {
     this.scene.start("GameOverScene", {
       winner: winner,
       playerCharacter: this.playerCharacter.name,
+      opponentCharacter: this.opponentCharacter.name,
       reason: reason || "Game Over",
     });
   }
@@ -1764,13 +1765,14 @@ export default class BattleScene extends Phaser.Scene {
       this.showRevealedCard(myCard, 375, 600, true);
       this.showRevealedCard(opponentCard, 375, 310, false);
 
-      // Use CardResolver for sequential animation (stats will update AFTER via Next Turn button)
+      // Use CardResolver for visual animations only (don't update stats)
       await CardResolver.resolveCardsWithDelay(
         myCard,
         opponentCard,
         this.playerStats,
         this.opponentStats,
         this,
+        true, // Skip stat updates - server will send real values
       );
 
       // After animations complete, show Next Turn button
@@ -1842,12 +1844,8 @@ export default class BattleScene extends Phaser.Scene {
   handleGameOverFromServer(data) {
     console.log("Game over:", data);
 
-    // Show game over with winner info
-    const amIWinner =
-      (this.isPlayer1 && data.winner === "player1") ||
-      (!this.isPlayer1 && data.winner === "player2");
-
-    const winner = amIWinner ? "player" : "opponent";
+    // Server already sends "you" or "opponent" - use it directly
+    const winner = data.winner === "you" ? "player" : "opponent";
 
     // Clean up network callbacks
     NetworkManager.onTurnComplete = null;
@@ -1859,6 +1857,7 @@ export default class BattleScene extends Phaser.Scene {
     this.scene.start("GameOverScene", {
       winner: winner,
       playerCharacter: this.playerCharacter.name,
+      opponentCharacter: this.opponentCharacter.name,
       reason: data.reason,
     });
   }
@@ -1886,6 +1885,7 @@ export default class BattleScene extends Phaser.Scene {
       this.scene.start("GameOverScene", {
         winner: "player",
         playerCharacter: this.playerCharacter.name,
+        opponentCharacter: this.opponentCharacter.name,
         reason: "Opponent disconnected",
       });
     });

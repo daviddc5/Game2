@@ -13,6 +13,7 @@ export default class CardResolver {
     playerStats,
     opponentStats,
     scene,
+    skipStatUpdates = false, // Add flag to skip stat updates for multiplayer
   ) {
     const { firstCard, secondCard, firstIsPlayer } =
       this.determineResolutionOrder(playerCard, aiCard);
@@ -62,11 +63,13 @@ export default class CardResolver {
         );
       }
 
-      // Update stats after first card
-      scene.playerStats = updatedPlayerStats;
-      scene.opponentStats = updatedOpponentStats;
-      scene.stats = scene.playerStats;
-      scene.updateStatBars();
+      // Update stats after first card (skip in multiplayer)
+      if (!skipStatUpdates) {
+        scene.playerStats = updatedPlayerStats;
+        scene.opponentStats = updatedOpponentStats;
+        scene.stats = scene.playerStats;
+        scene.updateStatBars();
+      }
 
       // Wait before second card
       await this.wait(800);
@@ -108,11 +111,13 @@ export default class CardResolver {
           );
         }
 
-        // Update stats after second card
-        scene.playerStats = updatedPlayerStats;
-        scene.opponentStats = updatedOpponentStats;
-        scene.stats = scene.playerStats;
-        scene.updateStatBars();
+        // Update stats after second card (skip in multiplayer)
+        if (!skipStatUpdates) {
+          scene.playerStats = updatedPlayerStats;
+          scene.opponentStats = updatedOpponentStats;
+          scene.stats = scene.playerStats;
+          scene.updateStatBars();
+        }
       }
     }
 
