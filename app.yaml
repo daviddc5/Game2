@@ -1,0 +1,19 @@
+# NOTE: This project uses Cloud Run instead of App Engine.
+# See Dockerfile and DEPLOYMENT.md for deployment instructions.
+# This file is kept only as a reference / fallback.
+
+runtime: nodejs20
+instance_class: F1
+
+env_variables:
+  NODE_ENV: "production"
+
+handlers:
+  - url: /.*
+    script: auto
+    secure: always
+
+automatic_scaling:
+  min_instances: 0
+  max_instances: 1
+  target_cpu_utilization: 0.65

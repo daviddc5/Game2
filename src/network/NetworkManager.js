@@ -19,10 +19,18 @@ class NetworkManager {
     this.onOpponentDisconnected = null;
     this.onConnectionError = null;
   }
-  connect(serverUrl = "http://localhost:3001") {
+  connect(serverUrl = null) {
     if (this.socket && this.connected) {
       console.log("Already connected to server");
       return;
+    }
+
+    // Auto-detect server URL based on environment
+    if (!serverUrl) {
+      // In production, connect to same domain. In development, use localhost:3001
+      serverUrl = window.location.hostname === 'localhost' 
+        ? "http://localhost:3001" 
+        : window.location.origin;
     }
 
     console.log("Connecting to server:", serverUrl);

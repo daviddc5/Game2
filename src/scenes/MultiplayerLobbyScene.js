@@ -168,7 +168,7 @@ export default class MultiplayerLobbyScene extends Phaser.Scene {
   }
 
   connectToServer() {
-    NetworkManager.connect("http://localhost:3001");
+    NetworkManager.connect();
 
     // Set up callbacks
     NetworkManager.onMatchFound = (data) => {
