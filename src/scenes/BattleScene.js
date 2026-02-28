@@ -608,22 +608,6 @@ export default class BattleScene extends Phaser.Scene {
     this.confirmButtonText = confirmButtonText;
     this.confirmLabel = confirmLabel;
     
-    // DEBUG: Add a bright visual indicator
-    const debugRect = this.add.rectangle(baseX, baseY - 50, 200, 30, 0xff00ff, 0.8);
-    debugRect.setDepth(1503).setVisible(false);
-    this.actionButtonElements.push(debugRect);
-    
-    const debugText = this.add.text(baseX, baseY - 50, "BUTTONS HERE", {
-      fontSize: "14px",
-      color: "#ffffff",
-      fontStyle: "bold",
-      backgroundColor: "#ff00ff"
-    }).setOrigin(0.5).setDepth(1504).setVisible(false);
-    this.actionButtonElements.push(debugText);
-    
-    this.debugRect = debugRect;
-    this.debugText = debugText;
-    
     // For compatibility, create a pseudo-container object
     this.cardActionButtons = {
       setVisible: (visible) => {
@@ -644,8 +628,6 @@ export default class BattleScene extends Phaser.Scene {
         this.confirmButtonBg.setPosition(baseX + 60 + offsetX, baseY + offsetY);
         this.confirmButtonText.setPosition(baseX + 60 + offsetX, baseY + offsetY);
         this.confirmLabel.setPosition(baseX + 60 + offsetX, baseY + 28 + offsetY);
-        this.debugRect.setPosition(baseX + offsetX, baseY - 50 + offsetY);
-        this.debugText.setPosition(baseX + offsetX, baseY - 50 + offsetY);
         console.log(`📍 Buttons repositioned to ${x}, ${y} (offset: ${offsetX}, ${offsetY})`);
       },
       setDepth: (depth) => {
