@@ -57,10 +57,10 @@ export const lCards = [
       pressure: 0,
     },
     opponentEffects: {
-      investigation: 0,
+      investigation: 6,
       morale: -5, // Shake their confidence
-      publicOpinion: 0,
-      pressure: 5, // Increase heat on them
+      publicOpinion: -8,
+      pressure: 10, // Increase heat on them
     },
   },
   {
@@ -97,10 +97,10 @@ export const lCards = [
       pressure: 0,
     },
     opponentEffects: {
-      investigation: 6,
+      investigation: 8,
       morale: 0,
       publicOpinion: 0,
-      pressure: 7,
+      pressure: 12,
     },
   },
   {
@@ -117,10 +117,10 @@ export const lCards = [
       pressure: 0,
     },
     opponentEffects: {
-      investigation: 5,
+      investigation: 7,
       morale: 0,
       publicOpinion: 0,
-      pressure: 6,
+      pressure: 10,
     },
   },
   {
@@ -191,16 +191,56 @@ export const lCards = [
     cardType: "QUICK",
     speed: 9,
     selfEffects: {
-      investigation: 25,
+      investigation: 8,
+      morale: 0,
+      publicOpinion: 0,
+      pressure: 0,
+    },
+    opponentEffects: {
+      investigation: 6,
+      morale: -8,
+      publicOpinion: -15,
+      pressure: 8,
+    },
+  },
+  {
+    id: "l_forensic_breakthrough",
+    name: "Forensic Breakthrough",
+    description: "Major evidence discovery puts heat on the killer",
+    energyCost: 7,
+    cardType: "POWER",
+    speed: 4,
+    selfEffects: {
+      investigation: 15,
+      morale: 8,
+      publicOpinion: 0,
+      pressure: 0,
+    },
+    opponentEffects: {
+      investigation: 12,
       morale: 0,
       publicOpinion: 0,
       pressure: 15,
     },
-    opponentEffects: {
+  },
+  {
+    id: "l_media_exposure",
+    name: "Media Exposure",
+    description: "Leak information to turn public against vigilante",
+    energyCost: 5,
+    cardType: "NORMAL",
+    speed: 5,
+    selfEffects: {
       investigation: 0,
-      morale: -18,
-      publicOpinion: -15,
+      morale: 0,
+      publicOpinion: -8,
       pressure: 0,
+    },
+    opponentEffects: {
+      investigation: 8,
+      morale: 0,
+      publicOpinion: -18,
+      pressure: 12,
     },
   },
 ];
@@ -323,8 +363,8 @@ export const kiraCards = [
     opponentEffects: {
       investigation: 0,
       morale: -8,
-      publicOpinion: 0,
-      pressure: 0,
+      publicOpinion: 12,
+      pressure: 8,
     },
   },
   {
@@ -383,8 +423,8 @@ export const kiraCards = [
     opponentEffects: {
       investigation: 0,
       morale: -7,
-      publicOpinion: 4,
-      pressure: 0,
+      publicOpinion: 15,
+      pressure: 10,
     },
   },
   {
@@ -398,13 +438,73 @@ export const kiraCards = [
       investigation: -10,
       morale: 0,
       publicOpinion: 0,
-      pressure: 6,
+      pressure: -6,
     },
     opponentEffects: {
       investigation: -7,
       morale: 0,
       publicOpinion: 0,
       pressure: 0,
+    },
+  },
+  {
+    id: "kira_smear_campaign",
+    name: "Smear Campaign",
+    description: "Turn public opinion against the detective team",
+    energyCost: 6,
+    cardType: "POWER",
+    speed: 3,
+    selfEffects: {
+      investigation: 0,
+      morale: 0,
+      publicOpinion: 10,
+      pressure: 0,
+    },
+    opponentEffects: {
+      investigation: 0,
+      morale: -10,
+      publicOpinion: 15,
+      pressure: 12,
+    },
+  },
+  {
+    id: "kira_discredit_investigation",
+    name: "Discredit Investigation",
+    description: "Make the case look incompetent",
+    energyCost: 5,
+    cardType: "NORMAL",
+    speed: 5,
+    selfEffects: {
+      investigation: -5,
+      morale: 8,
+      publicOpinion: 8,
+      pressure: 0,
+    },
+    opponentEffects: {
+      investigation: 0,
+      morale: -12,
+      publicOpinion: 18,
+      pressure: 10,
+    },
+  },
+  {
+    id: "kira_charismatic_speech",
+    name: "Charismatic Speech",
+    description: "Rally supporters while pressuring investigators",
+    energyCost: 4,
+    cardType: "QUICK",
+    speed: 7,
+    selfEffects: {
+      investigation: 0,
+      morale: 6,
+      publicOpinion: 12,
+      pressure: 0,
+    },
+    opponentEffects: {
+      investigation: 0,
+      morale: 0,
+      publicOpinion: 10,
+      pressure: 8,
     },
   },
 ];
@@ -431,11 +531,12 @@ export function getCardTypeName(cardType) {
 }
 
 // Helper function to get the correct deck for a character
+// Returns a COPY so the module-level arrays aren't mutated between games
 export function getDeckForCharacter(character) {
   if (character === "Independent Detective") {
-    return lCards;
+    return [...lCards];
   } else if (character === "Vigilante") {
-    return kiraCards;
+    return [...kiraCards];
   }
   return [];
 }

@@ -508,7 +508,7 @@ export default class BattleScene extends Phaser.Scene {
     this.actionButtonElements = [];
     
     const baseX = 375;
-    const baseY = 850;
+    const baseY = 750; // Moved up for better mobile accessibility (was 850)
 
     // VIEW button (left) - Circular with glow
     const viewButtonGlow = this.add.circle(baseX - 60, baseY, 45, 0x4444ff, 0.6);

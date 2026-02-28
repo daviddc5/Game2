@@ -46,7 +46,8 @@ if (!isDevelopment) {
   app.use(express.static(distPath));
 
   // Serve index.html for all routes (SPA support)
-  app.get("*", (req, res) => {
+  // Use middleware instead of route for Express 5 compatibility
+  app.use((req, res) => {
     res.sendFile(path.join(distPath, "index.html"));
   });
 } else {
@@ -61,10 +62,12 @@ if (!isDevelopment) {
   });
 }
 
-// Use environment variable for port (required by App Engine)
+// Use environment variable for port (required by Cloud Run)
 const PORT = process.env.PORT || 3001;
-httpServer.listen(PORT, () => {
-  console.log(`✅ Server listening on port ${PORT}`);
+const HOST = process.env.NODE_ENV === "production" ? "0.0.0.0" : "localhost";
+
+httpServer.listen(PORT, HOST, () => {
+  console.log(`✅ Server listening on ${HOST}:${PORT}`);
   console.log(`📡 Socket.io ready for connections`);
   console.log(`🌍 Environment: ${isDevelopment ? "development" : "production"}`);
 });
