@@ -93,11 +93,9 @@ HIGH (MVP) - CORE GAMEPLAY OVERHAUL
 ✅ Floating stat change numbers
 
 === PHASE 5: IMPROVED HAND & DRAW (30 min) ===
-✅ Start with 5 cards instead of 3
-✅ Draw 2 cards per turn (instead of 1)
-✅ Deck counter UI
-
-=== PHASE 6: ONLINE MULTIPLAYER (40-60 hours total) ===
+✅ Start with 4 cards (max hand size)
+✅ Draw 1 card per turn
+✅ Deck counter UI=== PHASE 6: ONLINE MULTIPLAYER (40-60 hours total) ===
 
 === Backend Setup (8-12 hours) ===
 ✅ Create /server folder, install express + socket.io + cors
@@ -137,36 +135,36 @@ HIGH (MVP) - CORE GAMEPLAY OVERHAUL
 ✅ Frontend and backend card values synchronized
 
 === Frontend Network Layer (3-5 hours) ===
-[ ] Create NetworkManager.js (socket.io-client)
-[ ] Connect to server, emit/listen for events
-[ ] Refactor BattleScene with isMultiplayer flag
-[ ] Disable AI when multiplayer mode active
-[ ] Send card selection to server, wait for response
-[ ] Update UI from server game state (don't calculate locally)
-[ ] Show "Waiting for opponent..." UI
+✅ Create NetworkManager.js (socket.io-client)
+✅ Connect to server, emit/listen for events
+✅ Refactor BattleScene with isMultiplayer flag
+✅ Disable AI when multiplayer mode active
+✅ Send card selection to server, wait for response
+✅ Update UI from server game state (don't calculate locally)
+✅ Show "Waiting for opponent..." UI
 
 === Multiplayer Lobby UI (1-2 hours) ===
-[ ] Create MultiplayerLobbyScene
-[ ] Username input + character selection
-[ ] "Find Match" button → matchmaking queue
-[ ] "Searching..." animation while waiting
-[ ] Connection status indicator
-[ ] Handle match found → transition to BattleScene
+✅ Create MultiplayerLobbyScene
+✅ Username input + character selection
+✅ "Find Match" button → matchmaking queue
+✅ "Searching..." animation while waiting
+✅ Connection status indicator
+✅ Handle match found → transition to BattleScene
 
 === Google Cloud Deployment (3-5 hours) ===
-[ ] Create GCP project, enable billing (or use Render.com free tier)
-[ ] Install gcloud CLI/Render CLI, authenticate
-[ ] Write Dockerfile for Node.js server (if using Cloud Run)
-[ ] Deploy to Cloud Run/Render: gcloud run deploy or git push
-[ ] Configure environment variables (CORS, production URL)
-[ ] Update frontend to use production server URL
+✅ Create GCP project, enable billing (or use Render.com free tier)
+✅ Install gcloud CLI/Render CLI, authenticate
+✅ Write Dockerfile for Node.js server (if using Cloud Run)
+✅ Deploy to Cloud Run/Render: gcloud run deploy or git push
+✅ Configure environment variables (CORS, production URL)
+[ ] Update frontend to use production server URL (currently testing locally)
 [ ] Deploy frontend to Vercel/Netlify (free)
-[ ] Test WebSocket/long-polling in production
+✅ Test WebSocket/long-polling in production
 [ ] Set up monitoring, logging
 
 === Testing & Bug Fixes (2-4 hours) ===
-[ ] Test locally with 2 browser windows
-[ ] Test production with 2 devices (phone + laptop)
+✅ Test locally with 2 browser windows
+✅ Test production with 2 devices (phone + laptop)
 [ ] Handle edge cases: refresh, timeout, spam clicks
 [ ] Latency testing and optimization
 
@@ -233,18 +231,30 @@ Allow user to select between multiple background tracks during gameplay
 [ ] Add at least 2 background tracks
 
 IN PROGRESS
-[ ] Fix: Cards clickable during opponent turn (DONE - waiting for test)
+(none currently)
+
+BUGS TO FIX
+[ ] View/Play buttons intermittently not appearing in multiplayer (2/10 times on game join)
+    - Works consistently once game loads successfully
+    - Appears to be initialization/timing issue with action buttons
+    - Need to investigate CardHand.render(), selectCard(), and createConfirmButton() timing
+[ ] Add exit/leave game button to return to home screen
+    - Currently no way to leave an active game
+    - Should be accessible during gameplay and game over
+    - Return to MenuScene or TitleScene
+
 DONE
 ✅ Fix turn system - Player → AI → repeat
 ✅ Battle log system
 ✅ Side-by-side portrait layout
 ✅ Character name changes (copyright-safe)
 ✅ Cards blocked during opponent turn
+✅ Fix: Cards clickable during opponent turn
 
 POLISH (After Core Gameplay Works)
 
 CARDS
-[ ] Stat change floating numbers with animations
+✅ Stat change floating numbers with animations
 [ ] Add deck visual and pickup animation
 [ ] Improve Card UI to look more like trading cards
 [ ] Discard pile visualization
@@ -264,9 +274,10 @@ CHARACTERS
 [ ] Add character skill descriptions
 
 USER EXPERIENCE
-[ ] Exit game screen/menu
+[ ] Exit game button (NEEDED - currently no way to leave mid-game)
 [ ] Settings menu
 [ ] Tutorial/help screen
+[ ] Instructions screen (game is hard to understand without explanations)
 
 ART
 [ ] Better background themes
@@ -333,8 +344,8 @@ ART
 - sprites are cool but really I should make some original sprites
 - better win animations
 GAME MECHANICS
--multiplayer mode
--add deck visualizer
+✅ multiplayer mode
+- add deck visualizer
 
 NOTES NOT AI GENERATED TO GENERATE
 make everything that can be abstracted such as the battle log a modal that can be opened and closed
