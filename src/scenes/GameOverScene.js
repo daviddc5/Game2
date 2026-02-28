@@ -129,29 +129,50 @@ export default class GameOverScene extends Phaser.Scene {
       }
     }
 
-    // Play Again button
-    const button = this.add
-      .rectangle(centerX, 1000, 400, 100, 0x333333)
+    // Play Again button (blue, DeathNote font)
+    const playAgainButton = this.add
+      .text(centerX, 950, "PLAY AGAIN", {
+        fontFamily: "DeathNote",
+        fontSize: "44px",
+        color: "#ffffff",
+        padding: { x: 50, y: 20 },
+      })
+      .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
 
-    const buttonText = this.add
-      .text(centerX, 1000, "Play Again", {
-        fontFamily: "Arial, sans-serif",
+    playAgainButton.on("pointerover", () => {
+      playAgainButton.setBackgroundColor("#00aaff");
+    });
+
+    playAgainButton.on("pointerout", () => {
+      playAgainButton.setBackgroundColor("transparent");
+    });
+
+    playAgainButton.on("pointerdown", () => {
+      this.scene.start("MenuScene");
+    });
+
+    // Exit to Main Menu button (red, DeathNote font)
+    const exitButton = this.add
+      .text(centerX, 1060, "MAIN MENU", {
+        fontFamily: "DeathNote",
         fontSize: "40px",
         color: "#ffffff",
+        padding: { x: 50, y: 15 },
       })
-      .setOrigin(0.5);
+      .setOrigin(0.5)
+      .setInteractive({ useHandCursor: true });
 
-    button.on("pointerover", () => {
-      button.setFillStyle(0x555555);
+    exitButton.on("pointerover", () => {
+      exitButton.setBackgroundColor("#ff0000");
     });
 
-    button.on("pointerout", () => {
-      button.setFillStyle(0x333333);
+    exitButton.on("pointerout", () => {
+      exitButton.setBackgroundColor("transparent");
     });
 
-    button.on("pointerdown", () => {
-      this.scene.start("MenuScene");
+    exitButton.on("pointerdown", () => {
+      this.scene.start("TitleScene");
     });
   }
 }

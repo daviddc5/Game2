@@ -30,12 +30,19 @@ export default class BattleScene extends Phaser.Scene {
     this.createStagingArea();
     this.selectedCard = null; // track which card is selected
     this.isSelectingCard = false; // track if player is in card selection mode
+    this.lockedCardIndex = null; // track which card is locked in elevated state
 
     // Initialize StatsModal
     this.statsModal = new StatsModal(this);
 
+    // Create exit button (top-right corner)
+    this.createExitButton();
+
     // Check if PASS button should be shown initially
     this.updatePassButtonVisibility();
+    
+    // Register shutdown event to clean up properly when scene stops
+    this.events.once('shutdown', this.shutdown, this);
   }
 
   initializeGameState() {
@@ -469,37 +476,70 @@ export default class BattleScene extends Phaser.Scene {
     this.isSelectingCard = true;
 
     //Show the confirm button
-    if (!this.confirmButton) {
+    // Check if button exists AND is not destroyed (handles scene restart)
+    if (!this.confirmButton || !this.viewButtonBg || !this.viewButtonBg.scene) {
+      console.log("Creating/recreating confirm buttons");
       this.createConfirmButton();
     }
+    
     // Position the buttons above the selected card (which is now locked elevated)
     this.positionActionButtonsAtCard(cardIndex);
+    
+    // Show buttons
     this.confirmButton.setVisible(true);
+    console.log("✅ Confirm button shown at position:", this.confirmButton.x, this.confirmButton.y);
+    
+    // DEBUG: Verify each element is actually visible
+    console.log("🔍 BUTTON DEBUG INFO:");
+    console.log("  - viewButtonGlow:", this.viewButtonGlow?.visible, "depth:", this.viewButtonGlow?.depth);
+    console.log("  - viewButtonBg:", this.viewButtonBg?.visible, "depth:", this.viewButtonBg?.depth);
+    console.log("  - viewButtonText:", this.viewButtonText?.visible, "depth:", this.viewButtonText?.depth);
+    console.log("  - confirmButtonGlow:", this.confirmButtonGlow?.visible, "depth:", this.confirmButtonGlow?.depth);
+    console.log("  - confirmButtonBg:", this.confirmButtonBg?.visible, "depth:", this.confirmButtonBg?.depth);
+    console.log("  - confirmButtonText:", this.confirmButtonText?.visible, "depth:", this.confirmButtonText?.depth);
+    console.log("  - Camera bounds:", this.cameras.main.worldView);
+    console.log("  - Element count in array:", this.actionButtonElements.length);
   }
 
   createConfirmButton() {
-    // Create container for both buttons (no backdrop)
-    this.cardActionButtons = this.add.container(375, 850);
-    this.cardActionButtons.setDepth(1000);
-    this.cardActionButtons.setVisible(false);
+    console.log("Creating action buttons");
+    
+    // Store button elements for group management
+    this.actionButtonElements = [];
+    
+    const baseX = 375;
+    const baseY = 850;
 
     // VIEW button (left) - Circular with glow
-    const viewButtonGlow = this.add.circle(-60, 0, 45, 0x4444ff, 0.6);
-    const viewButtonBg = this.add.circle(-60, 0, 38, 0x4444ff);
+    const viewButtonGlow = this.add.circle(baseX - 60, baseY, 45, 0x4444ff, 0.6);
+    viewButtonGlow.setDepth(1500).setVisible(false);
+    this.actionButtonElements.push(viewButtonGlow);
+    
+    const viewButtonBg = this.add.circle(baseX - 60, baseY, 38, 0x4444ff);
+    viewButtonBg.setDepth(1501).setVisible(false);
+    this.actionButtonElements.push(viewButtonBg);
+    
     const viewButtonText = this.add
-      .text(-60, 0, "👁", {
+      .text(baseX - 60, baseY, "👁", {
         fontSize: "28px",
         color: "#ffffff",
         fontStyle: "bold",
       })
-      .setOrigin(0.5);
+      .setOrigin(0.5)
+      .setDepth(1502)
+      .setVisible(false);
+    this.actionButtonElements.push(viewButtonText);
+    
     const viewLabel = this.add
-      .text(-60, 28, "VIEW", {
+      .text(baseX - 60, baseY + 28, "VIEW", {
         fontSize: "11px",
         color: "#ffffff",
         fontStyle: "bold",
       })
-      .setOrigin(0.5);
+      .setOrigin(0.5)
+      .setDepth(1502)
+      .setVisible(false);
+    this.actionButtonElements.push(viewLabel);
 
     viewButtonBg.setInteractive({ useHandCursor: true });
     viewButtonBg.on("pointerdown", () => {
@@ -515,22 +555,35 @@ export default class BattleScene extends Phaser.Scene {
     });
 
     // CONFIRM button (right) - Circular with glow
-    const confirmButtonGlow = this.add.circle(60, 0, 45, 0x00aa00, 0.6);
-    const confirmButtonBg = this.add.circle(60, 0, 38, 0x00aa00);
+    const confirmButtonGlow = this.add.circle(baseX + 60, baseY, 45, 0x00aa00, 0.6);
+    confirmButtonGlow.setDepth(1500).setVisible(false);
+    this.actionButtonElements.push(confirmButtonGlow);
+    
+    const confirmButtonBg = this.add.circle(baseX + 60, baseY, 38, 0x00aa00);
+    confirmButtonBg.setDepth(1501).setVisible(false);
+    this.actionButtonElements.push(confirmButtonBg);
+    
     const confirmButtonText = this.add
-      .text(60, 0, "▶", {
+      .text(baseX + 60, baseY, "▶", {
         fontSize: "26px",
         color: "#ffffff",
         fontStyle: "bold",
       })
-      .setOrigin(0.5);
+      .setOrigin(0.5)
+      .setDepth(1502)
+      .setVisible(false);
+    this.actionButtonElements.push(confirmButtonText);
+    
     const confirmLabel = this.add
-      .text(60, 28, "PLAY", {
+      .text(baseX + 60, baseY + 28, "PLAY", {
         fontSize: "11px",
         color: "#ffffff",
         fontStyle: "bold",
       })
-      .setOrigin(0.5);
+      .setOrigin(0.5)
+      .setDepth(1502)
+      .setVisible(false);
+    this.actionButtonElements.push(confirmLabel);
 
     confirmButtonBg.setInteractive({ useHandCursor: true });
     confirmButtonBg.on("pointerdown", () => {
@@ -545,29 +598,101 @@ export default class BattleScene extends Phaser.Scene {
       confirmButtonGlow.setFillStyle(0x00aa00, 0.6);
     });
 
-    // Add buttons to container (no backdrop)
-    this.cardActionButtons.add([
-      viewButtonGlow,
-      viewButtonBg,
-      viewButtonText,
-      viewLabel,
-      confirmButtonGlow,
-      confirmButtonBg,
-      confirmButtonText,
-      confirmLabel,
-    ]);
-
-    // Store references for later use
-    this.confirmButton = this.cardActionButtons; // Keep reference for compatibility
+    // Store references
+    this.viewButtonBg = viewButtonBg;
+    this.viewButtonGlow = viewButtonGlow;
+    this.viewButtonText = viewButtonText;
+    this.viewLabel = viewLabel;
+    this.confirmButtonBg = confirmButtonBg;
+    this.confirmButtonGlow = confirmButtonGlow;
+    this.confirmButtonText = confirmButtonText;
+    this.confirmLabel = confirmLabel;
+    
+    // DEBUG: Add a bright visual indicator
+    const debugRect = this.add.rectangle(baseX, baseY - 50, 200, 30, 0xff00ff, 0.8);
+    debugRect.setDepth(1503).setVisible(false);
+    this.actionButtonElements.push(debugRect);
+    
+    const debugText = this.add.text(baseX, baseY - 50, "BUTTONS HERE", {
+      fontSize: "14px",
+      color: "#ffffff",
+      fontStyle: "bold",
+      backgroundColor: "#ff00ff"
+    }).setOrigin(0.5).setDepth(1504).setVisible(false);
+    this.actionButtonElements.push(debugText);
+    
+    this.debugRect = debugRect;
+    this.debugText = debugText;
+    
+    // For compatibility, create a pseudo-container object
+    this.cardActionButtons = {
+      setVisible: (visible) => {
+        console.log(`🔧 Setting ${this.actionButtonElements.length} button elements to visible=${visible}`);
+        this.actionButtonElements.forEach((el, index) => {
+          el.setVisible(visible);
+          console.log(`  - Element ${index}: visible=${el.visible}, depth=${el.depth}, x=${el.x}, y=${el.y}, alpha=${el.alpha}`);
+        });
+      },
+      setPosition: (x, y) => {
+        const offsetX = x - baseX;
+        const offsetY = y - baseY;
+        this.viewButtonGlow.setPosition(baseX - 60 + offsetX, baseY + offsetY);
+        this.viewButtonBg.setPosition(baseX - 60 + offsetX, baseY + offsetY);
+        this.viewButtonText.setPosition(baseX - 60 + offsetX, baseY + offsetY);
+        this.viewLabel.setPosition(baseX - 60 + offsetX, baseY + 28 + offsetY);
+        this.confirmButtonGlow.setPosition(baseX + 60 + offsetX, baseY + offsetY);
+        this.confirmButtonBg.setPosition(baseX + 60 + offsetX, baseY + offsetY);
+        this.confirmButtonText.setPosition(baseX + 60 + offsetX, baseY + offsetY);
+        this.confirmLabel.setPosition(baseX + 60 + offsetX, baseY + 28 + offsetY);
+        this.debugRect.setPosition(baseX + offsetX, baseY - 50 + offsetY);
+        this.debugText.setPosition(baseX + offsetX, baseY - 50 + offsetY);
+        console.log(`📍 Buttons repositioned to ${x}, ${y} (offset: ${offsetX}, ${offsetY})`);
+      },
+      setDepth: (depth) => {
+        this.actionButtonElements.forEach(el => el.setDepth(depth));
+      },
+      setAlpha: (alpha) => {
+        this.actionButtonElements.forEach(el => el.setAlpha(alpha));
+      },
+      x: baseX,
+      y: baseY
+    };
+    
+    this.confirmButton = this.cardActionButtons;
+    
+    console.log("✅ Action buttons created successfully, element count:", this.actionButtonElements.length);
   }
 
   // Position the action buttons above the elevated card
   positionActionButtonsAtCard(cardIndex) {
-    if (!this.cardHand || !this.cardActionButtons) return;
+    if (!this.cardActionButtons) {
+      console.warn("⚠️ cardActionButtons not created yet");
+      return;
+    }
+    
+    if (!this.cardHand) {
+      console.warn("⚠️ cardHand not available, using fallback position");
+      // Fallback: center of screen, above hand area
+      this.cardActionButtons.setPosition(375, 750);
+      this.cardActionButtons.x = 375;
+      this.cardActionButtons.y = 750;
+      console.log("Using fallback position: 375, 750");
+      return;
+    }
+    
     const center = this.cardHand.getCardCenter
       ? this.cardHand.getCardCenter(cardIndex)
       : null;
-    if (!center) return;
+      
+    if (!center) {
+      console.warn(`⚠️ Could not get center for card ${cardIndex}, using fallback position`);
+      // Fallback: center of screen, above hand area
+      this.cardActionButtons.setPosition(375, 750);
+      this.cardActionButtons.x = 375;
+      this.cardActionButtons.y = 750;
+      console.log("Using fallback position: 375, 750");
+      return;
+    }
 
     // Position above the elevated card (HOVER_LIFT = 80px)
     const elevatedY = center.y - 80; // Card moves up 80px when elevated
@@ -577,8 +702,9 @@ export default class BattleScene extends Phaser.Scene {
       10; // Above the scaled card, very close
 
     this.cardActionButtons.setPosition(center.x, buttonY);
-    this.cardActionButtons.setDepth(1500);
-    this.cardActionButtons.setAlpha(1);
+    this.cardActionButtons.x = center.x;
+    this.cardActionButtons.y = buttonY;
+    console.log(`Positioned buttons at: ${center.x}, ${buttonY}`);
   }
 
   createStagingArea() {
@@ -635,6 +761,141 @@ export default class BattleScene extends Phaser.Scene {
     this.passButtonBg.on("pointerout", () => {
       this.passButtonBg.setFillStyle(0x555555);
     });
+  }
+
+  createExitButton() {
+    // Create EXIT button (top-right corner, transparent with red on hover)
+    this.exitButtonText = this.add
+      .text(680, 40, "EXIT", {
+        fontFamily: "DeathNote",
+        fontSize: "28px",
+        color: "#ffffff",
+        padding: { x: 15, y: 8 },
+      })
+      .setOrigin(0.5)
+      .setDepth(151)
+      .setInteractive({ useHandCursor: true });
+
+    this.exitButtonText.on("pointerdown", () => {
+      this.showExitConfirmation();
+    });
+    this.exitButtonText.on("pointerover", () => {
+      this.exitButtonText.setBackgroundColor("#ff0000");
+    });
+    this.exitButtonText.on("pointerout", () => {
+      this.exitButtonText.setBackgroundColor("transparent");
+    });
+  }
+
+  showExitConfirmation() {
+    // Prevent opening multiple dialogs
+    if (this.exitConfirmationOpen) return;
+    this.exitConfirmationOpen = true;
+
+    // Create dark overlay
+    const overlay = this.add
+      .rectangle(375, 667, 750, 1334, 0x000000, 0.9)
+      .setOrigin(0.5)
+      .setDepth(3000)
+      .setInteractive(); // Block clicks behind it
+
+    // Create dialog box (dark gray, matching game aesthetic)
+    const dialogBg = this.add
+      .rectangle(375, 667, 550, 350, 0x1a1a1a)
+      .setOrigin(0.5)
+      .setDepth(3001)
+      .setStrokeStyle(3, 0x666666);
+
+    // Title text (DeathNote font)
+    const titleText = this.add
+      .text(375, 570, "EXIT GAME?", {
+        fontFamily: "DeathNote",
+        fontSize: "56px",
+        color: "#ffffff",
+      })
+      .setOrigin(0.5)
+      .setDepth(3002);
+
+    // Message text
+    const messageText = this.add
+      .text(375, 670, "Are you sure you want to\nleave this game?", {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "28px",
+        color: "#cccccc",
+        align: "center",
+      })
+      .setOrigin(0.5)
+      .setDepth(3002);
+
+    // YES button (red background, DeathNote font)
+    const yesButton = this.add
+      .text(290, 780, "YES", {
+        fontFamily: "DeathNote",
+        fontSize: "40px",
+        color: "#ffffff",
+        backgroundColor: "#ff0000",
+        padding: { x: 50, y: 15 },
+      })
+      .setOrigin(0.5)
+      .setDepth(3002)
+      .setInteractive({ useHandCursor: true });
+
+    // NO button (transparent, DeathNote font)
+    const noButton = this.add
+      .text(460, 780, "NO", {
+        fontFamily: "DeathNote",
+        fontSize: "40px",
+        color: "#ffffff",
+        padding: { x: 50, y: 15 },
+      })
+      .setOrigin(0.5)
+      .setDepth(3002)
+      .setInteractive({ useHandCursor: true });
+
+    // Store all dialog elements for cleanup
+    const dialogElements = [
+      overlay,
+      dialogBg,
+      titleText,
+      messageText,
+      yesButton,
+      noButton,
+    ];
+
+    // YES button handlers
+    yesButton.on("pointerover", () => {
+      yesButton.setBackgroundColor("#cc0000");
+    });
+    yesButton.on("pointerout", () => {
+      yesButton.setBackgroundColor("#ff0000");
+    });
+    yesButton.on("pointerdown", () => {
+      dialogElements.forEach((el) => el.destroy());
+      this.exitConfirmationOpen = false;
+      this.handleExit();
+    });
+
+    // NO button handlers
+    noButton.on("pointerover", () => {
+      noButton.setBackgroundColor("#00aaff");
+    });
+    noButton.on("pointerout", () => {
+      noButton.setBackgroundColor("transparent");
+    });
+    noButton.on("pointerdown", () => {
+      dialogElements.forEach((el) => el.destroy());
+      this.exitConfirmationOpen = false;
+    });
+  }
+
+  handleExit() {
+    // Clean up multiplayer if active
+    if (this.isMultiplayer) {
+      this.shutdown();
+    }
+
+    // Return to menu
+    this.scene.start("MenuScene");
   }
 
   handlePass() {
@@ -1992,6 +2253,11 @@ export default class BattleScene extends Phaser.Scene {
       NetworkManager.onOpponentCardPlayed = null;
       NetworkManager.onOpponentDisconnected = null;
     }
+    
+    // Clear button references so they get recreated on next scene start
+    this.confirmButton = null;
+    this.cardActionButtons = null;
+    this.actionButtonElements = null;
   }
 
   handleOpponentDisconnected() {

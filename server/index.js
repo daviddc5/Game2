@@ -46,7 +46,7 @@ if (!isDevelopment) {
   app.use(express.static(distPath));
 
   // Serve index.html for all routes (SPA support)
-  app.get("/{*path}", (req, res) => {
+  app.get("*", (req, res) => {
     res.sendFile(path.join(distPath, "index.html"));
   });
 } else {

@@ -234,11 +234,14 @@ IN PROGRESS
 (none currently)
 
 BUGS TO FIX
-[ ] View/Play buttons intermittently not appearing in multiplayer (2/10 times on game join)
-    - Works consistently once game loads successfully
-    - Appears to be initialization/timing issue with action buttons
-    - Need to investigate CardHand.render(), selectCard(), and createConfirmButton() timing
-[ ] Add exit/leave game button to return to home screen
+✅ View/Play buttons intermittently not appearing in multiplayer (FIXED - added fallback positioning)
+    - Was caused by silent failures in positionActionButtonsAtCard()
+    - Now has defensive checks and fallback position at (375, 850)
+    - Added error logging to identify edge cases
+✅ Add exit/leave game button to return to home screen
+    - BattleScene: Transparent EXIT button (top-right) with red hover, DeathNote font
+    - Confirmation dialog: Dark theme (#1a1a1a) with DeathNote font, red YES button, blue NO button
+    - GameOverScene: "PLAY AGAIN" (blue hover) and "MAIN MENU" (red hover) buttons with DeathNote font
     - Currently no way to leave an active game
     - Should be accessible during gameplay and game over
     - Return to MenuScene or TitleScene
@@ -274,7 +277,7 @@ CHARACTERS
 [ ] Add character skill descriptions
 
 USER EXPERIENCE
-[ ] Exit game button (NEEDED - currently no way to leave mid-game)
+✅ Exit game button (DONE - DeathNote font, transparent with red hover matching game aesthetic)
 [ ] Settings menu
 [ ] Tutorial/help screen
 [ ] Instructions screen (game is hard to understand without explanations)
