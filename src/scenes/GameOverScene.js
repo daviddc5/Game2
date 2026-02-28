@@ -86,8 +86,8 @@ export default class GameOverScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
-    // Try to load character portraits
-    const winnerChar = getCharacter(winnerName);
+    // Try to load character portraits (use internal character names, not display names)
+    const winnerChar = getCharacter(didPlayerWin ? this.playerCharacter : this.opponentCharacter);
     const loserChar = getCharacter(didPlayerWin ? this.opponentCharacter : this.playerCharacter);
 
     if (winnerChar) {

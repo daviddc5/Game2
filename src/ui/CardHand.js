@@ -264,9 +264,10 @@ export default class CardHand {
       const centerX = this.scene.cameras.main.width / 2;
       const totalSpacing =
         (this.CARD_WIDTH + this.CARD_SPACING) * (numCards - 1);
-      const startX = centerX - totalSpacing / 2;
+      // Match the -50 offset from render() for consistent positioning
+      const startX = centerX - totalSpacing / 2 - 50;
       const x = startX + (this.CARD_WIDTH + this.CARD_SPACING) * cardIndex;
-      const normalizedPos = (cardIndex - (numCards - 1) / 2) / (numCards - 1);
+      const normalizedPos = numCards === 1 ? 0 : (cardIndex - (numCards - 1) / 2) / (numCards - 1);
       const arcOffset = Math.abs(normalizedPos) * this.ARC_AMOUNT;
       const y = this.CARD_Y + arcOffset;
       const rotation = normalizedPos * 0.1;
@@ -320,17 +321,21 @@ export default class CardHand {
   // Disable all card interactions (for multiplayer when waiting)
   disableInteractions() {
     this.cardObjects.forEach((container) => {
-      container.disableInteractive();
+      // Interactivity is on cardBg (2nd child), not the container
+      const cardBg = container.list && container.list[1];
+      if (cardBg && cardBg.disableInteractive) {
+        cardBg.disableInteractive();
+      }
     });
   }
 
   // Re-enable card interactions
   enableInteractions() {
     this.cardObjects.forEach((container) => {
-      // Only re-enable if container exists and hasn't been destroyed
-      if (container && container.scene) {
+      const cardBg = container.list && container.list[1];
+      if (cardBg && cardBg.scene) {
         try {
-          container.setInteractive({ useHandCursor: true });
+          cardBg.setInteractive({ useHandCursor: true });
         } catch (e) {
           // Silently ignore if already interactive or destroyed
         }

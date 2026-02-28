@@ -187,7 +187,7 @@ export function setupSocketHandlers(io, matchmakingQueue, gameRooms) {
         });
       }
 
-      // Check if both players have played
+      // Check if both players have played (skip the else branch if we already notified above)
       if (room.gameState.player1Card && room.gameState.player2Card) {
         room.gameState.bothCardsPlayed = true;
         console.log(`🎴🎴 BOTH CARDS SELECTED!`);
@@ -472,15 +472,9 @@ export function setupSocketHandlers(io, matchmakingQueue, gameRooms) {
         }
 
         console.log(`\n✅ Turn complete, game state emitted to both players\n`);
-      } else {
-        // Notify player their card was accepted
-        socket.emit("cardAccepted", { cardId });
-
-        // Notify opponent that player has selected (but don't reveal card)
-        const opponent = isPlayer1 ? room.player2 : room.player1;
-        console.log(`   Notifying opponent: ${opponent.socketId}`);
-        io.to(opponent.socketId).emit("opponentCardSelected");
       }
+      // Note: cardAccepted and opponentCardPlayed notifications are handled
+      // in the !opponentAutoPassed block above. No duplicate emission needed.
     });
 
     // Test event

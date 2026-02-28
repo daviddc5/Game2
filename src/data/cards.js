@@ -431,11 +431,12 @@ export function getCardTypeName(cardType) {
 }
 
 // Helper function to get the correct deck for a character
+// Returns a COPY so the module-level arrays aren't mutated between games
 export function getDeckForCharacter(character) {
   if (character === "Independent Detective") {
-    return lCards;
+    return [...lCards];
   } else if (character === "Vigilante") {
-    return kiraCards;
+    return [...kiraCards];
   }
   return [];
 }

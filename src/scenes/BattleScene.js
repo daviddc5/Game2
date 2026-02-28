@@ -88,6 +88,8 @@ export default class BattleScene extends Phaser.Scene {
 
       // Flag to show waiting UI
       this.waitingForOpponent = false;
+      this.isRevealingCards = false;
+      this.pendingGameOver = null;
 
       // Initialize card hand UI for multiplayer
       this.cardHand = new CardHand(this);
@@ -638,6 +640,13 @@ export default class BattleScene extends Phaser.Scene {
   handlePass() {
     if (this.turnInProgress || !this.isPlayerTurn) return;
 
+    // Clear any previously selected card (player chose PASS instead of confirming)
+    this.selectedCard = null;
+    this.isSelectingCard = false;
+    if (this.confirmButton) {
+      this.confirmButton.setVisible(false);
+    }
+
     // MULTIPLAYER: Send PASS to server
     if (this.isMultiplayer) {
       console.log("🌐 Sending PASS to server");
@@ -728,30 +737,37 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   showStatsModal(target) {
-    // Prevent opening during card selection or turn in progress
-    if (this.enlargedCardObjects || this.turnInProgress) return;
+    // Prevent opening during enlarged card view or turn in progress
+    if (this.enlargedViewElements || this.turnInProgress) return;
 
     const character =
       target === "player" ? this.playerCharacter : this.opponentCharacter;
-    this.statsModal.show(target, character, this.stats);
+    const stats =
+      target === "player" ? this.playerStats : this.opponentStats;
+    this.statsModal.show(target, character, stats);
   }
 
   closeStatsModal() {
     this.statsModal.close();
   }
 
-  showEnlargedCardView() {
-    // Use hovered card if available, otherwise use selected card
-    const cardData =
-      this.hoveredCard || (this.selectedCard ? this.selectedCard.card : null);
-    if (!cardData) return;
+  showEnlargedCardView(cardDataArg) {
+    // Use passed cardData, or fall back to hovered/selected card (for singleplayer)
+    const card = cardDataArg ||
+                 this.hoveredCard ||
+                 (this.selectedCard ? this.selectedCard.card : null);
+    if (!card) {
+      console.warn("No card data available for enlarged view");
+      return;
+    }
+
+    // Track whether this was called from card selection (has Play button) or from revealed card view (click to close)
+    const isFromCardSelection = !cardDataArg && (this.hoveredCard || this.selectedCard);
 
     // Hide action buttons while viewing enlarged card
     if (this.cardActionButtons) {
       this.cardActionButtons.setVisible(false);
     }
-
-    const card = cardData;
 
     // Create dark overlay background (fullscreen)
     this.enlargedViewOverlay = this.add
@@ -902,60 +918,8 @@ export default class BattleScene extends Phaser.Scene {
       .setOrigin(0.5)
       .setDepth(2002);
 
-    // Go Back button (left, at bottom)
-    const backButtonBg = this.add
-      .rectangle(250, 1200, 180, 60, 0x666666)
-      .setDepth(2003)
-      .setInteractive({ useHandCursor: true });
-
-    const backButtonText = this.add
-      .text(250, 1200, "← Go Back", {
-        fontSize: "24px",
-        color: "#ffffff",
-        fontStyle: "bold",
-      })
-      .setOrigin(0.5)
-      .setDepth(2004);
-
-    // Back button interactions
-    backButtonBg.on("pointerdown", () => {
-      this.closeEnlargedCardView();
-    });
-    backButtonBg.on("pointerover", () => {
-      backButtonBg.setFillStyle(0x888888);
-    });
-    backButtonBg.on("pointerout", () => {
-      backButtonBg.setFillStyle(0x666666);
-    });
-
-    // Confirm button (right, at bottom)
-    const confirmButtonBg = this.add
-      .rectangle(500, 1200, 180, 60, 0x00aa00)
-      .setDepth(2003)
-      .setInteractive({ useHandCursor: true });
-
-    const confirmButtonText = this.add
-      .text(500, 1200, "Play ▶", {
-        fontSize: "24px",
-        color: "#ffffff",
-        fontStyle: "bold",
-      })
-      .setOrigin(0.5)
-      .setDepth(2004);
-
-    // Confirm button interactions
-    confirmButtonBg.on("pointerdown", () => {
-      this.confirmCardPlay();
-    });
-    confirmButtonBg.on("pointerover", () => {
-      confirmButtonBg.setFillStyle(0x00ff00);
-    });
-    confirmButtonBg.on("pointerout", () => {
-      confirmButtonBg.setFillStyle(0x00aa00);
-    });
-
-    // Store all enlarged view elements for cleanup
-    this.enlargedViewElements = [
+    // Store base elements for cleanup
+    const allElements = [
       this.enlargedViewOverlay,
       cardBg,
       cardBorder,
@@ -964,11 +928,81 @@ export default class BattleScene extends Phaser.Scene {
       energyCostText,
       speedText,
       effectsText,
-      backButtonBg,
-      backButtonText,
-      confirmButtonBg,
-      confirmButtonText,
     ];
+
+    if (isFromCardSelection) {
+      // Card selection mode: show Go Back and Play buttons
+      const backButtonBg = this.add
+        .rectangle(250, 1200, 180, 60, 0x666666)
+        .setDepth(2003)
+        .setInteractive({ useHandCursor: true });
+
+      const backButtonText = this.add
+        .text(250, 1200, "← Go Back", {
+          fontSize: "24px",
+          color: "#ffffff",
+          fontStyle: "bold",
+        })
+        .setOrigin(0.5)
+        .setDepth(2004);
+
+      backButtonBg.on("pointerdown", () => {
+        this.closeEnlargedCardView();
+      });
+      backButtonBg.on("pointerover", () => {
+        backButtonBg.setFillStyle(0x888888);
+      });
+      backButtonBg.on("pointerout", () => {
+        backButtonBg.setFillStyle(0x666666);
+      });
+
+      const confirmButtonBg = this.add
+        .rectangle(500, 1200, 180, 60, 0x00aa00)
+        .setDepth(2003)
+        .setInteractive({ useHandCursor: true });
+
+      const confirmButtonText = this.add
+        .text(500, 1200, "Play ▶", {
+          fontSize: "24px",
+          color: "#ffffff",
+          fontStyle: "bold",
+        })
+        .setOrigin(0.5)
+        .setDepth(2004);
+
+      confirmButtonBg.on("pointerdown", () => {
+        this.confirmCardPlay();
+      });
+      confirmButtonBg.on("pointerover", () => {
+        confirmButtonBg.setFillStyle(0x00ff00);
+      });
+      confirmButtonBg.on("pointerout", () => {
+        confirmButtonBg.setFillStyle(0x00aa00);
+      });
+
+      allElements.push(backButtonBg, backButtonText, confirmButtonBg, confirmButtonText);
+    } else {
+      // View-only mode (from revealed cards): click anywhere to close
+      const closeText = this.add
+        .text(cardX, cardY + 380, "Click anywhere to close", {
+          fontFamily: "Arial, sans-serif",
+          fontSize: "20px",
+          color: "#888888",
+        })
+        .setOrigin(0.5)
+        .setDepth(2002);
+
+      allElements.push(closeText);
+
+      this.enlargedViewOverlay.on("pointerdown", () => {
+        allElements.forEach((element) => element.destroy());
+        this.enlargedViewOverlay = null;
+        this.enlargedViewElements = null;
+      });
+    }
+
+    // Store all enlarged view elements for cleanup
+    this.enlargedViewElements = allElements;
   }
 
   closeEnlargedCardView() {
@@ -1112,6 +1146,15 @@ export default class BattleScene extends Phaser.Scene {
       this.time.delayedCall(1000, () => this.revealBothCards(null));
       return;
     }
+
+    // Remove the selected card from the opponent's deck
+    const aiCardIndex = this.opponentDeck.findIndex((c) => c.id === aiCard.id);
+    if (aiCardIndex !== -1) {
+      this.opponentDeck.splice(aiCardIndex, 1);
+    }
+
+    // Update deck counter after AI draws
+    this.updateDeckCounter();
 
     // Deduct AI energy cost
     const energyCost = aiCard.energyCost || 0;
@@ -1512,9 +1555,9 @@ export default class BattleScene extends Phaser.Scene {
     //   this.cardHand.render();
     // }
 
-    const newCards = drawCards(this.playerDeck, 2);
+    const newCards = drawCards(this.playerDeck, 1);
     newCards.forEach((card) => {
-      if (card && this.hand.length < 3) {
+      if (card && this.hand.length < 4) {
         this.hand.push(card);
       }
     });
@@ -1640,12 +1683,53 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   checkGameOver() {
-    // Use GameLogic to check win conditions
-    const result = GameLogic.checkWinConditions(this.stats);
+    // Check player's win/lose conditions using character-specific logic
+    const playerWinStat = this.playerCharacter.winCondition.stat;
+    const playerLoseStat = this.playerCharacter.loseCondition.stat;
+    const opponentWinStat = this.opponentCharacter.winCondition.stat;
+    const opponentLoseStat = this.opponentCharacter.loseCondition.stat;
 
-    if (result.gameOver) {
-      console.log(`Game Over! ${result.winner} wins - ${result.reason}`);
-      this.gameOver(result.winner, result.reason);
+    // Player wins if their win stat reaches 100
+    if (this.playerStats[playerWinStat] >= 100) {
+      console.log(`Game Over! Player wins - ${playerWinStat} reached 100`);
+      this.gameOver("player", `${this.playerCharacter.winCondition.message}`);
+      return true;
+    }
+
+    // Player loses if their lose stat reaches 100
+    if (this.playerStats[playerLoseStat] >= 100) {
+      console.log(`Game Over! Player loses - ${playerLoseStat} reached 100`);
+      this.gameOver("opponent", `${this.playerCharacter.loseCondition.message}`);
+      return true;
+    }
+
+    // Opponent wins if their win stat reaches 100
+    if (this.opponentStats[opponentWinStat] >= 100) {
+      console.log(`Game Over! Opponent wins - ${opponentWinStat} reached 100`);
+      this.gameOver("opponent", `${this.opponentCharacter.winCondition.message}`);
+      return true;
+    }
+
+    // Opponent loses if their lose stat reaches 100
+    if (this.opponentStats[opponentLoseStat] >= 100) {
+      console.log(`Game Over! Opponent loses - ${opponentLoseStat} reached 100`);
+      this.gameOver("player", `${this.opponentCharacter.loseCondition.message}`);
+      return true;
+    }
+
+    // Check if both decks are empty and both hands are empty (out of cards)
+    const playerOutOfCards = this.hand.length === 0 && (!this.playerDeck || this.playerDeck.length === 0);
+    const opponentOutOfCards = !this.opponentDeck || this.opponentDeck.length === 0;
+    if (playerOutOfCards && opponentOutOfCards) {
+      // Compare win stat progress
+      const playerProgress = this.playerStats[playerWinStat] || 0;
+      const opponentProgress = this.opponentStats[opponentWinStat] || 0;
+      console.log(`Out of cards - Player ${playerWinStat}: ${playerProgress}, Opponent ${opponentWinStat}: ${opponentProgress}`);
+      if (playerProgress >= opponentProgress) {
+        this.gameOver("player", `Out of cards - higher ${playerWinStat} (${playerProgress} vs ${opponentProgress})`);
+      } else {
+        this.gameOver("opponent", `Out of cards - higher ${opponentWinStat} (${opponentProgress} vs ${playerProgress})`);
+      }
       return true;
     }
 
@@ -1653,9 +1737,19 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   gameOver(winner, reason) {
+    // Normalize winner to "player" or "opponent" for GameOverScene
+    let normalizedWinner;
+    if (winner === "player" || winner === "opponent") {
+      normalizedWinner = winner;
+    } else if (winner === this.playerCharacter.displayName || winner === this.playerCharacter.name) {
+      normalizedWinner = "player";
+    } else {
+      normalizedWinner = "opponent";
+    }
+
     // Switch to GameOverScene and pass winner data
     this.scene.start("GameOverScene", {
-      winner: winner,
+      winner: normalizedWinner,
       playerCharacter: this.playerCharacter.name,
       opponentCharacter: this.opponentCharacter.name,
       reason: reason || "Game Over",
@@ -1751,33 +1845,50 @@ export default class BattleScene extends Phaser.Scene {
   async revealBothCardsMultiplayer(myCard, opponentCard) {
     console.log("Revealing cards:", myCard, opponentCard);
 
-    // Import CardResolver for proper sequential resolution
-    const CardResolver = (await import("../logic/CardResolver.js")).default;
+    this.isRevealingCards = true;
 
-    // Both face-down cards should already be shown at this point
-    // Flip animation - destroy face-down, show face-up
-    this.time.delayedCall(500, async () => {
-      // Destroy face-down cards
-      if (this.playerStagedCardBack) this.playerStagedCardBack.destroy();
-      if (this.opponentStagedCardBack) this.opponentStagedCardBack.destroy();
+    // CardResolver is already imported at the top of the file
 
-      // Show revealed cards
-      this.showRevealedCard(myCard, 375, 600, true);
-      this.showRevealedCard(opponentCard, 375, 310, false);
+    // Wait 500ms before flipping cards
+    await new Promise((resolve) => this.time.delayedCall(500, resolve));
 
-      // Use CardResolver for visual animations only (don't update stats)
-      await CardResolver.resolveCardsWithDelay(
-        myCard,
-        opponentCard,
-        this.playerStats,
-        this.opponentStats,
-        this,
-        true, // Skip stat updates - server will send real values
-      );
+    // If game ended during the wait, don't continue
+    if (this.pendingGameOver) {
+      this.isRevealingCards = false;
+      this.handleGameOverFromServer(this.pendingGameOver);
+      return;
+    }
 
-      // After animations complete, show Next Turn button
-      this.showNextTurnButton();
-    });
+    // Destroy face-down cards (both rectangles and text)
+    if (this.playerStagedCard) this.playerStagedCard.destroy();
+    if (this.playerStagedCardBack) this.playerStagedCardBack.destroy();
+    if (this.opponentStagedCard) this.opponentStagedCard.destroy();
+    if (this.opponentStagedCardBack) this.opponentStagedCardBack.destroy();
+
+    // Show revealed cards
+    this.showRevealedCard(myCard, 375, 600, true);
+    this.showRevealedCard(opponentCard, 375, 310, false);
+
+    // Use CardResolver for visual animations only (don't update stats)
+    await CardResolver.resolveCardsWithDelay(
+      myCard,
+      opponentCard,
+      this.playerStats,
+      this.opponentStats,
+      this,
+      true, // Skip stat updates - server will send real values
+    );
+
+    this.isRevealingCards = false;
+
+    // If game over arrived during animations, handle it now
+    if (this.pendingGameOver) {
+      this.handleGameOverFromServer(this.pendingGameOver);
+      return;
+    }
+
+    // After animations complete, show Next Turn button
+    this.showNextTurnButton();
   }
 
   showRevealedCard(cardData, x, y, isPlayer) {
@@ -1844,6 +1955,13 @@ export default class BattleScene extends Phaser.Scene {
   handleGameOverFromServer(data) {
     console.log("Game over:", data);
 
+    // If we're in the middle of revealing cards, defer the game over
+    if (this.isRevealingCards) {
+      console.log("Deferring game over until card reveal finishes");
+      this.pendingGameOver = data;
+      return;
+    }
+
     // Server already sends "you" or "opponent" - use it directly
     const winner = data.winner === "you" ? "player" : "opponent";
 
@@ -1854,6 +1972,9 @@ export default class BattleScene extends Phaser.Scene {
     NetworkManager.onOpponentCardPlayed = null;
     NetworkManager.onOpponentDisconnected = null;
 
+    // Clean up pending state
+    this.pendingGameOver = null;
+
     this.scene.start("GameOverScene", {
       winner: winner,
       playerCharacter: this.playerCharacter.name,
@@ -1862,7 +1983,22 @@ export default class BattleScene extends Phaser.Scene {
     });
   }
 
+  shutdown() {
+    // Clean up multiplayer callbacks when scene is destroyed/restarted
+    if (this.isMultiplayer) {
+      NetworkManager.onTurnComplete = null;
+      NetworkManager.onGameOver = null;
+      NetworkManager.onCardAccepted = null;
+      NetworkManager.onOpponentCardPlayed = null;
+      NetworkManager.onOpponentDisconnected = null;
+    }
+  }
+
   handleOpponentDisconnected() {
+    // Disable all input to prevent actions during transition
+    this.turnInProgress = true;
+    this.isPlayerTurn = false;
+
     // Show message
     const disconnectText = this.add
       .text(375, 450, "Opponent Disconnected!\nYou Win!", {
@@ -1988,192 +2124,5 @@ export default class BattleScene extends Phaser.Scene {
     }
   }
 
-  showEnlargedCardView(cardData) {
-    // Use passed cardData, or fall back to hovered/selected card (for singleplayer)
-    const card = cardData || 
-                 this.hoveredCard || 
-                 (this.selectedCard ? this.selectedCard.card : null);
-    
-    if (!card) {
-      console.warn("No card data available for enlarged view");
-      return;
-    }
-
-    // Dark overlay background (fullscreen)
-    const overlay = this.add
-      .rectangle(375, 667, 750, 1334, 0x000000, 0.95)
-      .setOrigin(0.5)
-      .setDepth(2000)
-      .setInteractive(); // Block clicks behind it
-
-    // Enlarged card container (fullscreen, centered)
-    const cardWidth = 700;
-    const cardHeight = 1000;
-    const cardX = 375;
-    const cardY = 600; // Centered vertically
-
-    // Card background
-    const cardBg = this.add
-      .rectangle(cardX, cardY, cardWidth, cardHeight, 0x2a2a2a)
-      .setOrigin(0.5)
-      .setDepth(2001);
-
-    // Card border
-    const cardBorder = this.add
-      .rectangle(cardX, cardY, cardWidth, cardHeight)
-      .setOrigin(0.5)
-      .setStrokeStyle(4, 0xd4af37)
-      .setDepth(2001);
-
-    // Card name
-    const nameText = this.add
-      .text(cardX, cardY - 220, card.name, {
-        fontFamily: "Georgia, serif",
-        fontSize: "32px",
-        color: "#ffffff",
-        align: "center",
-        wordWrap: { width: cardWidth - 40 },
-        fontStyle: "bold",
-      })
-      .setOrigin(0.5)
-      .setDepth(2002);
-
-    // Card description
-    const descText = this.add
-      .text(cardX, cardY - 100, card.description, {
-        fontFamily: "Arial, sans-serif",
-        fontSize: "22px",
-        color: "#cccccc",
-        align: "center",
-        wordWrap: { width: cardWidth - 60 },
-        lineSpacing: 8,
-      })
-      .setOrigin(0.5)
-      .setDepth(2002);
-
-    // Energy cost and speed display
-    const energyCostText = this.add
-      .text(cardX - 100, cardY - 20, `Energy: ⬢ ${card.energyCost || 0}`, {
-        fontFamily: "Arial, sans-serif",
-        fontSize: "24px",
-        color: "#ffffff",
-        align: "center",
-        fontStyle: "bold",
-      })
-      .setOrigin(0.5)
-      .setDepth(2002);
-
-    const speedText = this.add
-      .text(cardX + 100, cardY - 20, `Speed: S ${card.speed || 0}`, {
-        fontFamily: "Arial, sans-serif",
-        fontSize: "24px",
-        color: "#ffd700",
-        align: "center",
-        fontStyle: "bold",
-      })
-      .setOrigin(0.5)
-      .setDepth(2002);
-
-    // Format and display effects - show both self and opponent effects
-    const effectLines = [];
-    effectLines.push("━━━ You ━━━");
-    if (card.selfEffects.investigation !== 0) {
-      effectLines.push(
-        `${this.playerCharacter.statLabels.investigation}: ${card.selfEffects.investigation > 0 ? "+" : ""}${
-          card.selfEffects.investigation
-        }`,
-      );
-    }
-    if (card.selfEffects.morale !== 0) {
-      effectLines.push(
-        `${this.playerCharacter.statLabels.morale}: ${card.selfEffects.morale > 0 ? "+" : ""}${
-          card.selfEffects.morale
-        }`,
-      );
-    }
-    if (card.selfEffects.publicOpinion !== 0) {
-      effectLines.push(
-        `${this.playerCharacter.statLabels.publicOpinion}: ${card.selfEffects.publicOpinion > 0 ? "+" : ""}${
-          card.selfEffects.publicOpinion
-        }`,
-      );
-    }
-    if (card.selfEffects.pressure !== 0) {
-      effectLines.push(
-        `${this.playerCharacter.statLabels.pressure}: ${card.selfEffects.pressure > 0 ? "+" : ""}${
-          card.selfEffects.pressure
-        }`,
-      );
-    }
-
-    effectLines.push("━━━ Foe ━━━");
-    if (card.opponentEffects.investigation !== 0) {
-      effectLines.push(
-        `${this.opponentCharacter.statLabels.investigation}: ${card.opponentEffects.investigation > 0 ? "+" : ""}${
-          card.opponentEffects.investigation
-        }`,
-      );
-    }
-    if (card.opponentEffects.morale !== 0) {
-      effectLines.push(
-        `${this.opponentCharacter.statLabels.morale}: ${card.opponentEffects.morale > 0 ? "+" : ""}${
-          card.opponentEffects.morale
-        }`,
-      );
-    }
-    if (card.opponentEffects.publicOpinion !== 0) {
-      effectLines.push(
-        `${this.opponentCharacter.statLabels.publicOpinion}: ${card.opponentEffects.publicOpinion > 0 ? "+" : ""}${
-          card.opponentEffects.publicOpinion
-        }`,
-      );
-    }
-    if (card.opponentEffects.pressure !== 0) {
-      effectLines.push(
-        `${this.opponentCharacter.statLabels.pressure}: ${card.opponentEffects.pressure > 0 ? "+" : ""}${
-          card.opponentEffects.pressure
-        }`,
-      );
-    }
-
-    const effectsText = this.add
-      .text(cardX, cardY + 100, effectLines.join("\n"), {
-        fontFamily: "Arial, sans-serif",
-        fontSize: "22px",
-        color: "#ffd700",
-        align: "center",
-        fontStyle: "bold",
-        lineSpacing: 8,
-      })
-      .setOrigin(0.5)
-      .setDepth(2002);
-
-    // Close instruction
-    const closeText = this.add
-      .text(cardX, cardY + 380, "Click anywhere to close", {
-        fontFamily: "Arial, sans-serif",
-        fontSize: "20px",
-        color: "#888888",
-      })
-      .setOrigin(0.5)
-      .setDepth(2002);
-
-    // Store all elements for cleanup
-    const allElements = [
-      overlay,
-      cardBg,
-      cardBorder,
-      nameText,
-      descText,
-      energyCostText,
-      speedText,
-      effectsText,
-      closeText,
-    ];
-
-    // Click to close
-    overlay.on("pointerdown", () => {
-      allElements.forEach((element) => element.destroy());
-    });
-  }
 }
+
