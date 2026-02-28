@@ -4,6 +4,7 @@ import MenuScene from "./scenes/MenuScene.js";
 import MultiplayerLobbyScene from "./scenes/MultiplayerLobbyScene.js";
 import BattleScene from "./scenes/BattleScene.js";
 import GameOverScene from "./scenes/GameOverScene.js";
+import InstructionsScene from "./scenes/InstructionsScene.js";
 
 const config = {
   //type is the rendering context
@@ -32,6 +33,7 @@ const config = {
     MultiplayerLobbyScene,
     BattleScene,
     GameOverScene,
+    InstructionsScene,
   ],
 };
 

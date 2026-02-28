@@ -94,6 +94,27 @@ export default class MenuScene extends Phaser.Scene {
       vigilanteButton.setBackgroundColor("transparent");
     });
     vigilanteButton.on("pointerdown", () => this.startGame("Vigilante"));
+
+    // How to Play button
+    const howToPlayButton = this.add
+      .text(centerX, 1050, "❓ HOW TO PLAY", {
+        fontFamily: "DeathNote",
+        fontSize: "36px",
+        color: "#aaaaaa",
+        padding: { x: 40, y: 15 },
+      })
+      .setOrigin(0.5)
+      .setInteractive({ useHandCursor: true });
+
+    howToPlayButton.on("pointerover", () => {
+      howToPlayButton.setColor("#ffffff");
+    });
+    howToPlayButton.on("pointerout", () => {
+      howToPlayButton.setColor("#aaaaaa");
+    });
+    howToPlayButton.on("pointerdown", () => {
+      this.scene.start("InstructionsScene");
+    });
   }
 
   startGame(character) {
