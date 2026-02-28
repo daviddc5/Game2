@@ -3,12 +3,11 @@ export default class MenuScene extends Phaser.Scene {
   constructor() {
     super({ key: "MenuScene" });
   }
-  create() {
-    // Get center of screen (works for any resolution)
-    const centerX = this.cameras.main.width / 2;
-    const centerY = this.cameras.main.height / 2;
 
-    // Title text (mobile-sized, wrapped for narrow screens with Death Note font)
+  create() {
+    const centerX = this.cameras.main.width / 2;
+
+    // Title
     this.add
       .text(centerX, 200, "SHADOWS OF\nJUDGMENT", {
         fontFamily: "DeathNote",
@@ -20,7 +19,7 @@ export default class MenuScene extends Phaser.Scene {
 
     // Multiplayer button
     const multiplayerButton = this.add
-      .text(centerX, 360, "🌐 MULTIPLAYER", {
+      .text(centerX, 450, "🌐 MULTIPLAYER", {
         fontFamily: "DeathNote",
         fontSize: "48px",
         color: "#ffffff",
@@ -28,76 +27,23 @@ export default class MenuScene extends Phaser.Scene {
         backgroundColor: "#0066cc",
       })
       .setOrigin(0.5)
-      .setInteractive();
+      .setInteractive({ useHandCursor: true });
 
-    //Choose Character text
-    this.add
-      .text(centerX, 520, "Single Player", {
-        fontFamily: "DeathNote",
-        fontSize: "40px",
-        color: "#cccccc",
-      })
-      .setOrigin(0.5);
-
-    // Detective button (stacked vertically for mobile)
-    const detectiveButton = this.add
-      .text(centerX, 680, "Independent Detective", {
+    // Single Player button
+    const singlePlayerButton = this.add
+      .text(centerX, 580, "🎮 SINGLE PLAYER", {
         fontFamily: "DeathNote",
         fontSize: "48px",
         color: "#ffffff",
-        padding: { x: 60, y: 30 },
-        fixedWidth: 600,
-        align: "center",
+        padding: { x: 60, y: 20 },
+        backgroundColor: "#006600",
       })
       .setOrigin(0.5)
-      .setInteractive();
-
-    // Vigilante button (below Detective button for vertical layout)
-    const vigilanteButton = this.add
-      .text(centerX, 880, "Vigilante", {
-        fontFamily: "DeathNote",
-        fontSize: "56px",
-        color: "#ffffff",
-        padding: { x: 60, y: 30 },
-        fixedWidth: 500,
-        align: "center",
-      })
-      .setOrigin(0.5)
-      .setInteractive();
-
-    // Button hover effects
-    multiplayerButton.on("pointerover", () => {
-      multiplayerButton.setBackgroundColor("#0088ff");
-    });
-    multiplayerButton.on("pointerout", () => {
-      multiplayerButton.setBackgroundColor("#0066cc");
-    });
-    multiplayerButton.on("pointerdown", () => {
-      this.scene.start("MultiplayerLobbyScene");
-    });
-
-    // Button hover effects - blue for Detective, red for Vigilante
-    detectiveButton.on("pointerover", () => {
-      detectiveButton.setBackgroundColor("#00aaff");
-    });
-    detectiveButton.on("pointerout", () => {
-      detectiveButton.setBackgroundColor("transparent");
-    });
-    detectiveButton.on("pointerdown", () =>
-      this.startGame("Independent Detective"),
-    );
-
-    vigilanteButton.on("pointerover", () => {
-      vigilanteButton.setBackgroundColor("#ff0000");
-    });
-    vigilanteButton.on("pointerout", () => {
-      vigilanteButton.setBackgroundColor("transparent");
-    });
-    vigilanteButton.on("pointerdown", () => this.startGame("Vigilante"));
+      .setInteractive({ useHandCursor: true });
 
     // How to Play button
     const howToPlayButton = this.add
-      .text(centerX, 1050, "❓ HOW TO PLAY", {
+      .text(centerX, 750, "❓ HOW TO PLAY", {
         fontFamily: "DeathNote",
         fontSize: "36px",
         color: "#aaaaaa",
@@ -106,20 +52,37 @@ export default class MenuScene extends Phaser.Scene {
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
 
-    howToPlayButton.on("pointerover", () => {
-      howToPlayButton.setColor("#ffffff");
+    // Multiplayer hover
+    multiplayerButton.on("pointerover", () =>
+      multiplayerButton.setBackgroundColor("#0088ff")
+    );
+    multiplayerButton.on("pointerout", () =>
+      multiplayerButton.setBackgroundColor("#0066cc")
+    );
+    multiplayerButton.on("pointerdown", () => {
+      this.scene.start("MultiplayerLobbyScene");
     });
-    howToPlayButton.on("pointerout", () => {
-      howToPlayButton.setColor("#aaaaaa");
+
+    // Single Player hover
+    singlePlayerButton.on("pointerover", () =>
+      singlePlayerButton.setBackgroundColor("#009900")
+    );
+    singlePlayerButton.on("pointerout", () =>
+      singlePlayerButton.setBackgroundColor("#006600")
+    );
+    singlePlayerButton.on("pointerdown", () => {
+      this.scene.start("SinglePlayerLobbyScene");
     });
+
+    // How to Play hover
+    howToPlayButton.on("pointerover", () =>
+      howToPlayButton.setColor("#ffffff")
+    );
+    howToPlayButton.on("pointerout", () =>
+      howToPlayButton.setColor("#aaaaaa")
+    );
     howToPlayButton.on("pointerdown", () => {
       this.scene.start("InstructionsScene");
     });
-  }
-
-  startGame(character) {
-    //Store Character choice and start battle
-    this.registry.set("playerCharacter", character);
-    this.scene.start("BattleScene");
   }
 }
