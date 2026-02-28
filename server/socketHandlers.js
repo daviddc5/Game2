@@ -266,6 +266,7 @@ export function setupSocketHandlers(io, matchmakingQueue, gameRooms) {
           io.to(room.player1.socketId).emit("gameOver", {
             winner: winResult.winner === "player1" ? "you" : "opponent",
             reason: winResult.reason,
+            scoring: winResult.scoring || null,
             finalStats: {
               yourStats: room.player1.stats,
               opponentStats: room.player2.stats,
@@ -275,6 +276,7 @@ export function setupSocketHandlers(io, matchmakingQueue, gameRooms) {
           io.to(room.player2.socketId).emit("gameOver", {
             winner: winResult.winner === "player2" ? "you" : "opponent",
             reason: winResult.reason,
+            scoring: winResult.scoring || null,
             finalStats: {
               yourStats: room.player2.stats,
               opponentStats: room.player1.stats,
@@ -326,6 +328,7 @@ export function setupSocketHandlers(io, matchmakingQueue, gameRooms) {
           io.to(room.player1.socketId).emit("gameOver", {
             winner: outOfCardsResult.winner === "player1" ? "you" : "opponent",
             reason: outOfCardsResult.reason,
+            scoring: outOfCardsResult.scoring || null,
             finalStats: {
               yourStats: room.player1.stats,
               opponentStats: room.player2.stats,
@@ -335,6 +338,7 @@ export function setupSocketHandlers(io, matchmakingQueue, gameRooms) {
           io.to(room.player2.socketId).emit("gameOver", {
             winner: outOfCardsResult.winner === "player2" ? "you" : "opponent",
             reason: outOfCardsResult.reason,
+            scoring: outOfCardsResult.scoring || null,
             finalStats: {
               yourStats: room.player2.stats,
               opponentStats: room.player1.stats,
@@ -615,17 +619,30 @@ function checkWinCondition(room) {
     const p2Colors = getStatColors(room.player2.character);
     let p1Score = 0;
     let p2Score = 0;
+    const p1Breakdown = { green: [], red: [] };
+    const p2Breakdown = { green: [], red: [] };
+
+    const statLabels = {
+      "Independent Detective": { investigation: "Investigation", morale: "Team Morale", publicOpinion: "Public Pressure", pressure: "Suspicion Level" },
+      "Vigilante": { investigation: "Evidence Against", morale: "Confidence", publicOpinion: "Public Support", pressure: "Investigation Heat" },
+    };
 
     for (const stat of ['investigation', 'morale', 'publicOpinion', 'pressure']) {
+      const p1Label = (statLabels[room.player1.character] || {})[stat] || stat;
+      const p2Label = (statLabels[room.player2.character] || {})[stat] || stat;
       if (p1Colors[stat]) {
         p1Score += room.player1.stats[stat];
+        p1Breakdown.green.push({ label: p1Label, value: room.player1.stats[stat] });
       } else {
         p1Score -= room.player1.stats[stat];
+        p1Breakdown.red.push({ label: p1Label, value: room.player1.stats[stat] });
       }
       if (p2Colors[stat]) {
         p2Score += room.player2.stats[stat];
+        p2Breakdown.green.push({ label: p2Label, value: room.player2.stats[stat] });
       } else {
         p2Score -= room.player2.stats[stat];
+        p2Breakdown.red.push({ label: p2Label, value: room.player2.stats[stat] });
       }
     }
 
@@ -635,22 +652,34 @@ function checkWinCondition(room) {
     console.log(`   Player2 (${room.player2.character}): score ${p2Score}`);
     console.log(`     Stats:`, room.player2.stats);
 
+    const scoringData = {
+      type: "outOfCards",
+      p1: { character: room.player1.character, score: p1Score, stats: { ...room.player1.stats }, breakdown: p1Breakdown },
+      p2: { character: room.player2.character, score: p2Score, stats: { ...room.player2.stats }, breakdown: p2Breakdown },
+    };
+
     if (p1Score > p2Score) {
       return {
         winner: "player1",
-        reason: `Out of cards! Stronger position (${p1Score} vs ${p2Score})`,
+        reason: `All cards played! Final score: ${room.player1.character} ${p1Score} vs ${room.player2.character} ${p2Score}`,
+        scoring: scoringData,
       };
     } else if (p2Score > p1Score) {
       return {
         winner: "player2",
-        reason: `Out of cards! Stronger position (${p2Score} vs ${p1Score})`,
+        reason: `All cards played! Final score: ${room.player2.character} ${p2Score} vs ${room.player1.character} ${p1Score}`,
+        scoring: scoringData,
       };
     } else {
       // Tie - compare win stat progress
       const p1WinProgress = room.player1.stats[p1Stats.winStat];
       const p2WinProgress = room.player2.stats[p2Stats.winStat];
       const winner = p1WinProgress >= p2WinProgress ? "player1" : "player2";
-      return { winner, reason: `Out of cards! Tied score - win stat tiebreaker` };
+      return {
+        winner,
+        reason: `All cards played! Scores tied at ${p1Score} — tiebreaker: ${winner === "player1" ? room.player1.character : room.player2.character} had higher ${winner === "player1" ? p1Stats.winStat : p2Stats.winStat}`,
+        scoring: scoringData,
+      };
     }
   }
 

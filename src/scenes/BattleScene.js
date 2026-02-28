@@ -1966,19 +1966,16 @@ export default class BattleScene extends Phaser.Scene {
     if (playerOutOfCards && opponentOutOfCards) {
       // Calculate score: green stats minus red stats for each player
       const playerGreenStats = this.playerCharacter.statColors;
+      const opponentGreenStats = this.opponentCharacter.statColors;
       let playerScore = 0;
       let opponentScore = 0;
 
       for (const stat of ['investigation', 'morale', 'publicOpinion', 'pressure']) {
-        // Player score: green stats help, red stats hurt
         if (playerGreenStats[stat].isGreen) {
           playerScore += this.playerStats[stat];
         } else {
           playerScore -= this.playerStats[stat];
         }
-
-        // Opponent score: use opponent's color definitions
-        const opponentGreenStats = this.opponentCharacter.statColors;
         if (opponentGreenStats[stat].isGreen) {
           opponentScore += this.opponentStats[stat];
         } else {
@@ -1988,18 +1985,21 @@ export default class BattleScene extends Phaser.Scene {
 
       console.log(`Out of cards! Player score: ${playerScore}, Opponent score: ${opponentScore}`);
 
+      const playerName = this.playerCharacter.displayName;
+      const opponentName = this.opponentCharacter.displayName;
+
       if (playerScore > opponentScore) {
-        this.gameOver("player", `Out of cards! You had a stronger position (${playerScore} vs ${opponentScore})`);
+        this.gameOver("player", `All cards played!\n${playerName} score: ${playerScore}\n${opponentName} score: ${opponentScore}`);
       } else if (opponentScore > playerScore) {
-        this.gameOver("opponent", `Out of cards! Opponent had a stronger position (${opponentScore} vs ${playerScore})`);
+        this.gameOver("opponent", `All cards played!\n${opponentName} score: ${opponentScore}\n${playerName} score: ${playerScore}`);
       } else {
         // True tie - player with higher win stat wins
         const playerWinProgress = this.playerStats[playerWinStat];
         const opponentWinProgress = this.opponentStats[opponentWinStat];
         if (playerWinProgress >= opponentWinProgress) {
-          this.gameOver("player", `Out of cards! Tied score - but your ${playerWinStat} was higher`);
+          this.gameOver("player", `All cards played! Tied at ${playerScore} — tiebreaker: your ${playerWinStat} was higher`);
         } else {
-          this.gameOver("opponent", `Out of cards! Tied score - opponent's ${opponentWinStat} was higher`);
+          this.gameOver("opponent", `All cards played! Tied at ${playerScore} — tiebreaker: opponent's ${opponentWinStat} was higher`);
         }
       }
       return true;
@@ -2025,6 +2025,10 @@ export default class BattleScene extends Phaser.Scene {
       playerCharacter: this.playerCharacter.name,
       opponentCharacter: this.opponentCharacter.name,
       reason: reason || "Game Over",
+      finalStats: {
+        yourStats: { ...this.playerStats },
+        opponentStats: { ...this.opponentStats },
+      },
     });
   }
 
@@ -2252,6 +2256,8 @@ export default class BattleScene extends Phaser.Scene {
       playerCharacter: this.playerCharacter.name,
       opponentCharacter: this.opponentCharacter.name,
       reason: data.reason,
+      scoring: data.scoring || null,
+      finalStats: data.finalStats || null,
     });
   }
 
