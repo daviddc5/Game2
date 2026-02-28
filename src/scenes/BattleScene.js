@@ -1960,18 +1960,47 @@ export default class BattleScene extends Phaser.Scene {
       return true;
     }
 
-    // Check if both decks are empty and both hands are empty (out of cards)
+    // Check if both players are out of cards
     const playerOutOfCards = this.hand.length === 0 && (!this.playerDeck || this.playerDeck.length === 0);
     const opponentOutOfCards = !this.opponentDeck || this.opponentDeck.length === 0;
     if (playerOutOfCards && opponentOutOfCards) {
-      // Compare win stat progress
-      const playerProgress = this.playerStats[playerWinStat] || 0;
-      const opponentProgress = this.opponentStats[opponentWinStat] || 0;
-      console.log(`Out of cards - Player ${playerWinStat}: ${playerProgress}, Opponent ${opponentWinStat}: ${opponentProgress}`);
-      if (playerProgress >= opponentProgress) {
-        this.gameOver("player", `Out of cards - higher ${playerWinStat} (${playerProgress} vs ${opponentProgress})`);
+      // Calculate score: green stats minus red stats for each player
+      const playerGreenStats = this.playerCharacter.statColors;
+      let playerScore = 0;
+      let opponentScore = 0;
+
+      for (const stat of ['investigation', 'morale', 'publicOpinion', 'pressure']) {
+        // Player score: green stats help, red stats hurt
+        if (playerGreenStats[stat].isGreen) {
+          playerScore += this.playerStats[stat];
+        } else {
+          playerScore -= this.playerStats[stat];
+        }
+
+        // Opponent score: use opponent's color definitions
+        const opponentGreenStats = this.opponentCharacter.statColors;
+        if (opponentGreenStats[stat].isGreen) {
+          opponentScore += this.opponentStats[stat];
+        } else {
+          opponentScore -= this.opponentStats[stat];
+        }
+      }
+
+      console.log(`Out of cards! Player score: ${playerScore}, Opponent score: ${opponentScore}`);
+
+      if (playerScore > opponentScore) {
+        this.gameOver("player", `Out of cards! You had a stronger position (${playerScore} vs ${opponentScore})`);
+      } else if (opponentScore > playerScore) {
+        this.gameOver("opponent", `Out of cards! Opponent had a stronger position (${opponentScore} vs ${playerScore})`);
       } else {
-        this.gameOver("opponent", `Out of cards - higher ${opponentWinStat} (${opponentProgress} vs ${playerProgress})`);
+        // True tie - player with higher win stat wins
+        const playerWinProgress = this.playerStats[playerWinStat];
+        const opponentWinProgress = this.opponentStats[opponentWinStat];
+        if (playerWinProgress >= opponentWinProgress) {
+          this.gameOver("player", `Out of cards! Tied score - but your ${playerWinStat} was higher`);
+        } else {
+          this.gameOver("opponent", `Out of cards! Tied score - opponent's ${opponentWinStat} was higher`);
+        }
       }
       return true;
     }

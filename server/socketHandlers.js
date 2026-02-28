@@ -195,23 +195,6 @@ export function setupSocketHandlers(io, matchmakingQueue, gameRooms) {
         console.log(`   Player2: ${room.gameState.player2CardObject.name}`);
         console.log(`   Turn completed: ${room.gameState.turn}`);
 
-        // Check if this will be the last turn BEFORE removing cards
-        const p1WillBeOut =
-          (room.player1.hand.length === 1 ||
-            room.gameState.player1Card === "PASS") &&
-          room.player1.deck.length === 0;
-        const p2WillBeOut =
-          (room.player2.hand.length === 1 ||
-            room.gameState.player2Card === "PASS") &&
-          room.player2.deck.length === 0;
-        const isLastTurn = p1WillBeOut && p2WillBeOut;
-
-        if (isLastTurn) {
-          console.log(
-            `⚠️ This is the LAST TURN - both players will be out of cards after this`,
-          );
-        }
-
         // Remove cards from hands (don't remove PASS cards)
         if (room.gameState.player1Card !== "PASS") {
           room.player1.hand = room.player1.hand.filter(
@@ -336,51 +319,31 @@ export function setupSocketHandlers(io, matchmakingQueue, gameRooms) {
           room.player2.hand.map((c) => c.id),
         );
 
-        // Check card count status AFTER drawing
-        let p1OutOfCards =
-          room.player1.hand.length === 0 && room.player1.deck.length === 0;
-        let p2OutOfCards =
-          room.player2.hand.length === 0 && room.player2.deck.length === 0;
+        // Check if both players are out of cards after drawing
+        const outOfCardsResult = checkWinCondition(room);
 
-        // Only end game if this was the last turn (both players played their final cards)
-        if (isLastTurn && p1OutOfCards && p2OutOfCards) {
-          console.log(
-            `\n⚠️ Both players out of cards! Triggering end-game scoring...`,
-          );
-          const winResult = checkWinCondition(room);
+        if (outOfCardsResult) {
+          io.to(room.player1.socketId).emit("gameOver", {
+            winner: outOfCardsResult.winner === "player1" ? "you" : "opponent",
+            reason: outOfCardsResult.reason,
+            finalStats: {
+              yourStats: room.player1.stats,
+              opponentStats: room.player2.stats,
+            },
+          });
 
-          if (winResult) {
-            io.to(room.player1.socketId).emit("gameOver", {
-              winner: winResult.winner === "player1" ? "you" : "opponent",
-              reason: winResult.reason,
-              finalStats: {
-                yourStats: room.player1.stats,
-                opponentStats: room.player2.stats,
-              },
-            });
+          io.to(room.player2.socketId).emit("gameOver", {
+            winner: outOfCardsResult.winner === "player2" ? "you" : "opponent",
+            reason: outOfCardsResult.reason,
+            finalStats: {
+              yourStats: room.player2.stats,
+              opponentStats: room.player1.stats,
+            },
+          });
 
-            io.to(room.player2.socketId).emit("gameOver", {
-              winner: winResult.winner === "player2" ? "you" : "opponent",
-              reason: winResult.reason,
-              finalStats: {
-                yourStats: room.player2.stats,
-                opponentStats: room.player1.stats,
-              },
-            });
-
-            gameRooms.delete(roomId);
-            console.log(`   Room ${roomId} deleted`);
-            return;
-          }
-        } else if (p1OutOfCards || p2OutOfCards) {
-          // One player out of cards - log it but continue
-          console.log(`\n⚠️ One player out of cards:`);
-          console.log(
-            `   Player1: hand=${room.player1.hand.length}, deck=${room.player1.deck.length}`,
-          );
-          console.log(
-            `   Player2: hand=${room.player2.hand.length}, deck=${room.player2.deck.length}`,
-          );
+          gameRooms.delete(roomId);
+          console.log(`   Room ${roomId} deleted`);
+          return;
         }
 
         // Increment energy
@@ -440,7 +403,9 @@ export function setupSocketHandlers(io, matchmakingQueue, gameRooms) {
         room.gameState.player2CardObject = null;
         room.gameState.bothCardsPlayed = false;
 
-        // Auto-pass for players who are out of cards (reuse variables from above)
+        // Auto-pass for players who are out of cards for next turn
+        const p1OutOfCards = room.player1.hand.length === 0 && room.player1.deck.length === 0;
+        const p2OutOfCards = room.player2.hand.length === 0 && room.player2.deck.length === 0;
         if (p1OutOfCards && !p2OutOfCards) {
           console.log(
             `🚫 Player1 out of cards for next turn - setting auto-pass`,
@@ -585,6 +550,26 @@ function getStatTypes(character) {
   }
 }
 
+// Helper: Returns true/false for each stat (true = green/good, false = red/bad)
+function getStatColors(character) {
+  if (character === "Independent Detective") {
+    return {
+      investigation: true,   // green
+      morale: true,           // green
+      publicOpinion: false,   // red
+      pressure: false,        // red
+    };
+  } else {
+    // Vigilante
+    return {
+      investigation: false,   // red
+      morale: true,           // green
+      publicOpinion: true,    // green
+      pressure: false,        // red
+    };
+  }
+}
+
 // Helper: Check win conditions
 function checkWinCondition(room) {
   const p1Stats = getStatTypes(room.player1.character);
@@ -618,42 +603,54 @@ function checkWinCondition(room) {
     };
   }
 
-  // If BOTH players out of cards without reaching 100 - compare win stat progress
+  // If BOTH players out of cards - score based on all stats
   if (
     room.player1.hand.length === 0 &&
     room.player1.deck.length === 0 &&
     room.player2.hand.length === 0 &&
     room.player2.deck.length === 0
   ) {
-    const p1Progress = room.player1.stats[p1Stats.winStat];
-    const p2Progress = room.player2.stats[p2Stats.winStat];
+    // Calculate score: green stats minus red stats
+    const p1Colors = getStatColors(room.player1.character);
+    const p2Colors = getStatColors(room.player2.character);
+    let p1Score = 0;
+    let p2Score = 0;
 
-    console.log(`📊 OUT OF CARDS - COMPARING WIN STAT PROGRESS:`);
-    console.log(
-      `   Player1 (${room.player1.character}) ${p1Stats.winStat}: ${p1Progress}/100`,
-    );
-    console.log(
-      `   Player2 (${room.player2.character}) ${p2Stats.winStat}: ${p2Progress}/100`,
-    );
+    for (const stat of ['investigation', 'morale', 'publicOpinion', 'pressure']) {
+      if (p1Colors[stat]) {
+        p1Score += room.player1.stats[stat];
+      } else {
+        p1Score -= room.player1.stats[stat];
+      }
+      if (p2Colors[stat]) {
+        p2Score += room.player2.stats[stat];
+      } else {
+        p2Score -= room.player2.stats[stat];
+      }
+    }
 
-    if (p1Progress > p2Progress) {
+    console.log(`\n📊 OUT OF CARDS - FINAL SCORING:`);
+    console.log(`   Player1 (${room.player1.character}): score ${p1Score}`);
+    console.log(`     Stats:`, room.player1.stats);
+    console.log(`   Player2 (${room.player2.character}): score ${p2Score}`);
+    console.log(`     Stats:`, room.player2.stats);
+
+    if (p1Score > p2Score) {
       return {
         winner: "player1",
-        reason: `Out of cards - Higher ${p1Stats.winStat} (${p1Progress} vs ${p2Progress})`,
+        reason: `Out of cards! Stronger position (${p1Score} vs ${p2Score})`,
       };
-    } else if (p2Progress > p1Progress) {
+    } else if (p2Score > p1Score) {
       return {
         winner: "player2",
-        reason: `Out of cards - Higher ${p2Stats.winStat} (${p2Progress} vs ${p1Progress})`,
+        reason: `Out of cards! Stronger position (${p2Score} vs ${p1Score})`,
       };
     } else {
-      // Tie - use investigation as tiebreaker
-      console.log(`   🔀 TIE! Using investigation as tiebreaker`);
-      const winner =
-        room.player1.stats.investigation >= room.player2.stats.investigation
-          ? "player1"
-          : "player2";
-      return { winner, reason: `Out of cards - Tie broken by investigation` };
+      // Tie - compare win stat progress
+      const p1WinProgress = room.player1.stats[p1Stats.winStat];
+      const p2WinProgress = room.player2.stats[p2Stats.winStat];
+      const winner = p1WinProgress >= p2WinProgress ? "player1" : "player2";
+      return { winner, reason: `Out of cards! Tied score - win stat tiebreaker` };
     }
   }
 

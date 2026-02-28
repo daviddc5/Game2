@@ -185,12 +185,14 @@ export default class MultiplayerLobbyScene extends Phaser.Scene {
     };
 
     NetworkManager.onConnectionError = (error) => {
+      if (!this.scene || !this.scene.isActive() || !this.statusText) return;
       this.statusText.setText("Connection failed! Check if server is running.");
       this.statusText.setColor("#ff0000");
     };
 
     // Wait a bit then check connection
     this.time.delayedCall(1000, () => {
+      if (!this.scene || !this.scene.isActive() || !this.statusText) return;
       if (NetworkManager.connected) {
         this.statusText.setText("✅ Connected to server");
         this.statusText.setColor("#00ff00");
