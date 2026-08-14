@@ -12,10 +12,8 @@ npm-debug.log
 dist/
 
 # Design & documentation files
-DESIGN_NOTES/
-LEARNING_GUIDE.md
-GDD.md
 *.md
+docs/
 !README.md
 
 # IDE and editor files

@@ -1,5 +1,5 @@
 # NOTE: This project uses Cloud Run instead of App Engine.
-# See Dockerfile and DEPLOYMENT.md for deployment instructions.
+# See Dockerfile and docs/DEPLOYMENT.md for deployment instructions.
 # This file is kept only as a reference / fallback.
 
 runtime: nodejs20
