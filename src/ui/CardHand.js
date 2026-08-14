@@ -93,6 +93,8 @@ export default class CardHand {
     // Store type color on border object for later reference
     cardBorder.setData("typeColor", typeBorderColor);
 
+    const summary = this.getPrimaryEffectSummary(cardData);
+
     // Inner border for depth
     const innerBorder = this.scene.add
       .rectangle(0, 0, this.CARD_WIDTH - 10, this.CARD_HEIGHT - 10)
@@ -112,15 +114,40 @@ export default class CardHand {
       })
       .setOrigin(0.5);
 
-    // Card description (dimmed if unaffordable)
-    const descColor = isAffordable ? "#cccccc" : "#555555";
-    const descText = this.scene.add
-      .text(0, -40, cardData.description, {
+    // Card type chip for quick recognition
+    const typeChipBg = this.scene.add
+      .rectangle(0, -66, 92, 24, isAffordable ? typeBorderColor : 0x555555)
+      .setOrigin(0.5);
+
+    const typeChipText = this.scene.add
+      .text(0, -66, cardData.cardType || "NORMAL", {
         fontFamily: "Arial, sans-serif",
-        fontSize: "13px",
-        color: descColor,
+        fontSize: "11px",
+        color: "#111111",
+        align: "center",
+        fontStyle: "bold",
+      })
+      .setOrigin(0.5);
+
+    // Primary summary line (dimmed if unaffordable)
+    const summaryColor = isAffordable ? summary.color : "#666666";
+    const summaryText = this.scene.add
+      .text(0, -28, summary.text, {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "14px",
+        color: summaryColor,
         align: "center",
         wordWrap: { width: 160 },
+        fontStyle: "bold",
+      })
+      .setOrigin(0.5);
+
+    const detailsHint = this.scene.add
+      .text(0, 16, "Tap for details", {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "11px",
+        color: isAffordable ? "#888888" : "#555555",
+        align: "center",
       })
       .setOrigin(0.5);
 
@@ -155,7 +182,10 @@ export default class CardHand {
       cardBorder,
       innerBorder,
       nameText,
-      descText,
+      typeChipBg,
+      typeChipText,
+      summaryText,
+      detailsHint,
       costText,
       speedText,
     ]);
@@ -251,6 +281,61 @@ export default class CardHand {
 
     // Store card container for cleanup
     this.cardObjects.push(cardContainer);
+  }
+
+  getPrimaryEffectSummary(cardData) {
+    if (cardData.cancels) {
+      return {
+        text: "COUNTERS opponent card",
+        color: "#ffb347",
+      };
+    }
+
+    const effects = [];
+    const playerLabels = this.scene.playerCharacter?.statLabels || {};
+    const opponentLabels = this.scene.opponentCharacter?.statLabels || {};
+    const playerColors = this.scene.playerCharacter?.statColors || {};
+    const opponentColors = this.scene.opponentCharacter?.statColors || {};
+
+    Object.entries(cardData.selfEffects || {}).forEach(([stat, value]) => {
+      if (!value) return;
+      effects.push({
+        target: "YOU",
+        stat,
+        value,
+        label: playerLabels[stat] || stat,
+        isGreen: playerColors[stat]?.isGreen,
+      });
+    });
+
+    Object.entries(cardData.opponentEffects || {}).forEach(([stat, value]) => {
+      if (!value) return;
+      effects.push({
+        target: "FOE",
+        stat,
+        value,
+        label: opponentLabels[stat] || stat,
+        isGreen: opponentColors[stat]?.isGreen,
+      });
+    });
+
+    if (effects.length === 0) {
+      return { text: "No direct stat change", color: "#bbbbbb" };
+    }
+
+    effects.sort((a, b) => Math.abs(b.value) - Math.abs(a.value));
+    const top = effects[0];
+    const signed = top.value > 0 ? `+${top.value}` : `${top.value}`;
+
+    const isGoodForYou =
+      top.target === "YOU"
+        ? (top.isGreen && top.value > 0) || (!top.isGreen && top.value < 0)
+        : (top.isGreen && top.value < 0) || (!top.isGreen && top.value > 0);
+
+    return {
+      text: `${top.target} ${signed} ${top.label}`,
+      color: isGoodForYou ? "#6cff8e" : "#ff7070",
+    };
   }
 
   unlockCard(cardIndex) {

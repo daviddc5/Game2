@@ -19,6 +19,7 @@ export default class BattleScene extends Phaser.Scene {
     this.isMultiplayer = this.registry.get("isMultiplayer") || false;
     this.multiplayerData = this.registry.get("multiplayerData") || null;
     this.debugMode = this.registry.get("debugMode") || false;
+    this.simpleMode = !this.isMultiplayer;
 
     // Initialize game state
     this.initializeGameState();
@@ -27,6 +28,9 @@ export default class BattleScene extends Phaser.Scene {
     this.createPortraits();
     this.createStatBars();
     this.createEnergyDisplays();
+    this.createSimpleVisualHud();
+    this.createUiModeToggle();
+    this.setSimpleMode(this.simpleMode);
     this.createCardHand();
     this.createStagingArea();
     this.selectedCard = null; // track which card is selected
@@ -327,6 +331,392 @@ export default class BattleScene extends Phaser.Scene {
       ...this.playerStatGroup.getAllTexts(),
       ...this.opponentStatGroup.getAllTexts(),
     };
+  }
+
+  createSimpleVisualHud() {
+    const barWidth = 240;
+    const barHeight = 18;
+
+    this.simpleHud = {
+      objects: [],
+      player: {
+        progressFill: null,
+        dangerFill: null,
+        progressValue: null,
+        dangerValue: null,
+      },
+      opponent: {
+        progressFill: null,
+        dangerFill: null,
+        progressValue: null,
+        dangerValue: null,
+      },
+      state: {
+        playerProgress: null,
+        playerDanger: null,
+        opponentProgress: null,
+        opponentDanger: null,
+      },
+      barWidth,
+      barHeight,
+    };
+
+    const addRow = (x, y, label, color, side, key) => {
+      const labelText = this.add
+        .text(x, y, label, {
+          fontFamily: "Arial, sans-serif",
+          fontSize: "16px",
+          color,
+          fontStyle: "bold",
+        })
+        .setOrigin(0, 0.5)
+        .setDepth(165)
+        .setVisible(false);
+
+      const border = this.add
+        .rectangle(x + 110, y, barWidth + 4, barHeight + 4, 0x555555)
+        .setOrigin(0, 0.5)
+        .setDepth(165)
+        .setVisible(false);
+
+      const background = this.add
+        .rectangle(x + 112, y, barWidth, barHeight, 0x191919)
+        .setOrigin(0, 0.5)
+        .setDepth(165)
+        .setVisible(false);
+
+      const fill = this.add
+        .rectangle(x + 112, y, 0, barHeight, Phaser.Display.Color.HexStringToColor(color).color)
+        .setOrigin(0, 0.5)
+        .setDepth(166)
+        .setVisible(false);
+
+      const value = this.add
+        .text(x + 112 + barWidth - 8, y, "0", {
+          fontFamily: "Arial, sans-serif",
+          fontSize: "16px",
+          color: "#ffffff",
+          fontStyle: "bold",
+        })
+        .setOrigin(1, 0.5)
+        .setDepth(167)
+        .setVisible(false);
+
+      this.simpleHud.objects.push(labelText, border, background, fill, value);
+      this.simpleHud[side][`${key}Fill`] = fill;
+      this.simpleHud[side][`${key}Value`] = value;
+    };
+
+    const enemyTitle = this.add
+      .text(70, 145, "OPPONENT", {
+        fontFamily: "DeathNote",
+        fontSize: "24px",
+        color: "#ff6666",
+      })
+      .setOrigin(0, 0.5)
+      .setDepth(165)
+      .setVisible(false);
+    this.simpleHud.objects.push(enemyTitle);
+
+    addRow(70, 175, "PROGRESS", "#35D57F", "opponent", "progress");
+    addRow(70, 210, "DANGER", "#FF4034", "opponent", "danger");
+
+    const playerTitle = this.add
+      .text(70, 700, "YOU", {
+        fontFamily: "DeathNote",
+        fontSize: "24px",
+        color: "#66c8ff",
+      })
+      .setOrigin(0, 0.5)
+      .setDepth(165)
+      .setVisible(false);
+    this.simpleHud.objects.push(playerTitle);
+
+    addRow(70, 730, "PROGRESS", "#35D57F", "player", "progress");
+    addRow(70, 765, "DANGER", "#FF4034", "player", "danger");
+
+    const rulesStrip = this.add
+      .text(375, 255, "WIN: fill both GREEN to 100    |    LOSE: any RED reaches 100", {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "15px",
+        color: "#dddddd",
+        align: "center",
+      })
+      .setOrigin(0.5)
+      .setDepth(165)
+      .setVisible(false);
+    this.simpleHud.objects.push(rulesStrip);
+
+    this.updateSimpleVisualHud(true);
+  }
+
+  createUiModeToggle() {
+    this.uiModeButton = this.add
+      .text(600, 90, "MODE: SIMPLE", {
+        fontFamily: "DeathNote",
+        fontSize: "22px",
+        color: "#ffffff",
+        backgroundColor: "#2c2c3d",
+        padding: { x: 10, y: 6 },
+      })
+      .setOrigin(0.5)
+      .setDepth(170)
+      .setInteractive({ useHandCursor: true });
+
+    this.uiModeButton.on("pointerdown", () => {
+      this.setSimpleMode(!this.simpleMode);
+    });
+    this.uiModeButton.on("pointerover", () => {
+      this.uiModeButton.setBackgroundColor("#444466");
+    });
+    this.uiModeButton.on("pointerout", () => {
+      this.uiModeButton.setBackgroundColor("#2c2c3d");
+    });
+  }
+
+  setSimpleMode(enabled) {
+    this.simpleMode = enabled;
+
+    if (this.playerStatGroup && this.opponentStatGroup) {
+      this.playerStatGroup.setVisible(!enabled);
+      this.opponentStatGroup.setVisible(!enabled);
+    }
+
+    if (this.simpleHud?.objects) {
+      this.simpleHud.objects.forEach((obj) => obj.setVisible(enabled));
+      this.updateSimpleVisualHud(true);
+    }
+
+    if (this.uiModeButton) {
+      this.uiModeButton.setText(enabled ? "MODE: SIMPLE" : "MODE: ADV");
+    }
+  }
+
+  getProgressValue(stats, character) {
+    const winStats = character.winCondition.stats || [character.winCondition.stat];
+    return Math.min(...winStats.map((stat) => stats[stat] ?? 0));
+  }
+
+  getDangerValue(stats, character) {
+    const loseStats = character.loseCondition.stats || [character.loseCondition.stat];
+    return Math.max(...loseStats.map((stat) => stats[stat] ?? 0));
+  }
+
+  animateSimpleBar(fill, valueText, value, oldValue, color) {
+    const width = (value / 100) * this.simpleHud.barWidth;
+    fill.setFillStyle(Phaser.Display.Color.HexStringToColor(color).color);
+
+    this.tweens.add({
+      targets: fill,
+      width,
+      duration: 260,
+      ease: "Power2",
+    });
+    valueText.setText(String(value));
+
+    if (oldValue === null || oldValue === value) return;
+
+    this.tweens.add({
+      targets: [fill, valueText],
+      alpha: 0.45,
+      duration: 120,
+      yoyo: true,
+      repeat: 1,
+      ease: "Sine.easeInOut",
+    });
+  }
+
+  updateSimpleVisualHud(force = false) {
+    if (!this.simpleHud) return;
+
+    const playerProgress = this.getProgressValue(this.playerStats, this.playerCharacter);
+    const playerDanger = this.getDangerValue(this.playerStats, this.playerCharacter);
+    const opponentProgress = this.getProgressValue(this.opponentStats, this.opponentCharacter);
+    const opponentDanger = this.getDangerValue(this.opponentStats, this.opponentCharacter);
+
+    const prev = this.simpleHud.state;
+    this.animateSimpleBar(
+      this.simpleHud.player.progressFill,
+      this.simpleHud.player.progressValue,
+      playerProgress,
+      force ? null : prev.playerProgress,
+      "#35D57F",
+    );
+    this.animateSimpleBar(
+      this.simpleHud.player.dangerFill,
+      this.simpleHud.player.dangerValue,
+      playerDanger,
+      force ? null : prev.playerDanger,
+      "#FF4034",
+    );
+    this.animateSimpleBar(
+      this.simpleHud.opponent.progressFill,
+      this.simpleHud.opponent.progressValue,
+      opponentProgress,
+      force ? null : prev.opponentProgress,
+      "#35D57F",
+    );
+    this.animateSimpleBar(
+      this.simpleHud.opponent.dangerFill,
+      this.simpleHud.opponent.dangerValue,
+      opponentDanger,
+      force ? null : prev.opponentDanger,
+      "#FF4034",
+    );
+
+    this.simpleHud.state = {
+      playerProgress,
+      playerDanger,
+      opponentProgress,
+      opponentDanger,
+    };
+  }
+
+  getSideSnapshot(stats, character) {
+    const progress = this.getProgressValue(stats, character);
+    const danger = this.getDangerValue(stats, character);
+    return {
+      progress,
+      danger,
+      score: progress - danger,
+    };
+  }
+
+  getLargestShiftMessage(beforePlayerStats, beforeOpponentStats) {
+    const shifts = [];
+
+    Object.keys(this.playerStats).forEach((stat) => {
+      const delta = this.playerStats[stat] - beforePlayerStats[stat];
+      if (delta !== 0) {
+        shifts.push({
+          target: "You",
+          label: this.playerCharacter.statLabels[stat],
+          delta,
+        });
+      }
+    });
+
+    Object.keys(this.opponentStats).forEach((stat) => {
+      const delta = this.opponentStats[stat] - beforeOpponentStats[stat];
+      if (delta !== 0) {
+        shifts.push({
+          target: "Foe",
+          label: this.opponentCharacter.statLabels[stat],
+          delta,
+        });
+      }
+    });
+
+    if (shifts.length === 0) return "No major swing this turn.";
+
+    shifts.sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta));
+    const strongest = shifts[0];
+    const deltaText = strongest.delta > 0 ? `+${strongest.delta}` : `${strongest.delta}`;
+    return `${strongest.target} ${strongest.label} ${deltaText}.`;
+  }
+
+  getSituationMessage(playerSnapshot, opponentSnapshot) {
+    const momentum = playerSnapshot.score - opponentSnapshot.score;
+    if (momentum > 10) {
+      return `You are AHEAD (${momentum}) — keep pressure on.`;
+    }
+    if (momentum < -10) {
+      return `You are BEHIND (${momentum}) — stabilize danger first.`;
+    }
+    return "Match is EVEN — next turn is pivotal.";
+  }
+
+  showTurnSummaryOverlay(beforePlayerStats, beforeOpponentStats) {
+    if (this.turnSummaryObjects) {
+      this.turnSummaryObjects.forEach((obj) => obj.destroy());
+    }
+
+    const yourState = this.getSideSnapshot(this.playerStats, this.playerCharacter);
+    const foeState = this.getSideSnapshot(this.opponentStats, this.opponentCharacter);
+
+    const changeLine = this.getLargestShiftMessage(beforePlayerStats, beforeOpponentStats);
+    const situationLine = this.getSituationMessage(yourState, foeState);
+    const stateLine = `You P:${yourState.progress}/100 D:${yourState.danger}/100   |   Foe P:${foeState.progress}/100 D:${foeState.danger}/100`;
+
+    const objects = [];
+    const overlay = this.add
+      .rectangle(375, 667, 700, 360, 0x000000, 0.9)
+      .setDepth(2800)
+      .setStrokeStyle(2, 0x555555)
+      .setOrigin(0.5);
+    objects.push(overlay);
+
+    const title = this.add
+      .text(375, 545, "TURN RESOLVE", {
+        fontFamily: "DeathNote",
+        fontSize: "44px",
+        color: "#ffffff",
+      })
+      .setOrigin(0.5)
+      .setDepth(2801);
+    objects.push(title);
+
+    const changes = this.add
+      .text(375, 615, changeLine, {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "24px",
+        color: "#ffd166",
+        align: "center",
+        wordWrap: { width: 640 },
+      })
+      .setOrigin(0.5)
+      .setDepth(2801);
+    objects.push(changes);
+
+    const situation = this.add
+      .text(375, 675, situationLine, {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "21px",
+        color: "#d8e8ff",
+        align: "center",
+        wordWrap: { width: 640 },
+      })
+      .setOrigin(0.5)
+      .setDepth(2801);
+    objects.push(situation);
+
+    const state = this.add
+      .text(375, 725, stateLine, {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "18px",
+        color: "#cccccc",
+        align: "center",
+      })
+      .setOrigin(0.5)
+      .setDepth(2801);
+    objects.push(state);
+
+    const nextButton = this.add
+      .text(375, 800, "NEXT TURN", {
+        fontFamily: "DeathNote",
+        fontSize: "34px",
+        color: "#ffffff",
+        backgroundColor: "#2f7a2f",
+        padding: { x: 26, y: 12 },
+      })
+      .setOrigin(0.5)
+      .setDepth(2802)
+      .setInteractive({ useHandCursor: true });
+    objects.push(nextButton);
+
+    nextButton.on("pointerover", () => {
+      nextButton.setBackgroundColor("#3ca13c");
+    });
+    nextButton.on("pointerout", () => {
+      nextButton.setBackgroundColor("#2f7a2f");
+    });
+    nextButton.on("pointerdown", () => {
+      objects.forEach((obj) => obj.destroy());
+      this.turnSummaryObjects = null;
+      this.finalizeTurn();
+    });
+
+    this.turnSummaryObjects = objects;
   }
 
   createEnergyDisplays() {
@@ -1961,6 +2351,9 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   async applyBothCardEffects(playerCard, aiCard) {
+    const beforePlayerStats = { ...this.playerStats };
+    const beforeOpponentStats = { ...this.opponentStats };
+
     // Use CardResolver with delay for sequential resolution
     await CardResolver.resolveCardsWithDelay(
       playerCard,
@@ -1975,8 +2368,8 @@ export default class BattleScene extends Phaser.Scene {
       return;
     }
 
-    // Finalize turn
-    this.finalizeTurn();
+    // Show a clear summary and wait for player confirmation before next turn.
+    this.showTurnSummaryOverlay(beforePlayerStats, beforeOpponentStats);
   }
 
   showCancellationEffect(isPlayerCancelled) {
@@ -2140,6 +2533,9 @@ export default class BattleScene extends Phaser.Scene {
 
     // Update legacy stats reference
     this.stats = this.playerStats;
+
+    // Update simplified, visual summary HUD
+    this.updateSimpleVisualHud();
   }
 
   endAITurn() {
@@ -2614,6 +3010,9 @@ export default class BattleScene extends Phaser.Scene {
     this.debugPanelObjects = null;
     this.debugButton = null;
     this.debugPanelVisible = false;
+    this.simpleHud = null;
+    this.uiModeButton = null;
+    this.turnSummaryObjects = null;
   }
 
   handleOpponentDisconnected() {

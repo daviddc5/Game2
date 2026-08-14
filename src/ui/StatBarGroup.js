@@ -10,6 +10,7 @@ export default class StatBarGroup {
     this.isPlayer = isPlayer;
     this.bars = {};
     this.texts = {};
+    this.objects = [];
   }
 
   create() {
@@ -40,24 +41,28 @@ export default class StatBarGroup {
         fontStyle: "bold",
       })
       .setOrigin(0, 0.5);
+    this.objects.push(labelText);
 
     // Container for bar and border
     const barY = y + 22;
 
     // Border (slightly larger than bar)
-    this.scene.add
+    const border = this.scene.add
       .rectangle(this.x, barY, barWidth + 4, barHeight + 4, 0x666666)
       .setOrigin(0, 0.5);
+    this.objects.push(border);
 
     // Background bar (dark)
-    this.scene.add
+    const background = this.scene.add
       .rectangle(this.x + 2, barY, barWidth, barHeight, 0x222222)
       .setOrigin(0, 0.5);
+    this.objects.push(background);
 
     // Foreground bar (colored, animated)
     const bar = this.scene.add
       .rectangle(this.x + 2, barY, (value / 100) * barWidth, barHeight, color)
       .setOrigin(0, 0.5);
+    this.objects.push(bar);
 
     // Store current value for change detection
     bar.setData('currentValue', value);
@@ -81,6 +86,7 @@ export default class StatBarGroup {
         fontStyle: "bold",
       })
       .setOrigin(1, 0.5);
+    this.objects.push(valueText);
 
     this.texts[key] = valueText;
   }
@@ -163,5 +169,9 @@ export default class StatBarGroup {
 
   getAllTexts() {
     return this.texts;
+  }
+
+  setVisible(visible) {
+    this.objects.forEach((obj) => obj.setVisible(visible));
   }
 }
