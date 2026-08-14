@@ -74,7 +74,7 @@ npm run deploy
 ```bash
 gcloud run deploy shadows-of-judgment \
     --source . \
-    --region us-central1 \
+    --region europe-west1 \
     --allow-unauthenticated \
     --session-affinity \
     --min-instances 0 \
@@ -91,10 +91,10 @@ First deploy takes ~5 minutes. Subsequent deploys are faster.
 ### Get your URL
 
 ```bash
-gcloud run services describe shadows-of-judgment --region us-central1 --format="value(status.url)"
+gcloud run services describe shadows-of-judgment --region europe-west1 --format="value(status.url)"
 ```
 
-Your app will be at: `https://shadows-of-judgment-XXXXXX-uc.a.run.app`
+Your app will be at: `https://shadows-of-judgment-XXXXXX-ew.a.run.app`
 
 ### View Logs
 
@@ -103,7 +103,7 @@ Your app will be at: `https://shadows-of-judgment-XXXXXX-uc.a.run.app`
 npm run deploy:logs
 
 # Stream logs in real-time
-gcloud run services logs tail shadows-of-judgment --region us-central1
+gcloud run services logs tail shadows-of-judgment --region europe-west1
 ```
 
 ## Key Configuration Choices (for staying free)
@@ -145,7 +145,7 @@ docker run -p 8080:8080 shadows-of-judgment
 gcloud run domain-mappings create \
     --service shadows-of-judgment \
     --domain yourdomain.com \
-    --region us-central1
+    --region europe-west1
 ```
 
 ## Updating the App
@@ -161,7 +161,7 @@ npm run deploy
 ## Deleting the Service
 
 ```bash
-gcloud run services delete shadows-of-judgment --region us-central1
+gcloud run services delete shadows-of-judgment --region europe-west1
 ```
 
 ## Troubleshooting
@@ -175,7 +175,7 @@ With `min-instances=0`, the first request after idle may take 2-3 seconds. This 
 ### 502 / Container Fails to Start
 ```bash
 # Check build & startup logs
-gcloud run services logs read shadows-of-judgment --region us-central1 --limit 100
+gcloud run services logs read shadows-of-judgment --region europe-west1 --limit 100
 ```
 
 ### Exceeded Free Tier?
@@ -194,8 +194,8 @@ npm run deploy
 npm run deploy:logs
 
 # Get URL
-gcloud run services describe shadows-of-judgment --region us-central1 --format="value(status.url)"
+gcloud run services describe shadows-of-judgment --region europe-west1 --format="value(status.url)"
 
 # Delete (stop all costs)
-gcloud run services delete shadows-of-judgment --region us-central1
+gcloud run services delete shadows-of-judgment --region europe-west1
 ```

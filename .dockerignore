@@ -8,9 +8,7 @@ dist/
 
 # Documentation
 *.md
-GDD.md
-LEARNING_GUIDE.md
-DESIGN_NOTES/
+docs/
 
 # Build artifacts
 .vite/
