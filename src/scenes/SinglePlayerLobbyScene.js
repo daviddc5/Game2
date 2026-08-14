@@ -4,6 +4,11 @@ export default class SinglePlayerLobbyScene extends Phaser.Scene {
   constructor() {
     super({ key: "SinglePlayerLobbyScene" });
     this.selectedCharacter = null;
+    this.debugMode = false;
+  }
+
+  init(data) {
+    this.debugMode = !!data?.debugMode;
   }
 
   create() {
@@ -18,6 +23,17 @@ export default class SinglePlayerLobbyScene extends Phaser.Scene {
         align: "center",
       })
       .setOrigin(0.5);
+
+    if (this.debugMode) {
+      this.add
+        .text(centerX, 210, "TEST MODE ENABLED", {
+          fontFamily: "DeathNote",
+          fontSize: "28px",
+          color: "#ffcc66",
+          align: "center",
+        })
+        .setOrigin(0.5);
+    }
 
     // Character selection title
     this.add
@@ -176,6 +192,8 @@ export default class SinglePlayerLobbyScene extends Phaser.Scene {
     this.startButton.on("pointerdown", () => {
       if (this.selectedCharacter) {
         this.registry.set("playerCharacter", this.selectedCharacter);
+        this.registry.set("isMultiplayer", false);
+        this.registry.set("debugMode", this.debugMode);
         this.scene.start("BattleScene");
       }
     });

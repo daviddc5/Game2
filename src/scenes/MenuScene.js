@@ -41,9 +41,21 @@ export default class MenuScene extends Phaser.Scene {
       .setOrigin(0.5)
       .setInteractive({ useHandCursor: true });
 
+    // Test Mode button
+    const testModeButton = this.add
+      .text(centerX, 675, "🧪 TEST MODE", {
+        fontFamily: "DeathNote",
+        fontSize: "42px",
+        color: "#ffffff",
+        padding: { x: 55, y: 18 },
+        backgroundColor: "#7a3f00",
+      })
+      .setOrigin(0.5)
+      .setInteractive({ useHandCursor: true });
+
     // How to Play button
     const howToPlayButton = this.add
-      .text(centerX, 750, "❓ HOW TO PLAY", {
+      .text(centerX, 790, "❓ HOW TO PLAY", {
         fontFamily: "DeathNote",
         fontSize: "36px",
         color: "#aaaaaa",
@@ -60,6 +72,7 @@ export default class MenuScene extends Phaser.Scene {
       multiplayerButton.setBackgroundColor("#0066cc")
     );
     multiplayerButton.on("pointerdown", () => {
+      this.registry.set("debugMode", false);
       this.scene.start("MultiplayerLobbyScene");
     });
 
@@ -71,7 +84,20 @@ export default class MenuScene extends Phaser.Scene {
       singlePlayerButton.setBackgroundColor("#006600")
     );
     singlePlayerButton.on("pointerdown", () => {
-      this.scene.start("SinglePlayerLobbyScene");
+      this.registry.set("debugMode", false);
+      this.scene.start("SinglePlayerLobbyScene", { debugMode: false });
+    });
+
+    // Test Mode hover
+    testModeButton.on("pointerover", () =>
+      testModeButton.setBackgroundColor("#a95500")
+    );
+    testModeButton.on("pointerout", () =>
+      testModeButton.setBackgroundColor("#7a3f00")
+    );
+    testModeButton.on("pointerdown", () => {
+      this.registry.set("debugMode", true);
+      this.scene.start("SinglePlayerLobbyScene", { debugMode: true });
     });
 
     // How to Play hover

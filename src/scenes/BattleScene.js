@@ -18,6 +18,7 @@ export default class BattleScene extends Phaser.Scene {
     // Check if this is multiplayer mode
     this.isMultiplayer = this.registry.get("isMultiplayer") || false;
     this.multiplayerData = this.registry.get("multiplayerData") || null;
+    this.debugMode = this.registry.get("debugMode") || false;
 
     // Initialize game state
     this.initializeGameState();
@@ -37,6 +38,11 @@ export default class BattleScene extends Phaser.Scene {
 
     // Create exit button (top-right corner)
     this.createExitButton();
+
+    // Optional debug controls for testing win/loss conditions.
+    if (this.debugMode && !this.isMultiplayer) {
+      this.createDebugControls();
+    }
 
     // Check if PASS button should be shown initially
     this.updatePassButtonVisibility();
@@ -836,6 +842,183 @@ export default class BattleScene extends Phaser.Scene {
     this.exitButtonText.on("pointerout", () => {
       this.exitButtonText.setBackgroundColor("transparent");
     });
+  }
+
+  createDebugControls() {
+    this.debugButton = this.add
+      .text(70, 40, "DEBUG", {
+        fontFamily: "DeathNote",
+        fontSize: "26px",
+        color: "#ffffff",
+        backgroundColor: "#8a4b00",
+        padding: { x: 14, y: 8 },
+      })
+      .setOrigin(0.5)
+      .setDepth(170)
+      .setInteractive({ useHandCursor: true });
+
+    this.debugButton.on("pointerover", () => {
+      this.debugButton.setBackgroundColor("#b36000");
+    });
+    this.debugButton.on("pointerout", () => {
+      this.debugButton.setBackgroundColor("#8a4b00");
+    });
+    this.debugButton.on("pointerdown", () => {
+      this.toggleDebugPanel();
+    });
+
+    const panelObjects = [];
+    const panelBg = this.add
+      .rectangle(375, 667, 680, 760, 0x111111, 0.96)
+      .setDepth(3500)
+      .setStrokeStyle(3, 0xaa7700)
+      .setVisible(false);
+    panelObjects.push(panelBg);
+
+    const panelTitle = this.add
+      .text(375, 330, "TEST MODE", {
+        fontFamily: "DeathNote",
+        fontSize: "52px",
+        color: "#ffcc66",
+      })
+      .setOrigin(0.5)
+      .setDepth(3501)
+      .setVisible(false);
+    panelObjects.push(panelTitle);
+
+    const panelHint = this.add
+      .text(375, 380, "Set instant stat values for quick win/lose checks", {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "20px",
+        color: "#dddddd",
+      })
+      .setOrigin(0.5)
+      .setDepth(3501)
+      .setVisible(false);
+    panelObjects.push(panelHint);
+
+    const statRows = [
+      "investigation",
+      "morale",
+      "publicOpinion",
+      "pressure",
+    ];
+
+    statRows.forEach((stat, index) => {
+      const y = 460 + index * 95;
+      const label = this.add
+        .text(375, y, this.playerCharacter.statLabels[stat], {
+          fontFamily: "Arial, sans-serif",
+          fontSize: "22px",
+          color: "#ffffff",
+          fontStyle: "bold",
+        })
+        .setOrigin(0.5)
+        .setDepth(3501)
+        .setVisible(false);
+      panelObjects.push(label);
+
+      const youButton = this.createDebugPanelButton(
+        225,
+        y,
+        "YOU = 100",
+        "#007a2f",
+        () => this.setDebugStat("player", stat, 100),
+      );
+      panelObjects.push(...youButton);
+
+      const foeButton = this.createDebugPanelButton(
+        525,
+        y,
+        "FOE = 100",
+        "#8f1f1f",
+        () => this.setDebugStat("opponent", stat, 100),
+      );
+      panelObjects.push(...foeButton);
+    });
+
+    const resetButtonsY = 870;
+    const resetAll = this.createDebugPanelButton(
+      250,
+      resetButtonsY,
+      "RESET BOTH",
+      "#555555",
+      () => this.resetDebugStats(),
+      210,
+      48,
+    );
+    panelObjects.push(...resetAll);
+
+    const closePanel = this.createDebugPanelButton(
+      500,
+      resetButtonsY,
+      "CLOSE",
+      "#4444aa",
+      () => this.toggleDebugPanel(false),
+      170,
+      48,
+    );
+    panelObjects.push(...closePanel);
+
+    this.debugPanelObjects = panelObjects;
+    this.debugPanelVisible = false;
+  }
+
+  createDebugPanelButton(x, y, text, color, onClick, width = 180, height = 42) {
+    const bg = this.add
+      .rectangle(x, y, width, height, Phaser.Display.Color.HexStringToColor(color).color)
+      .setDepth(3501)
+      .setInteractive({ useHandCursor: true })
+      .setVisible(false);
+
+    const label = this.add
+      .text(x, y, text, {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "16px",
+        color: "#ffffff",
+        fontStyle: "bold",
+      })
+      .setOrigin(0.5)
+      .setDepth(3502)
+      .setVisible(false);
+
+    bg.on("pointerdown", onClick);
+    bg.on("pointerover", () => {
+      bg.setAlpha(0.85);
+    });
+    bg.on("pointerout", () => {
+      bg.setAlpha(1);
+    });
+
+    return [bg, label];
+  }
+
+  toggleDebugPanel(forceState) {
+    const nextState = typeof forceState === "boolean" ? forceState : !this.debugPanelVisible;
+    this.debugPanelVisible = nextState;
+
+    if (!this.debugPanelObjects) return;
+    this.debugPanelObjects.forEach((obj) => obj.setVisible(nextState));
+  }
+
+  setDebugStat(target, stat, value) {
+    const clamped = GameLogic.clampStat(value);
+    if (target === "player") {
+      this.playerStats[stat] = clamped;
+    } else {
+      this.opponentStats[stat] = clamped;
+    }
+
+    this.updateStatBars();
+    this.checkGameOver();
+  }
+
+  resetDebugStats() {
+    Object.keys(this.playerStats).forEach((stat) => {
+      this.playerStats[stat] = 0;
+      this.opponentStats[stat] = 0;
+    });
+    this.updateStatBars();
   }
 
   showExitConfirmation() {
@@ -2426,6 +2609,9 @@ export default class BattleScene extends Phaser.Scene {
     this.confirmButton = null;
     this.cardActionButtons = null;
     this.actionButtonElements = null;
+    this.debugPanelObjects = null;
+    this.debugButton = null;
+    this.debugPanelVisible = false;
   }
 
   handleOpponentDisconnected() {
