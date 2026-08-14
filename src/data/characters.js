@@ -6,20 +6,19 @@ export const characters = {
     name: "Independent Detective",
     displayName: "Detective",
     portrait: "detective-neutral.png",
-    // Labels say WHOSE stat it is. All four values are shared between the two
-    // characters; only the label and colour differ. "Team Morale" used to read
-    // as the player's own when it is really the Vigilante's confidence.
     statLabels: {
-      investigation: "Your Evidence",
-      morale: "Their Confidence",
-      publicOpinion: "Their Support",
-      pressure: "Heat On Them",
+      investigation: "Investigation",
+      morale: "Team Morale",
+      publicOpinion: "Public Pressure",
+      pressure: "Suspicion Level",
     },
     statColors: {
-      investigation: { color: 0x00ff00, isGreen: true }, // Green - you win at 100
-      morale: { color: 0xff4444, isGreen: false }, // Red - you LOSE at 100
-      publicOpinion: { color: 0xff4444, isGreen: false }, // Red - they win at 100
-      pressure: { color: 0x00ff00, isGreen: true }, // Green - they lose at 100, so you win
+      // These four are the Detective's OWN stats. Only investigation and morale
+      // decide the match; the other two feed the deck-exhaustion tiebreak only.
+      investigation: { color: 0x00ff00, isGreen: true }, // winCondition - you win at 100
+      morale: { color: 0xff4444, isGreen: false }, // loseCondition - you LOSE at 100
+      publicOpinion: { color: 0xff4444, isGreen: false }, // no win/lose role
+      pressure: { color: 0xff4444, isGreen: false }, // no win/lose role
     },
     positiveStats: ["investigation"],
     negativeStats: ["morale"],
@@ -40,16 +39,18 @@ export const characters = {
     displayName: "Vigilante",
     portrait: "killer-neutral.png",
     statLabels: {
-      investigation: "Evidence On You",
-      morale: "Your Confidence",
-      publicOpinion: "Your Support",
-      pressure: "Heat On You",
+      investigation: "Evidence Against",
+      morale: "Confidence",
+      publicOpinion: "Public Support",
+      pressure: "Investigation Heat",
     },
     statColors: {
-      investigation: { color: 0xff4444, isGreen: false }, // Red - they win at 100
-      morale: { color: 0x00ff00, isGreen: true }, // Green - they lose at 100, so you win
-      publicOpinion: { color: 0x00ff00, isGreen: true }, // Green - you win at 100
-      pressure: { color: 0xff4444, isGreen: false }, // Red - you LOSE at 100
+      // The Vigilante's OWN stats. Only publicOpinion and pressure decide the
+      // match; the other two feed the deck-exhaustion tiebreak only.
+      investigation: { color: 0xff4444, isGreen: false }, // no win/lose role
+      morale: { color: 0x00ff00, isGreen: true }, // no win/lose role
+      publicOpinion: { color: 0x00ff00, isGreen: true }, // winCondition - you win at 100
+      pressure: { color: 0xff4444, isGreen: false }, // loseCondition - you LOSE at 100
     },
     positiveStats: ["publicOpinion"],
     negativeStats: ["pressure"],

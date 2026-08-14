@@ -1,19 +1,18 @@
 import { describe, it, expect } from "vitest";
-import { characters, getOpponent } from "./characters.js";
+import { characters } from "./characters.js";
 
 /**
- * The four stats are shared between both characters — only the labels differ.
- * Whether a stat rising is good or bad for a given character is fully
- * determined by the win/lose conditions, so we derive the expectation rather
- * than hardcoding it. If the conditions change, these tests follow.
+ * Each character has their OWN set of four stats — playerStats and
+ * opponentStats are separate objects, each panel labelled from its own
+ * character. Only two of the four decide the match: the character's
+ * winCondition stat and their loseCondition stat. The other two have no
+ * win/lose role and only affect the deck-exhaustion tiebreak, so their
+ * colour is a design choice we cannot derive.
  */
-function expectedIsGreen(character, stat) {
-  const opponent = getOpponent(character.name);
+function decisiveColour(character, stat) {
   if (stat === character.winCondition.stat) return true; // rising wins me the game
   if (stat === character.loseCondition.stat) return false; // rising loses me the game
-  if (stat === opponent.winCondition.stat) return false; // rising wins them the game
-  if (stat === opponent.loseCondition.stat) return true; // rising loses them the game
-  throw new Error(`${stat} is not referenced by any win/lose condition`);
+  return null; // no win/lose role — not derivable
 }
 
 const names = Object.keys(characters);
@@ -24,13 +23,14 @@ describe("character stat colours", () => {
     const character = characters[name];
 
     STATS.forEach((stat) => {
-      it(`${character.displayName}: ${stat} colour matches whether rising it helps them`, () => {
-        const expected = expectedIsGreen(character, stat);
+      it(`${character.displayName}: ${stat} colour matches its win/lose role`, () => {
+        const expected = decisiveColour(character, stat);
+        if (expected === null) return; // design choice, nothing to assert
         expect(
           character.statColors[stat].isGreen,
           `"${character.statLabels[stat]}" is rendered ${
             character.statColors[stat].isGreen ? "green" : "red"
-          } but rising it ${expected ? "helps" : "hurts"} the ${character.displayName}`,
+          } but rising it ${expected ? "WINS" : "LOSES"} the ${character.displayName} the match`,
         ).toBe(expected);
       });
     });
