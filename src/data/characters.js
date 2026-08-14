@@ -13,25 +13,22 @@ export const characters = {
       pressure: "Suspicion Level",
     },
     statColors: {
-      // The Detective's OWN stats. Both characters follow the same rule:
-      // win when your green win-stat maxes, lose when pressure maxes.
-      // morale and publicOpinion have no win/lose role.
-      investigation: { color: 0x00ff00, isGreen: true }, // winCondition - you win at 100
-      morale: { color: 0x00ff00, isGreen: true }, // no win/lose role
-      publicOpinion: { color: 0xff4444, isGreen: false }, // no win/lose role
-      pressure: { color: 0xff4444, isGreen: false }, // loseCondition - you LOSE at 100
+      investigation: { color: 0x00ff00, isGreen: true }, // Green - want high
+      morale: { color: 0x00ff00, isGreen: true }, // Green - want high
+      publicOpinion: { color: 0xff4444, isGreen: false }, // Red - vigilante support is bad
+      pressure: { color: 0xff4444, isGreen: false }, // Red - suspicion on case is bad
     },
     positiveStats: ["investigation"],
-    negativeStats: ["pressure"],
+    negativeStats: ["morale"],
     winCondition: {
       stat: "investigation",
       threshold: 100,
       message: "The detective exposes the truth with overwhelming evidence!",
     },
     loseCondition: {
-      stat: "pressure",
+      stat: "morale",
       threshold: 100,
-      message: "Suspicion buries the case — the detective is pulled off it!",
+      message: "The detective's team loses all morale and gives up!",
     },
   },
   Vigilante: {
@@ -46,12 +43,10 @@ export const characters = {
       pressure: "Investigation Heat",
     },
     statColors: {
-      // The Vigilante's OWN stats. Same rule as the Detective:
-      // win when your green win-stat maxes, lose when pressure maxes.
-      investigation: { color: 0xff4444, isGreen: false }, // no win/lose role
-      morale: { color: 0x00ff00, isGreen: true }, // no win/lose role
-      publicOpinion: { color: 0x00ff00, isGreen: true }, // winCondition - you win at 100
-      pressure: { color: 0xff4444, isGreen: false }, // loseCondition - you LOSE at 100
+      investigation: { color: 0xff4444, isGreen: false }, // Red - evidence against him is bad
+      morale: { color: 0x00ff00, isGreen: true }, // Green - confidence is good
+      publicOpinion: { color: 0x00ff00, isGreen: true }, // Green - public support is good
+      pressure: { color: 0xff4444, isGreen: false }, // Red - being investigated is bad
     },
     positiveStats: ["publicOpinion"],
     negativeStats: ["pressure"],

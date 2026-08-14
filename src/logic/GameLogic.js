@@ -18,26 +18,41 @@ export default class GameLogic {
     return newStats;
   }
 
-  /**
-   * Each player has their own stats object, so both must be passed. A single
-   * shared object cannot express the game: both characters lose on `pressure`,
-   * and only the owner of that value decides who it belongs to.
-   *
-   * Returns "player" or "opponent" — the same vocabulary BattleScene.gameOver()
-   * expects, so it can call this directly instead of duplicating the checks.
-   */
-  static checkWinConditions(playerStats, opponentStats, playerCharacter, opponentCharacter) {
-    const checks = [
-      [playerStats, playerCharacter.winCondition, "player"],
-      [playerStats, playerCharacter.loseCondition, "opponent"],
-      [opponentStats, opponentCharacter.winCondition, "opponent"],
-      [opponentStats, opponentCharacter.loseCondition, "player"],
-    ];
+  static checkWinConditions(stats) {
+    // Check L win condition
+    if (stats.investigation >= 100) {
+      return {
+        gameOver: true,
+        winner: "Detective L",
+        reason: "Investigation complete!",
+      };
+    }
 
-    for (const [stats, condition, winner] of checks) {
-      if (stats[condition.stat] >= condition.threshold) {
-        return { gameOver: true, winner, reason: condition.message };
-      }
+    // Check L loss condition
+    if (stats.morale >= 100) {
+      return {
+        gameOver: true,
+        winner: "Kira",
+        reason: "L's Morale collapsed!",
+      };
+    }
+
+    // Check Kira win condition
+    if (stats.publicOpinion >= 100) {
+      return {
+        gameOver: true,
+        winner: "Kira",
+        reason: "Public Opinion reached 100!",
+      };
+    }
+
+    // Check Kira loss condition
+    if (stats.pressure >= 100) {
+      return {
+        gameOver: true,
+        winner: "Detective L",
+        reason: "Pressure too high!",
+      };
     }
 
     return { gameOver: false };

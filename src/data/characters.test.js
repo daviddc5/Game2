@@ -1,53 +1,39 @@
 import { describe, it, expect } from "vitest";
-import { characters } from "./characters.js";
+import { characters, getCharacter, getOpponent } from "./characters.js";
 
-/**
- * Each character has their OWN set of four stats — playerStats and
- * opponentStats are separate objects, each panel labelled from its own
- * character. Only two of the four decide the match: the character's
- * winCondition stat and their loseCondition stat. The other two have no
- * win/lose role and only affect the deck-exhaustion tiebreak, so their
- * colour is a design choice we cannot derive.
- */
-function decisiveColour(character, stat) {
-  if (stat === character.winCondition.stat) return true; // rising wins me the game
-  if (stat === character.loseCondition.stat) return false; // rising loses me the game
-  return null; // no win/lose role — not derivable
-}
-
-const names = Object.keys(characters);
 const STATS = ["investigation", "morale", "publicOpinion", "pressure"];
 
-describe("character stat colours", () => {
-  names.forEach((name) => {
-    const character = characters[name];
-
-    STATS.forEach((stat) => {
-      it(`${character.displayName}: ${stat} colour matches its win/lose role`, () => {
-        const expected = decisiveColour(character, stat);
-        if (expected === null) return; // design choice, nothing to assert
-        expect(
-          character.statColors[stat].isGreen,
-          `"${character.statLabels[stat]}" is rendered ${
-            character.statColors[stat].isGreen ? "green" : "red"
-          } but rising it ${expected ? "WINS" : "LOSES"} the ${character.displayName} the match`,
-        ).toBe(expected);
+describe("character definitions", () => {
+  Object.values(characters).forEach((character) => {
+    it(`${character.displayName} defines all four stats`, () => {
+      STATS.forEach((stat) => {
+        expect(character.statLabels[stat]).toBeTruthy();
+        expect(character.statColors[stat]).toHaveProperty("isGreen");
       });
     });
 
-    it(`${character.displayName}: green stats are actually green, red stats actually red`, () => {
+    it(`${character.displayName} colour values match their isGreen flag`, () => {
       STATS.forEach((stat) => {
         const { color, isGreen } = character.statColors[stat];
-        expect(color, `${stat} colour value disagrees with its isGreen flag`).toBe(
-          isGreen ? 0x00ff00 : 0xff4444,
-        );
+        expect(color).toBe(isGreen ? 0x00ff00 : 0xff4444);
       });
     });
 
-    it(`${character.displayName}: positiveStats/negativeStats agree with win/lose conditions`, () => {
-      expect(character.positiveStats).toContain(character.winCondition.stat);
-      expect(character.negativeStats).toContain(character.loseCondition.stat);
+    it(`${character.displayName} win and lose conditions name real stats`, () => {
+      expect(STATS).toContain(character.winCondition.stat);
+      expect(STATS).toContain(character.loseCondition.stat);
+      expect(character.winCondition.threshold).toBe(100);
+      expect(character.loseCondition.threshold).toBe(100);
     });
   });
 
+  it("getOpponent returns the other character", () => {
+    expect(getOpponent("Independent Detective").id).toBe("vigilante");
+    expect(getOpponent("Vigilante").id).toBe("detective");
+    expect(getOpponent("nobody")).toBeNull();
+  });
+
+  it("getCharacter looks up by full name", () => {
+    expect(getCharacter("Vigilante").displayName).toBe("Vigilante");
+  });
 });

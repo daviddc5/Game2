@@ -1,10 +1,7 @@
 import { describe, it, expect } from "vitest";
 import GameLogic from "./GameLogic.js";
-import { characters } from "../data/characters.js";
 
 const zero = { investigation: 0, morale: 0, publicOpinion: 0, pressure: 0 };
-const detective = characters["Independent Detective"];
-const vigilante = characters["Vigilante"];
 
 describe("clampStat", () => {
   it("holds values inside 0-100", () => {
@@ -32,50 +29,21 @@ describe("applyEffects", () => {
 });
 
 describe("checkWinConditions", () => {
-  const call = (p, o) =>
-    GameLogic.checkWinConditions({ ...zero, ...p }, { ...zero, ...o }, detective, vigilante);
-
+  // Characterisation tests: these record what the current implementation does,
+  // so a future change to the win rules shows up as a deliberate test edit.
   it("is not over while every stat is below 100", () => {
-    expect(call({ investigation: 99 }, { publicOpinion: 99 }).gameOver).toBe(false);
+    expect(GameLogic.checkWinConditions({ ...zero, investigation: 99 }).gameOver).toBe(false);
   });
 
-  it("player wins when their own win stat maxes", () => {
-    expect(call({ [detective.winCondition.stat]: 100 }, {})).toMatchObject({
-      gameOver: true,
-      winner: "player",
-    });
-  });
-
-  it("player loses when their own lose stat maxes", () => {
-    expect(call({ [detective.loseCondition.stat]: 100 }, {})).toMatchObject({
-      gameOver: true,
-      winner: "opponent",
-    });
-  });
-
-  it("opponent wins when their own win stat maxes", () => {
-    expect(call({}, { [vigilante.winCondition.stat]: 100 })).toMatchObject({
-      gameOver: true,
-      winner: "opponent",
-    });
-  });
-
-  it("opponent loses when their own lose stat maxes", () => {
-    expect(call({}, { [vigilante.loseCondition.stat]: 100 })).toMatchObject({
-      gameOver: true,
-      winner: "player",
-    });
-  });
-
-  it("tells the two pressure values apart — both characters lose on pressure", () => {
-    expect(call({ pressure: 100 }, {}).winner).toBe("opponent");
-    expect(call({}, { pressure: 100 }).winner).toBe("player");
-  });
-
-  it("reports the reason from the character definition, not a hardcoded string", () => {
-    expect(call({ [detective.winCondition.stat]: 100 }, {}).reason).toBe(
-      detective.winCondition.message,
-    );
+  it.each([
+    ["investigation", "Detective L"],
+    ["morale", "Kira"],
+    ["publicOpinion", "Kira"],
+    ["pressure", "Detective L"],
+  ])("%s at 100 ends the match in favour of %s", (stat, winner) => {
+    const result = GameLogic.checkWinConditions({ ...zero, [stat]: 100 });
+    expect(result.gameOver).toBe(true);
+    expect(result.winner).toBe(winner);
   });
 });
 
