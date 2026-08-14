@@ -144,13 +144,25 @@ The current diagnosis is entirely about *comprehension*. "Loses engagement" is a
 - Win and lose stings
 - One ambient loop, with a mute toggle
 
-#### 3B. Juice
-There are 16 tweens across the entire UI. Every interaction currently just *happens*, with no physical feedback:
-- Button press states — depress, not just a colour swap
-- Cards snap and settle rather than teleport
-- Damage/gain numbers float off the stat bars (`+12` rising and fading)
-- Stat bars overshoot slightly and settle
-- Portrait reacts on big swings
+#### 3B. Juice — uneven, and worst where it matters on mobile
+There are 16 tweens across the UI, and they are not spread evenly.
+
+Already good, leave alone:
+- Card resolution: flip reveal, counter/cancel X, priority text, glow layers (6 tweens)
+- Stat bars: animated fill plus floating `+12` / `-8` numbers with correct colour inversion for negative stats — `StatBarGroup.showStatChange()`, called on every update
+
+Missing entirely:
+- **Buttons have no press state.** They swap `setBackgroundColor` on hover and nothing else. See `MenuScene.js:56-62`.
+- `BattleLog` — 0 tweens, entries appear instantly
+- `StatsModal` — 0 tweens, pops in with no transition
+
+**The real problem: roughly 9 of the 16 tweens are hover-driven** — the card lift in `CardHand`, the border flash, every button colour swap. `pointerover` does not meaningfully exist on touch, so **on a phone most of this feedback never plays at all.** Tapping a button produces no visual response until the scene changes, which reads as an unresponsive control and causes double-taps.
+
+Fix in this order:
+1. Button press states — scale down ~0.95 on `pointerdown`, spring back on release. Works on both input types.
+2. Card tap feedback that does not depend on hover — shares a root cause with the touch interaction redesign
+3. Stat bar overshoot and settle
+4. Portrait reaction on big swings
 
 #### 3C. Turn pacing
 `BattleScene.js` has stacked `delayedCall`s of 800ms, 1000ms, 1000ms, 500ms, 800ms and a 2000ms hold. Add those up across a turn and the player spends several seconds per turn watching nothing happen.
@@ -189,7 +201,6 @@ Not for this pass, but worth recording since engagement was the complaint:
 | `src/ui/MomentumBar.js` | Tug-of-war progress indicator |
 | `src/ui/NarrativeOverlay.js` | Dramatic text overlay during card resolution |
 | `src/scenes/TutorialBattleScene.js` | Interactive tutorial scene |
-| `src/ui/FloatingNumber.js` | Rising `+12` / `-8` feedback on stat changes |
 | `src/audio/SoundManager.js` | Central sound playback + mute toggle |
 
 ## Files to Modify
@@ -198,7 +209,8 @@ Not for this pass, but worth recording since engagement was the complaint:
 |------|---------|
 | `src/data/cards.js` | Add `playNarration` to each card |
 | `src/ui/CardHand.js` | Simplified effect display (arrows instead of numbers) |
-| `src/ui/BattleLog.js` | Transform into narrative story log |
+| `src/ui/BattleLog.js` | Transform into narrative story log; add entry transitions |
+| `src/ui/StatBarGroup.js` | Add overshoot/settle (floating numbers already implemented) |
 | `src/logic/CardResolver.js` | Integrate narration generation + screen effects |
 | `src/scenes/BattleScene.js` | Add momentum bar, narrative overlay, screen effects, tutorial hooks |
 | `src/scenes/MenuScene.js` | Add "LEARN TO PLAY" tutorial button |
@@ -218,7 +230,7 @@ Not for this pass, but worth recording since engagement was the complaint:
 
 **Phase 1 — game feel (cheapest engagement wins)**
 4. `SoundManager.js` + preload; card, counter, win/lose sounds
-5. `FloatingNumber.js` and stat bar overshoot
+5. Button press states (works on touch, unlike the current hover-only feedback)
 6. Audit turn timing; overlap animations; add tap-to-skip
 
 **Phase 2 — comprehension**
