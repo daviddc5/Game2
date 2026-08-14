@@ -13,24 +13,25 @@ export const characters = {
       pressure: "Suspicion Level",
     },
     statColors: {
-      // These four are the Detective's OWN stats. Only investigation and morale
-      // decide the match; the other two feed the deck-exhaustion tiebreak only.
+      // The Detective's OWN stats. Both characters follow the same rule:
+      // win when your green win-stat maxes, lose when pressure maxes.
+      // morale and publicOpinion have no win/lose role.
       investigation: { color: 0x00ff00, isGreen: true }, // winCondition - you win at 100
-      morale: { color: 0xff4444, isGreen: false }, // loseCondition - you LOSE at 100
+      morale: { color: 0x00ff00, isGreen: true }, // no win/lose role
       publicOpinion: { color: 0xff4444, isGreen: false }, // no win/lose role
-      pressure: { color: 0xff4444, isGreen: false }, // no win/lose role
+      pressure: { color: 0xff4444, isGreen: false }, // loseCondition - you LOSE at 100
     },
     positiveStats: ["investigation"],
-    negativeStats: ["morale"],
+    negativeStats: ["pressure"],
     winCondition: {
       stat: "investigation",
       threshold: 100,
       message: "The detective exposes the truth with overwhelming evidence!",
     },
     loseCondition: {
-      stat: "morale",
+      stat: "pressure",
       threshold: 100,
-      message: "The detective's team loses all morale and gives up!",
+      message: "Suspicion buries the case — the detective is pulled off it!",
     },
   },
   Vigilante: {
@@ -45,8 +46,8 @@ export const characters = {
       pressure: "Investigation Heat",
     },
     statColors: {
-      // The Vigilante's OWN stats. Only publicOpinion and pressure decide the
-      // match; the other two feed the deck-exhaustion tiebreak only.
+      // The Vigilante's OWN stats. Same rule as the Detective:
+      // win when your green win-stat maxes, lose when pressure maxes.
       investigation: { color: 0xff4444, isGreen: false }, // no win/lose role
       morale: { color: 0x00ff00, isGreen: true }, // no win/lose role
       publicOpinion: { color: 0x00ff00, isGreen: true }, // winCondition - you win at 100

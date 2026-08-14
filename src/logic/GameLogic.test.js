@@ -32,31 +32,50 @@ describe("applyEffects", () => {
 });
 
 describe("checkWinConditions", () => {
+  const call = (p, o) =>
+    GameLogic.checkWinConditions({ ...zero, ...p }, { ...zero, ...o }, detective, vigilante);
+
   it("is not over while every stat is below 100", () => {
-    expect(GameLogic.checkWinConditions({ ...zero, investigation: 99 }).gameOver).toBe(false);
+    expect(call({ investigation: 99 }, { publicOpinion: 99 }).gameOver).toBe(false);
   });
 
-  // Each character's own definition is the source of truth for who wins.
-  [
-    [detective, "winCondition", detective],
-    [detective, "loseCondition", vigilante],
-    [vigilante, "winCondition", vigilante],
-    [vigilante, "loseCondition", detective],
-  ].forEach(([character, condition, expectedWinner]) => {
-    const stat = character[condition].stat;
-    it(`${character.displayName} ${condition} on "${stat}" makes ${expectedWinner.displayName} the winner`, () => {
-      const result = GameLogic.checkWinConditions({ ...zero, [stat]: 100 });
-      expect(result.gameOver).toBe(true);
-      expect(result.winner).toBe(expectedWinner.displayName);
+  it("player wins when their own win stat maxes", () => {
+    expect(call({ [detective.winCondition.stat]: 100 }, {})).toMatchObject({
+      gameOver: true,
+      winner: "player",
     });
   });
 
-  it("never reports a winner name that is not a defined character", () => {
-    const valid = Object.values(characters).map((c) => c.displayName);
-    ["investigation", "morale", "publicOpinion", "pressure"].forEach((stat) => {
-      const { winner } = GameLogic.checkWinConditions({ ...zero, [stat]: 100 });
-      expect(valid, `"${winner}" is not a character in characters.js`).toContain(winner);
+  it("player loses when their own lose stat maxes", () => {
+    expect(call({ [detective.loseCondition.stat]: 100 }, {})).toMatchObject({
+      gameOver: true,
+      winner: "opponent",
     });
+  });
+
+  it("opponent wins when their own win stat maxes", () => {
+    expect(call({}, { [vigilante.winCondition.stat]: 100 })).toMatchObject({
+      gameOver: true,
+      winner: "opponent",
+    });
+  });
+
+  it("opponent loses when their own lose stat maxes", () => {
+    expect(call({}, { [vigilante.loseCondition.stat]: 100 })).toMatchObject({
+      gameOver: true,
+      winner: "player",
+    });
+  });
+
+  it("tells the two pressure values apart — both characters lose on pressure", () => {
+    expect(call({ pressure: 100 }, {}).winner).toBe("opponent");
+    expect(call({}, { pressure: 100 }).winner).toBe("player");
+  });
+
+  it("reports the reason from the character definition, not a hardcoded string", () => {
+    expect(call({ [detective.winCondition.stat]: 100 }, {}).reason).toBe(
+      detective.winCondition.message,
+    );
   });
 });
 

@@ -1,5 +1,3 @@
-import { characters, getOpponent } from "../data/characters.js";
-
 /**
  * GameLogic - Handles stat calculations and win/loss conditions
  */
@@ -21,28 +19,24 @@ export default class GameLogic {
   }
 
   /**
-   * Win/lose conditions are defined per character in characters.js. Reading
-   * them from there keeps one source of truth — this used to hardcode both the
-   * thresholds and the winner names, which drifted from the definitions.
+   * Each player has their own stats object, so both must be passed. A single
+   * shared object cannot express the game: both characters lose on `pressure`,
+   * and only the owner of that value decides who it belongs to.
+   *
+   * Returns "player" or "opponent" — the same vocabulary BattleScene.gameOver()
+   * expects, so it can call this directly instead of duplicating the checks.
    */
-  static checkWinConditions(stats) {
-    for (const character of Object.values(characters)) {
-      const { winCondition, loseCondition } = character;
+  static checkWinConditions(playerStats, opponentStats, playerCharacter, opponentCharacter) {
+    const checks = [
+      [playerStats, playerCharacter.winCondition, "player"],
+      [playerStats, playerCharacter.loseCondition, "opponent"],
+      [opponentStats, opponentCharacter.winCondition, "opponent"],
+      [opponentStats, opponentCharacter.loseCondition, "player"],
+    ];
 
-      if (stats[winCondition.stat] >= winCondition.threshold) {
-        return {
-          gameOver: true,
-          winner: character.displayName,
-          reason: winCondition.message,
-        };
-      }
-
-      if (stats[loseCondition.stat] >= loseCondition.threshold) {
-        return {
-          gameOver: true,
-          winner: getOpponent(character.name).displayName,
-          reason: loseCondition.message,
-        };
+    for (const [stats, condition, winner] of checks) {
+      if (stats[condition.stat] >= condition.threshold) {
+        return { gameOver: true, winner, reason: condition.message };
       }
     }
 
