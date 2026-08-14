@@ -1,3 +1,5 @@
+import { characters, getOpponent } from "../data/characters.js";
+
 /**
  * GameLogic - Handles stat calculations and win/loss conditions
  */
@@ -18,41 +20,30 @@ export default class GameLogic {
     return newStats;
   }
 
+  /**
+   * Win/lose conditions are defined per character in characters.js. Reading
+   * them from there keeps one source of truth — this used to hardcode both the
+   * thresholds and the winner names, which drifted from the definitions.
+   */
   static checkWinConditions(stats) {
-    // Check L win condition
-    if (stats.investigation >= 100) {
-      return {
-        gameOver: true,
-        winner: "Detective L",
-        reason: "Investigation complete!",
-      };
-    }
+    for (const character of Object.values(characters)) {
+      const { winCondition, loseCondition } = character;
 
-    // Check L loss condition
-    if (stats.morale >= 100) {
-      return {
-        gameOver: true,
-        winner: "Kira",
-        reason: "L's Morale collapsed!",
-      };
-    }
+      if (stats[winCondition.stat] >= winCondition.threshold) {
+        return {
+          gameOver: true,
+          winner: character.displayName,
+          reason: winCondition.message,
+        };
+      }
 
-    // Check Kira win condition
-    if (stats.publicOpinion >= 100) {
-      return {
-        gameOver: true,
-        winner: "Kira",
-        reason: "Public Opinion reached 100!",
-      };
-    }
-
-    // Check Kira loss condition
-    if (stats.pressure >= 100) {
-      return {
-        gameOver: true,
-        winner: "Detective L",
-        reason: "Pressure too high!",
-      };
+      if (stats[loseCondition.stat] >= loseCondition.threshold) {
+        return {
+          gameOver: true,
+          winner: getOpponent(character.name).displayName,
+          reason: loseCondition.message,
+        };
+      }
     }
 
     return { gameOver: false };

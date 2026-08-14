@@ -6,17 +6,20 @@ export const characters = {
     name: "Independent Detective",
     displayName: "Detective",
     portrait: "detective-neutral.png",
+    // Labels say WHOSE stat it is. All four values are shared between the two
+    // characters; only the label and colour differ. "Team Morale" used to read
+    // as the player's own when it is really the Vigilante's confidence.
     statLabels: {
-      investigation: "Investigation",
-      morale: "Team Morale",
-      publicOpinion: "Public Pressure",
-      pressure: "Suspicion Level",
+      investigation: "Your Evidence",
+      morale: "Their Confidence",
+      publicOpinion: "Their Support",
+      pressure: "Heat On Them",
     },
     statColors: {
-      investigation: { color: 0x00ff00, isGreen: true }, // Green - want high
-      morale: { color: 0x00ff00, isGreen: true }, // Green - want high
-      publicOpinion: { color: 0xff4444, isGreen: false }, // Red - vigilante support is bad
-      pressure: { color: 0xff4444, isGreen: false }, // Red - suspicion on case is bad
+      investigation: { color: 0x00ff00, isGreen: true }, // Green - you win at 100
+      morale: { color: 0xff4444, isGreen: false }, // Red - you LOSE at 100
+      publicOpinion: { color: 0xff4444, isGreen: false }, // Red - they win at 100
+      pressure: { color: 0x00ff00, isGreen: true }, // Green - they lose at 100, so you win
     },
     positiveStats: ["investigation"],
     negativeStats: ["morale"],
@@ -37,16 +40,16 @@ export const characters = {
     displayName: "Vigilante",
     portrait: "killer-neutral.png",
     statLabels: {
-      investigation: "Evidence Against",
-      morale: "Confidence",
-      publicOpinion: "Public Support",
-      pressure: "Investigation Heat",
+      investigation: "Evidence On You",
+      morale: "Your Confidence",
+      publicOpinion: "Your Support",
+      pressure: "Heat On You",
     },
     statColors: {
-      investigation: { color: 0xff4444, isGreen: false }, // Red - evidence against him is bad
-      morale: { color: 0x00ff00, isGreen: true }, // Green - confidence is good
-      publicOpinion: { color: 0x00ff00, isGreen: true }, // Green - public support is good
-      pressure: { color: 0xff4444, isGreen: false }, // Red - being investigated is bad
+      investigation: { color: 0xff4444, isGreen: false }, // Red - they win at 100
+      morale: { color: 0x00ff00, isGreen: true }, // Green - they lose at 100, so you win
+      publicOpinion: { color: 0x00ff00, isGreen: true }, // Green - you win at 100
+      pressure: { color: 0xff4444, isGreen: false }, // Red - you LOSE at 100
     },
     positiveStats: ["publicOpinion"],
     negativeStats: ["pressure"],

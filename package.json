@@ -7,6 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "server": "cd server && npm start",
     "server:dev": "cd server && npm run dev",
     "deploy": "gcloud run deploy shadows-of-judgment --source . --region europe-west1 --allow-unauthenticated --session-affinity --min-instances 0 --max-instances 1 --memory 256Mi --cpu 1 --port 8080",
@@ -27,6 +29,7 @@
     "socket.io-client": "^4.8.3"
   },
   "devDependencies": {
-    "vite": "^7.2.7"
+    "vite": "^7.2.7",
+    "vitest": "^4.1.10"
   }
 }
