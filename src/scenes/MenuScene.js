@@ -66,10 +66,10 @@ export default class MenuScene extends Phaser.Scene {
 
     // Multiplayer hover
     multiplayerButton.on("pointerover", () =>
-      multiplayerButton.setBackgroundColor("#0088ff")
+      multiplayerButton.setBackgroundColor("#0088ff"),
     );
     multiplayerButton.on("pointerout", () =>
-      multiplayerButton.setBackgroundColor("#0066cc")
+      multiplayerButton.setBackgroundColor("#0066cc"),
     );
     multiplayerButton.on("pointerdown", () => {
       this.registry.set("debugMode", false);
@@ -78,10 +78,10 @@ export default class MenuScene extends Phaser.Scene {
 
     // Single Player hover
     singlePlayerButton.on("pointerover", () =>
-      singlePlayerButton.setBackgroundColor("#009900")
+      singlePlayerButton.setBackgroundColor("#009900"),
     );
     singlePlayerButton.on("pointerout", () =>
-      singlePlayerButton.setBackgroundColor("#006600")
+      singlePlayerButton.setBackgroundColor("#006600"),
     );
     singlePlayerButton.on("pointerdown", () => {
       this.registry.set("debugMode", false);
@@ -90,10 +90,10 @@ export default class MenuScene extends Phaser.Scene {
 
     // Test Mode hover
     testModeButton.on("pointerover", () =>
-      testModeButton.setBackgroundColor("#a95500")
+      testModeButton.setBackgroundColor("#a95500"),
     );
     testModeButton.on("pointerout", () =>
-      testModeButton.setBackgroundColor("#7a3f00")
+      testModeButton.setBackgroundColor("#7a3f00"),
     );
     testModeButton.on("pointerdown", () => {
       this.registry.set("debugMode", true);
@@ -102,11 +102,9 @@ export default class MenuScene extends Phaser.Scene {
 
     // How to Play hover
     howToPlayButton.on("pointerover", () =>
-      howToPlayButton.setColor("#ffffff")
+      howToPlayButton.setColor("#ffffff"),
     );
-    howToPlayButton.on("pointerout", () =>
-      howToPlayButton.setColor("#aaaaaa")
-    );
+    howToPlayButton.on("pointerout", () => howToPlayButton.setColor("#aaaaaa"));
     howToPlayButton.on("pointerdown", () => {
       this.scene.start("InstructionsScene");
     });

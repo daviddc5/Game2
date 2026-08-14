@@ -897,12 +897,7 @@ export default class BattleScene extends Phaser.Scene {
       .setVisible(false);
     panelObjects.push(panelHint);
 
-    const statRows = [
-      "investigation",
-      "morale",
-      "publicOpinion",
-      "pressure",
-    ];
+    const statRows = ["investigation", "morale", "publicOpinion", "pressure"];
 
     statRows.forEach((stat, index) => {
       const y = 460 + index * 95;
@@ -966,7 +961,13 @@ export default class BattleScene extends Phaser.Scene {
 
   createDebugPanelButton(x, y, text, color, onClick, width = 180, height = 42) {
     const bg = this.add
-      .rectangle(x, y, width, height, Phaser.Display.Color.HexStringToColor(color).color)
+      .rectangle(
+        x,
+        y,
+        width,
+        height,
+        Phaser.Display.Color.HexStringToColor(color).color,
+      )
       .setDepth(3501)
       .setInteractive({ useHandCursor: true })
       .setVisible(false);
@@ -994,7 +995,8 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   toggleDebugPanel(forceState) {
-    const nextState = typeof forceState === "boolean" ? forceState : !this.debugPanelVisible;
+    const nextState =
+      typeof forceState === "boolean" ? forceState : !this.debugPanelVisible;
     this.debugPanelVisible = nextState;
 
     if (!this.debugPanelObjects) return;
