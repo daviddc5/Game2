@@ -41,155 +41,91 @@ Players need to understand energy costs, speed/priority, card types, AND stat ef
 
 ---
 
-## Planned Improvements
+## How to use this document
 
-### Priority 0: Correctness & Visual Redesign (do first)
+Every task is a checkbox with an ID (`U1`, `U2`, ...). Work top to bottom — the order is deliberate, not a preference. Phase 0 is a correctness fix; everything after it is wasted effort until it lands, because playtests before it measure the wrong problem.
 
-#### 0A. Fix the contradictory stat signals
-- Make `statColors.isGreen` agree with `positiveStats` / `negativeStats` for every stat on both characters. Right now the Detective's `morale` disagrees with itself.
-- Reconcile `GameLogic.checkWinConditions()` with the `winCondition` / `loseCondition` objects in `characters.js`. The logic currently hardcodes thresholds and returns the names `"Detective L"` and `"Kira"`, ignoring the character definitions entirely.
-- Relabel the four stats so each name says **whose** it is. "Team Morale" reads as the player's; it is really the Vigilante's confidence. Names like "Their Confidence" / "Your Evidence" remove the ambiguity for free.
+### Instructions for the agent
 
-#### 0B. Visual redesign pass before building new UI
-Every Priority 1 and 2 item needs somewhere to live: the narration overlay needs screen space, the momentum bar needs a home, simplified cards change the hand's footprint. Building those into the current layout and *then* redesigning means building each one twice.
+When you finish a task in this file, update it in the same change:
 
-Design the target battle screen first, then build into it:
-- One agreed layout for the battle screen at 750x1334, with the momentum bar, narration overlay, and compact stat display placed deliberately rather than fitted around what already exists.
-- A named colour palette and type scale, so "green means good" is a rule applied once rather than a per-stat decision.
-- A minimum type size. Several current labels are 10-14px in a 750-wide canvas that renders at roughly half scale on a phone — around 5-7pt on screen. Nothing below ~24px in design space survives on a real device.
-- Decide the art direction explicitly: the pixel-art portraits and the flat rectangle UI currently belong to two different games.
+1. Tick the box: `- [ ]` becomes `- [x]`.
+2. Append the completion marker to that line: `✅ <YYYY-MM-DD> · <short commit sha>`.
+3. If the work revealed the task was wrong, unnecessary, or already done, **do not silently tick it** — rewrite the line to say what was actually true, and note why.
+4. If you discover new work, add it as a new `U<n>` under the right phase rather than expanding an existing task.
+5. Never tick a box you have not verified. "The code looks right" is not verification — run it, or say plainly that you did not.
+6. Keep the phase ordering intact. If something must jump the queue, move the line and say why in the commit message.
 
-*Claude can generate layout mockups and palette options for this step before any code changes.*
+Update the progress count in the phase headings as you go.
 
 ---
 
-### Priority 1: Visual Storytelling & Narrative Feedback
+## Task List
 
-#### 1A. Turn-by-Turn Narration
-- Replace generic battle log with narrative text that tells a story
-- Each card play triggers a dramatic description of what happened
-- Examples:
-  - Detective plays "Surveillance Sweep": *"The Detective deploys surveillance cameras across the city, watching the shadows for the Vigilante's next move."*
-  - Vigilante plays "Righteous Act": *"The Vigilante strikes down a notorious crime lord. The public cheers - but the Detective takes note."*
-  - Counter cancels: *"The Detective anticipated this move! The Vigilante's plan crumbles before it even begins."*
+### Phase 0 — Correctness (blocks everything) · 0/4
 
-#### 1B. Narrative Event System
-- Key moments trigger story beats:
-  - Win stat crosses 50: *"The tide is turning! The Detective's investigation is gaining momentum."*
-  - Lose stat crosses 75: *"Danger! The Vigilante's identity is nearly exposed!"*
-  - Near win (90+): *"The endgame approaches. One more push could decide everything."*
-  - Counter play: dramatic counter-narration
-  - Big power card: special dramatic text
+The UI currently instructs Detective players to do the thing that loses them the game. Nothing else in this document matters until this is fixed.
 
-#### 1C. Screen Effects During Card Resolution
-- Screen shake on power cards
-- Color flash on counters (red flash for cancellation)
-- Glow/pulse effects on stat bars when they change significantly
-- Camera zoom on dramatic moments
-- Particle-like effects (using Phaser rectangles/circles) for big plays
+- [ ] **U1** — Fix the Detective's `morale` contradiction in `characters.js`: it is coloured green with `isGreen: true` ("want high"), listed in `negativeStats`, and is the `loseCondition` at `>= 100`. Decide which is true and make all three agree.
+- [ ] **U2** — Audit the other seven stat label/colour pairs for the same class of contradiction. Check `isGreen` against `positiveStats`/`negativeStats` against the win/lose conditions for both characters.
+- [ ] **U3** — Relabel all four stats so the name says *whose* it is. "Team Morale" reads as the player's but is really the Vigilante's confidence. There are four shared values, not eight — the label is the only thing distinguishing them.
+- [ ] **U4** — Reconcile `GameLogic.checkWinConditions()` with the `winCondition`/`loseCondition` objects in `characters.js`. It currently hardcodes thresholds and returns the names `"Detective L"` and `"Kira"`, which also leaks the pre-pivot Death Note naming to the player.
 
-#### 1D. Card Flavor Text
-- Add `playNarration` field to every card in `cards.js`
-- Each card gets a unique narrative description of what happens when played
-- Shown in the narration overlay during resolution
+### Phase 0.5 — Design pass (before building new UI) · 0/3
 
-### Priority 2: Reducing Confusion
+Narration, the momentum bar, and simplified cards all need somewhere to live. Build them into the current layout and then redesign, and each gets built twice.
 
-#### 2A. Momentum / Tug-of-War Bar
-- A single horizontal bar at the center of the battle screen
-- Shows who is winning at a glance without needing to understand individual stats
-- Left side = player winning (blue), right side = opponent winning (red)
-- Calculation: `(playerWinProgress - playerLoseRisk) - (opponentWinProgress - opponentLoseRisk)`
-- Updates with smooth animation each turn
-- Labels: player name on left, opponent name on right, "ADVANTAGE" indicator
+- [ ] **U5** — Agree one battle-screen layout at 750x1334 with deliberate space for the momentum bar, narration overlay, and compact stats. Mockup first, no code.
+- [ ] **U6** — Define a named colour palette and type scale. "Green means good" becomes one rule applied once, instead of a per-stat decision that produced U1.
+- [ ] **U7** — Decide the art direction. The pixel-art portraits and the flat-rectangle UI currently belong to two different games.
 
-#### 2B. Simplified Card Effect Display
-- Replace raw stat numbers on cards with intuitive visual summary
-- Show colored arrows: green up-arrows for beneficial effects, red down-arrows for harmful
-- Compact format on card face: "YOU: +++" / "FOE: --" (arrow count = impact strength)
-- Full stat breakdown only shown in the enlarged card view (tap to see details)
-- Card "power rating" indicator (1-5 stars or simple strength label)
+### Phase 1 — Touch and feel · 0/9
 
-#### 2C. Better Battle Log (Story-Driven)
-- Transform the existing `BattleLog` from plain text into a narrative story log
-- Each entry is a short story sentence, not "Player played: Card Name"
-- Color-coded by impact: green for good news, red for threats, gold for dramatic moments
-- Show turn number context
+Addresses the "loses engagement" half of the feedback. Cheapest wins per hour of work, and every later change inherits the benefit.
 
-#### 2D. Interactive Tutorial (Guided First Game)
-- New "LEARN TO PLAY" button on the main menu
-- Launches a special tutorial battle with step-by-step guidance
-- Tutorial flow (one concept per turn):
-  1. **Turn 1**: "This is your hand. Tap a card to select it." (highlight cards, dim everything else)
-  2. **Turn 2**: "See the energy cost? You need enough energy to play." (highlight energy display)
-  3. **Turn 3**: "Watch the momentum bar - it shows who's winning." (highlight momentum bar)
-  4. **Turn 4**: "Your green stats are good. Push them up!" (highlight player stats)
-  5. **Turn 5**: "The opponent's red stats hurt them. Push those up too!" (highlight opponent stats)
-  6. **Turn 6**: "Counter cards cancel the opponent's move! Try it." (give counter card)
-  7. Free play for remaining turns with occasional tips
-- AI plays slowly and predictably during tutorial
-- Tutorial can be skipped at any time
+- [ ] **U8** — Button press states: scale to ~0.95 on `pointerdown`, spring back on release. Buttons currently only swap `setBackgroundColor` on hover, so **on touch they give no feedback at all** — see `MenuScene.js:56-62`.
+- [ ] **U9** — Replace hover-driven card preview with tap-to-preview → tap-to-confirm. `CardHand`'s `HOVER_LIFT`/`HOVER_SCALE` fire on finger-down then immediately fire `pointerdown`, so cards flash and misplay on touch.
+- [ ] **U10** — Font size pass. Nothing below ~24px in the 750-wide design space; the canvas renders at roughly half scale on a phone, so current 10-14px labels land around 5-7pt.
+- [ ] **U11** — Safe-area handling for notch and home indicator. 750x1334 is 0.5625; modern phones are ~0.46, so `Scale.FIT` letterboxes.
+- [ ] **U12** — `SoundManager.js` plus preload in `BootScene`. There is currently **zero audio in the codebase**.
+- [ ] **U13** — Core sounds: card select, card confirm, card reveal, a distinct counter/cancel sting, stat gain vs loss tones, win and lose stings. The counter is the most dramatic moment in the game and currently passes in silence.
+- [ ] **U14** — One ambient loop with a mute toggle that persists.
+- [ ] **U15** — Stat bar overshoot and settle. (Floating `+12`/`-8` numbers already exist and work — see Already Done.)
+- [ ] **U16** — Time one full turn end to end and write the number down. Overlap the stacked `delayedCall`s (800 + 1000 + 1000 + 500 + 800, plus a 2000ms hold) and let a tap skip any resolution animation.
+
+### Phase 2 — Comprehension · 0/3
+
+- [ ] **U17** — `MomentumBar.js`: one horizontal tug-of-war bar showing who is ahead without needing to parse individual stats. `(playerWin - playerRisk) - (opponentWin - opponentRisk)`, animated each turn.
+- [ ] **U18** — Simplified card effect display in `CardHand.js`: coloured arrows ("YOU: +++" / "FOE: --") on the face, full stat breakdown only in the enlarged view.
+- [ ] **U19** — `GameOverScene` payoff: show the final momentum swing, one line on *why* they won or lost tied to the deciding stat, and make "play again" the default action with no character re-selection.
+
+### Phase 3 — Storytelling · 0/4
+
+- [ ] **U20** — Add a `playNarration` field to all 25 cards in `cards.js`.
+- [ ] **U21** — `narration.js`: narrative generation for card plays and game events (win stat crossing 50, lose stat crossing 75, near-win at 90+, counter plays).
+- [ ] **U22** — `NarrativeOverlay.js` plus screen effects wired into `CardResolver.js`: shake on power cards, red flash on counters, glow on large stat changes.
+- [ ] **U23** — Turn `BattleLog` into a story log: short narrative sentences, colour-coded by impact, with turn context. Add entry transitions (currently 0 tweens).
+
+### Phase 4 — Teaching · 0/2
+
+- [ ] **U24** — `TutorialBattleScene.js`: guided first game, one concept per turn (select → energy → momentum → your stats → their stats → counters), predictable AI, skippable at any point.
+- [ ] **U25** — "LEARN TO PLAY" button in `MenuScene`, register the scene in `config.js`.
+
+### Phase 5 — Reasons to return (later) · 0/2
+
+- [ ] **U26** — Persist matches played, win rate, longest streak locally.
+- [ ] **U27** — Per-character win/loss tracking, to give a reason to try the other side.
 
 ---
 
-### Priority 3: Game Feel
+## Already Done
 
-The current diagnosis is entirely about *comprehension*. "Loses engagement" is a separate failure: a player can understand the game perfectly and still be bored. These are the cheapest fixes per unit of engagement.
+Recorded so nobody rebuilds them:
 
-#### 3A. Sound — there is none at all
-`grep` finds zero audio in the codebase. No card sound, no hit, no music. Silence reads as "unfinished prototype" faster than any visual problem, and this is the highest impact-per-hour item in the document.
-- Card select, card confirm, card reveal
-- Distinct counter/cancel sting — the most dramatic moment in the game currently passes in silence
-- Stat gain vs stat loss tones
-- Win and lose stings
-- One ambient loop, with a mute toggle
-
-#### 3B. Juice — uneven, and worst where it matters on mobile
-There are 16 tweens across the UI, and they are not spread evenly.
-
-Already good, leave alone:
-- Card resolution: flip reveal, counter/cancel X, priority text, glow layers (6 tweens)
-- Stat bars: animated fill plus floating `+12` / `-8` numbers with correct colour inversion for negative stats — `StatBarGroup.showStatChange()`, called on every update
-
-Missing entirely:
-- **Buttons have no press state.** They swap `setBackgroundColor` on hover and nothing else. See `MenuScene.js:56-62`.
-- `BattleLog` — 0 tweens, entries appear instantly
-- `StatsModal` — 0 tweens, pops in with no transition
-
-**The real problem: roughly 9 of the 16 tweens are hover-driven** — the card lift in `CardHand`, the border flash, every button colour swap. `pointerover` does not meaningfully exist on touch, so **on a phone most of this feedback never plays at all.** Tapping a button produces no visual response until the scene changes, which reads as an unresponsive control and causes double-taps.
-
-Fix in this order:
-1. Button press states — scale down ~0.95 on `pointerdown`, spring back on release. Works on both input types.
-2. Card tap feedback that does not depend on hover — shares a root cause with the touch interaction redesign
-3. Stat bar overshoot and settle
-4. Portrait reaction on big swings
-
-#### 3C. Turn pacing
-`BattleScene.js` has stacked `delayedCall`s of 800ms, 1000ms, 1000ms, 500ms, 800ms and a 2000ms hold. Add those up across a turn and the player spends several seconds per turn watching nothing happen.
-- Time one full turn end to end and write the number down before changing anything.
-- Overlap animations instead of queueing them.
-- Let a tap skip any resolution animation. Returning players should never be forced to sit through a sequence they have seen fifty times.
-
-#### 3D. The first thirty seconds
-Before the tutorial can teach anything, the player has to still be there.
-- Count taps from load to first card played. Every one before the first meaningful decision is a place to lose someone.
-- The title screen should state what the game *is* in one line, not just offer buttons.
-- Consider dropping the player straight into a match against the AI, with character select offered afterwards.
-
-#### 3E. Win/lose payoff
-The match ends and a screen appears. Ending is the moment that decides whether a player starts a second match:
-- Show the final momentum swing, not just the result
-- One line on *why* they won or lost, tied to the stat that ended it
-- "Play again" as the default focused action, on the same character, with no re-selection
-
----
-
-### Priority 4: Reasons to Return (later)
-
-Not for this pass, but worth recording since engagement was the complaint:
-- Persist a local record: matches played, win rate per character, longest streak
-- Per-character win/loss tracking gives a reason to try the other side
-- Daily "beat the AI on hard" style challenge
+- [x] **Floating stat-change numbers** — `StatBarGroup.showStatChange()` spawns coloured `+12`/`-8` text, floats and fades it, and correctly inverts colour for negative stats. Called on every stat update.
+- [x] **Card resolution animation** — flip reveal, counter/cancel X, priority text, and glow layers are all tweened.
+- [x] **Animated stat bar fill** — 300ms `Power2` ease on value change.
+- [x] **Instructions screen** — `InstructionsScene.js` exists. Note this is the "wall of text" that U24 replaces, not a substitute for it.
 
 ---
 
@@ -221,35 +157,6 @@ Not for this pass, but worth recording since engagement was the complaint:
 
 ---
 
-## Implementation Order
-
-**Phase 0 — correctness and design (before any new UI)**
-1. Fix `isGreen` contradictions and relabel stats in `characters.js`
-2. Reconcile `GameLogic.checkWinConditions()` with the character definitions
-3. Agree the redesigned battle screen layout, palette, and type scale
-
-**Phase 1 — game feel (cheapest engagement wins)**
-4. `SoundManager.js` + preload; card, counter, win/lose sounds
-5. Button press states (works on touch, unlike the current hover-only feedback)
-6. Audit turn timing; overlap animations; add tap-to-skip
-
-**Phase 2 — comprehension**
-7. `MomentumBar.js` — who is winning, at a glance
-8. Simplified card effect display in `CardHand.js`
-9. `GameOverScene.js` payoff pass
-
-**Phase 3 — storytelling**
-10. Add `playNarration` to all cards in `cards.js`
-11. `narration.js` generation logic
-12. `NarrativeOverlay.js` + screen effects in `CardResolver.js`
-13. `BattleLog.js` into a story log
-
-**Phase 4 — teaching**
-14. `TutorialBattleScene.js`
-15. "LEARN TO PLAY" button in `MenuScene.js`, register scene in config
-
-Sound and juice move ahead of narration deliberately: they are far less work, they benefit every future change, and they address "loses engagement" directly rather than through comprehension.
-
 ## Success Criteria
 
 - A new player can understand who's winning within 5 seconds of looking at the screen (momentum bar)
@@ -268,3 +175,131 @@ The criteria above are unfalsifiable as written. Make them measurable with five 
 4. Ask one question at the end: "would you play again?" That is the actual metric the LinkedIn feedback was about.
 
 Record the answers before the changes as a baseline. Without it there is no way to know whether any of this worked.
+
+---
+
+## Appendix — Task Detail
+
+Fuller specifications for the tasks above. The `U` numbers in the task list are the source of truth for scope and ordering; this section is reference for *how*.
+
+### Storytelling detail (U20-U23)
+
+#### U21 · Turn-by-Turn Narration
+- Replace generic battle log with narrative text that tells a story
+- Each card play triggers a dramatic description of what happened
+- Examples:
+  - Detective plays "Surveillance Sweep": *"The Detective deploys surveillance cameras across the city, watching the shadows for the Vigilante's next move."*
+  - Vigilante plays "Righteous Act": *"The Vigilante strikes down a notorious crime lord. The public cheers - but the Detective takes note."*
+  - Counter cancels: *"The Detective anticipated this move! The Vigilante's plan crumbles before it even begins."*
+
+#### U21 · Narrative Event System
+- Key moments trigger story beats:
+  - Win stat crosses 50: *"The tide is turning! The Detective's investigation is gaining momentum."*
+  - Lose stat crosses 75: *"Danger! The Vigilante's identity is nearly exposed!"*
+  - Near win (90+): *"The endgame approaches. One more push could decide everything."*
+  - Counter play: dramatic counter-narration
+  - Big power card: special dramatic text
+
+#### U22 · Screen Effects During Card Resolution
+- Screen shake on power cards
+- Color flash on counters (red flash for cancellation)
+- Glow/pulse effects on stat bars when they change significantly
+- Camera zoom on dramatic moments
+- Particle-like effects (using Phaser rectangles/circles) for big plays
+
+#### U20 · Card Flavor Text
+- Add `playNarration` field to every card in `cards.js`
+- Each card gets a unique narrative description of what happens when played
+- Shown in the narration overlay during resolution
+
+### Comprehension detail (U17-U19, U24-U25)
+
+#### U17 · Momentum / Tug-of-War Bar
+- A single horizontal bar at the center of the battle screen
+- Shows who is winning at a glance without needing to understand individual stats
+- Left side = player winning (blue), right side = opponent winning (red)
+- Calculation: `(playerWinProgress - playerLoseRisk) - (opponentWinProgress - opponentLoseRisk)`
+- Updates with smooth animation each turn
+- Labels: player name on left, opponent name on right, "ADVANTAGE" indicator
+
+#### U18 · Simplified Card Effect Display
+- Replace raw stat numbers on cards with intuitive visual summary
+- Show colored arrows: green up-arrows for beneficial effects, red down-arrows for harmful
+- Compact format on card face: "YOU: +++" / "FOE: --" (arrow count = impact strength)
+- Full stat breakdown only shown in the enlarged card view (tap to see details)
+- Card "power rating" indicator (1-5 stars or simple strength label)
+
+#### U23 · Better Battle Log (Story-Driven)
+- Transform the existing `BattleLog` from plain text into a narrative story log
+- Each entry is a short story sentence, not "Player played: Card Name"
+- Color-coded by impact: green for good news, red for threats, gold for dramatic moments
+- Show turn number context
+
+#### U24 · Interactive Tutorial (Guided First Game)
+- New "LEARN TO PLAY" button on the main menu
+- Launches a special tutorial battle with step-by-step guidance
+- Tutorial flow (one concept per turn):
+  1. **Turn 1**: "This is your hand. Tap a card to select it." (highlight cards, dim everything else)
+  2. **Turn 2**: "See the energy cost? You need enough energy to play." (highlight energy display)
+  3. **Turn 3**: "Watch the momentum bar - it shows who's winning." (highlight momentum bar)
+  4. **Turn 4**: "Your green stats are good. Push them up!" (highlight player stats)
+  5. **Turn 5**: "The opponent's red stats hurt them. Push those up too!" (highlight opponent stats)
+  6. **Turn 6**: "Counter cards cancel the opponent's move! Try it." (give counter card)
+  7. Free play for remaining turns with occasional tips
+- AI plays slowly and predictably during tutorial
+- Tutorial can be skipped at any time
+
+---
+
+### Game feel detail (U8-U16)
+
+The current diagnosis is entirely about *comprehension*. "Loses engagement" is a separate failure: a player can understand the game perfectly and still be bored. These are the cheapest fixes per unit of engagement.
+
+#### U12-U14 · Sound — there is none at all
+`grep` finds zero audio in the codebase. No card sound, no hit, no music. Silence reads as "unfinished prototype" faster than any visual problem, and this is the highest impact-per-hour item in the document.
+- Card select, card confirm, card reveal
+- Distinct counter/cancel sting — the most dramatic moment in the game currently passes in silence
+- Stat gain vs stat loss tones
+- Win and lose stings
+- One ambient loop, with a mute toggle
+
+#### U8-U9, U15 · Juice — uneven, and worst where it matters on mobile
+There are 16 tweens across the UI, and they are not spread evenly.
+
+Already good, leave alone:
+- Card resolution: flip reveal, counter/cancel X, priority text, glow layers (6 tweens)
+- Stat bars: animated fill plus floating `+12` / `-8` numbers with correct colour inversion for negative stats — `StatBarGroup.showStatChange()`, called on every update
+
+Missing entirely:
+- **Buttons have no press state.** They swap `setBackgroundColor` on hover and nothing else. See `MenuScene.js:56-62`.
+- `BattleLog` — 0 tweens, entries appear instantly
+- `StatsModal` — 0 tweens, pops in with no transition
+
+**The real problem: roughly 9 of the 16 tweens are hover-driven** — the card lift in `CardHand`, the border flash, every button colour swap. `pointerover` does not meaningfully exist on touch, so **on a phone most of this feedback never plays at all.** Tapping a button produces no visual response until the scene changes, which reads as an unresponsive control and causes double-taps.
+
+Fix in this order:
+1. Button press states — scale down ~0.95 on `pointerdown`, spring back on release. Works on both input types.
+2. Card tap feedback that does not depend on hover — shares a root cause with the touch interaction redesign
+3. Stat bar overshoot and settle
+4. Portrait reaction on big swings
+
+#### U16 · Turn pacing
+`BattleScene.js` has stacked `delayedCall`s of 800ms, 1000ms, 1000ms, 500ms, 800ms and a 2000ms hold. Add those up across a turn and the player spends several seconds per turn watching nothing happen.
+- Time one full turn end to end and write the number down before changing anything.
+- Overlap animations instead of queueing them.
+- Let a tap skip any resolution animation. Returning players should never be forced to sit through a sequence they have seen fifty times.
+
+#### First thirty seconds · The first thirty seconds
+Before the tutorial can teach anything, the player has to still be there.
+- Count taps from load to first card played. Every one before the first meaningful decision is a place to lose someone.
+- The title screen should state what the game *is* in one line, not just offer buttons.
+- Consider dropping the player straight into a match against the AI, with character select offered afterwards.
+
+#### U19 · Win/lose payoff
+The match ends and a screen appears. Ending is the moment that decides whether a player starts a second match:
+- Show the final momentum swing, not just the result
+- One line on *why* they won or lost, tied to the stat that ended it
+- "Play again" as the default focused action, on the same character, with no re-selection
+
+---
+
