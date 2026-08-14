@@ -65,7 +65,7 @@ export default class StatBarGroup {
     this.objects.push(bar);
 
     // Store current value for change detection
-    bar.setData('currentValue', value);
+    bar.setData("currentValue", value);
 
     // Store reference with isPositive flag
     this.bars[key] = {
@@ -125,7 +125,7 @@ export default class StatBarGroup {
 
     // Format text
     const changeText = change > 0 ? `+${change}` : `${change}`;
-    
+
     // Determine color based on whether stat is positive and whether change is increase/decrease
     // For positive stats (green): increase = green, decrease = red
     // For negative stats (red): increase = red, decrease = green

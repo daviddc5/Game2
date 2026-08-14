@@ -352,7 +352,8 @@ export default class CardHand {
       // Match the -50 offset from render() for consistent positioning
       const startX = centerX - totalSpacing / 2 - 50;
       const x = startX + (this.CARD_WIDTH + this.CARD_SPACING) * cardIndex;
-      const normalizedPos = numCards === 1 ? 0 : (cardIndex - (numCards - 1) / 2) / (numCards - 1);
+      const normalizedPos =
+        numCards === 1 ? 0 : (cardIndex - (numCards - 1) / 2) / (numCards - 1);
       const arcOffset = Math.abs(normalizedPos) * this.ARC_AMOUNT;
       const y = this.CARD_Y + arcOffset;
       const rotation = normalizedPos * 0.1;

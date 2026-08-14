@@ -386,7 +386,13 @@ export default class BattleScene extends Phaser.Scene {
         .setVisible(false);
 
       const fill = this.add
-        .rectangle(x + 112, y, 0, barHeight, Phaser.Display.Color.HexStringToColor(color).color)
+        .rectangle(
+          x + 112,
+          y,
+          0,
+          barHeight,
+          Phaser.Display.Color.HexStringToColor(color).color,
+        )
         .setOrigin(0, 0.5)
         .setDepth(166)
         .setVisible(false);
@@ -436,12 +442,17 @@ export default class BattleScene extends Phaser.Scene {
     addRow(70, 765, "DANGER", "#FF4034", "player", "danger");
 
     const rulesStrip = this.add
-      .text(375, 255, "WIN: fill both GREEN to 100    |    LOSE: any RED reaches 100", {
-        fontFamily: "Arial, sans-serif",
-        fontSize: "15px",
-        color: "#dddddd",
-        align: "center",
-      })
+      .text(
+        375,
+        255,
+        "WIN: fill both GREEN to 100    |    LOSE: any RED reaches 100",
+        {
+          fontFamily: "Arial, sans-serif",
+          fontSize: "15px",
+          color: "#dddddd",
+          align: "center",
+        },
+      )
       .setOrigin(0.5)
       .setDepth(165)
       .setVisible(false);
@@ -493,12 +504,16 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   getProgressValue(stats, character) {
-    const winStats = character.winCondition.stats || [character.winCondition.stat];
+    const winStats = character.winCondition.stats || [
+      character.winCondition.stat,
+    ];
     return Math.min(...winStats.map((stat) => stats[stat] ?? 0));
   }
 
   getDangerValue(stats, character) {
-    const loseStats = character.loseCondition.stats || [character.loseCondition.stat];
+    const loseStats = character.loseCondition.stats || [
+      character.loseCondition.stat,
+    ];
     return Math.max(...loseStats.map((stat) => stats[stat] ?? 0));
   }
 
@@ -529,10 +544,22 @@ export default class BattleScene extends Phaser.Scene {
   updateSimpleVisualHud(force = false) {
     if (!this.simpleHud) return;
 
-    const playerProgress = this.getProgressValue(this.playerStats, this.playerCharacter);
-    const playerDanger = this.getDangerValue(this.playerStats, this.playerCharacter);
-    const opponentProgress = this.getProgressValue(this.opponentStats, this.opponentCharacter);
-    const opponentDanger = this.getDangerValue(this.opponentStats, this.opponentCharacter);
+    const playerProgress = this.getProgressValue(
+      this.playerStats,
+      this.playerCharacter,
+    );
+    const playerDanger = this.getDangerValue(
+      this.playerStats,
+      this.playerCharacter,
+    );
+    const opponentProgress = this.getProgressValue(
+      this.opponentStats,
+      this.opponentCharacter,
+    );
+    const opponentDanger = this.getDangerValue(
+      this.opponentStats,
+      this.opponentCharacter,
+    );
 
     const prev = this.simpleHud.state;
     this.animateSimpleBar(
@@ -611,7 +638,8 @@ export default class BattleScene extends Phaser.Scene {
 
     shifts.sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta));
     const strongest = shifts[0];
-    const deltaText = strongest.delta > 0 ? `+${strongest.delta}` : `${strongest.delta}`;
+    const deltaText =
+      strongest.delta > 0 ? `+${strongest.delta}` : `${strongest.delta}`;
     return `${strongest.target} ${strongest.label} ${deltaText}.`;
   }
 
@@ -631,10 +659,19 @@ export default class BattleScene extends Phaser.Scene {
       this.turnSummaryObjects.forEach((obj) => obj.destroy());
     }
 
-    const yourState = this.getSideSnapshot(this.playerStats, this.playerCharacter);
-    const foeState = this.getSideSnapshot(this.opponentStats, this.opponentCharacter);
+    const yourState = this.getSideSnapshot(
+      this.playerStats,
+      this.playerCharacter,
+    );
+    const foeState = this.getSideSnapshot(
+      this.opponentStats,
+      this.opponentCharacter,
+    );
 
-    const changeLine = this.getLargestShiftMessage(beforePlayerStats, beforeOpponentStats);
+    const changeLine = this.getLargestShiftMessage(
+      beforePlayerStats,
+      beforeOpponentStats,
+    );
     const situationLine = this.getSituationMessage(yourState, foeState);
     const stateLine = `You P:${yourState.progress}/100 D:${yourState.danger}/100   |   Foe P:${foeState.progress}/100 D:${foeState.danger}/100`;
 
