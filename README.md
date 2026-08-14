@@ -135,21 +135,52 @@ npm run deploy
 
 - [GDD.md](GDD.md) — Full Game Design Document (mechanics, cards, roadmap)
 - [DEPLOYMENT.md](DEPLOYMENT.md) — Google Cloud Run deployment guide
-- [DESIGN_NOTES/](DESIGN_NOTES/) — Development decisions and notes
+- [OBJECTIVES.md](docs/OBJECTIVES.md) — Harness CI/CD and UX objectives
+- [UX_IMPROVEMENTS.md](docs/UX_IMPROVEMENTS.md) — Engagement diagnosis and plan
+- [design-notes/](docs/design-notes/) — Character art prompts and open design ideas
 
 ---
 
 ## 🗺️ Roadmap
 
+**Shipped**
 - [x] Core simultaneous card system
-- [x] Energy management
+- [x] Energy management + speed/priority resolution
 - [x] AI opponent
 - [x] Online multiplayer (WebSockets)
-- [ ] More characters (4–6 total)
-- [ ] Deck building
-- [ ] Sound effects & animations
+- [x] Cloud Run deployment
+- [x] Instructions screen
+
+**Next — understandability** (see [docs/UX_IMPROVEMENTS.md](docs/UX_IMPROVEMENTS.md))
+- [ ] Turn-by-turn narration + card flavor text
+- [ ] Momentum bar (who's winning at a glance)
+- [ ] Simplified card effect display
+- [ ] Story-driven battle log
+- [ ] Interactive guided tutorial
+
+**Next — delivery** (see [docs/OBJECTIVES.md](docs/OBJECTIVES.md))
+- [ ] Harness CI pipeline with test gate
+- [ ] Immutable image tags + approval gate + rollback
+
+**Later — content**
+- [ ] More characters (4–6 total), unlock system
+- [ ] More cards per character, combos, rarity
+- [ ] Deck building + deck/discard visualisation
+- [ ] Story mode with progression
+
+**Later — polish**
+- [ ] Sound effects, background music, music selection
+- [ ] Particle effects, screen shake, animated backgrounds
+- [ ] Character expression switching on winning/losing
+- [ ] Original sprite art (replace AI-generated placeholders)
+- [ ] Settings menu
+
+**Later — platform & accounts**
+- [ ] PWA (installable, offline, fullscreen)
 - [ ] Mobile app (Capacitor)
-- [ ] Story mode
+- [ ] Auth + database (match history, leaderboard, profiles)
+- [ ] Move multiplayer state out of process memory (unblocks max-instances>1)
+- [ ] Ranked mode, best-of-3, turn timer
 
 ---
 
