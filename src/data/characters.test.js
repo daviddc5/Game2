@@ -20,8 +20,14 @@ describe("character definitions", () => {
     });
 
     it(`${character.displayName} win and lose conditions name real stats`, () => {
-      expect(STATS).toContain(character.winCondition.stat);
-      expect(STATS).toContain(character.loseCondition.stat);
+      character.winCondition.stats.forEach((stat) => {
+        expect(STATS).toContain(stat);
+      });
+      character.loseCondition.stats.forEach((stat) => {
+        expect(STATS).toContain(stat);
+      });
+      expect(character.winCondition.mode).toBe("all");
+      expect(character.loseCondition.mode).toBe("any");
       expect(character.winCondition.threshold).toBe(100);
       expect(character.loseCondition.threshold).toBe(100);
     });

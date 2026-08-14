@@ -7,10 +7,10 @@ export const characters = {
     displayName: "Detective",
     portrait: "detective-neutral.png",
     statLabels: {
-      investigation: "Investigation",
-      morale: "Team Morale",
-      publicOpinion: "Public Pressure",
-      pressure: "Suspicion Level",
+      investigation: "Evidence Chain",
+      morale: "Task Force Unity",
+      publicOpinion: "Public Panic",
+      pressure: "Case Doubt",
     },
     statColors: {
       investigation: { color: 0x00ff00, isGreen: true }, // Green - want high
@@ -18,17 +18,19 @@ export const characters = {
       publicOpinion: { color: 0xff4444, isGreen: false }, // Red - vigilante support is bad
       pressure: { color: 0xff4444, isGreen: false }, // Red - suspicion on case is bad
     },
-    positiveStats: ["investigation"],
-    negativeStats: ["morale"],
+    positiveStats: ["investigation", "morale"],
+    negativeStats: ["publicOpinion", "pressure"],
     winCondition: {
-      stat: "investigation",
+      stats: ["investigation", "morale"],
+      mode: "all",
       threshold: 100,
-      message: "The detective exposes the truth with overwhelming evidence!",
+      message: "The detective has sealed the case and the task force is fully united!",
     },
     loseCondition: {
-      stat: "morale",
+      stats: ["publicOpinion", "pressure"],
+      mode: "any",
       threshold: 100,
-      message: "The detective's team loses all morale and gives up!",
+      message: "The case collapses under panic and doubt!",
     },
   },
   Vigilante: {
@@ -38,9 +40,9 @@ export const characters = {
     portrait: "killer-neutral.png",
     statLabels: {
       investigation: "Evidence Against",
-      morale: "Confidence",
+      morale: "Cult Resolve",
       publicOpinion: "Public Support",
-      pressure: "Investigation Heat",
+      pressure: "Manhunt Heat",
     },
     statColors: {
       investigation: { color: 0xff4444, isGreen: false }, // Red - evidence against him is bad
@@ -48,17 +50,19 @@ export const characters = {
       publicOpinion: { color: 0x00ff00, isGreen: true }, // Green - public support is good
       pressure: { color: 0xff4444, isGreen: false }, // Red - being investigated is bad
     },
-    positiveStats: ["publicOpinion"],
-    negativeStats: ["pressure"],
+    positiveStats: ["morale", "publicOpinion"],
+    negativeStats: ["investigation", "pressure"],
     winCondition: {
-      stat: "publicOpinion",
+      stats: ["morale", "publicOpinion"],
+      mode: "all",
       threshold: 100,
-      message: "The vigilante's new world order is complete!",
+      message: "The vigilante's followers are unified and fully behind the cause!",
     },
     loseCondition: {
-      stat: "pressure",
+      stats: ["investigation", "pressure"],
+      mode: "any",
       threshold: 100,
-      message: "The vigilante's identity is exposed!",
+      message: "The vigilante is cornered by evidence and manhunt pressure!",
     },
   },
 };

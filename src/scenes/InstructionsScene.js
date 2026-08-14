@@ -80,7 +80,7 @@ export default class InstructionsScene extends Phaser.Scene {
           {
             heading: "GOAL",
             body:
-              "Raise your WIN stat to 100 before your opponent does the same — or avoid your LOSE stat hitting 100!",
+              "Win by maxing both GREEN stats to 100.\nLose if any RED stat reaches 100.",
           },
           {
             heading: "TURNS",
@@ -97,13 +97,13 @@ export default class InstructionsScene extends Phaser.Scene {
           {
             heading: "🔍 DETECTIVE",
             body:
-              "GREEN stats (good for you):\n  • Investigation — reach 100 to WIN\n  • Team Morale — keep it high\n\nRED stats (bad for you):\n  • Public Pressure — vigilante support\n  • Suspicion Level — doubt on your case",
+              "GREEN stats (win condition):\n  • Evidence Chain\n  • Task Force Unity\n\nRED stats (lose condition):\n  • Public Panic\n  • Case Doubt\n\nYou win when both green stats hit 100. You lose if either red stat hits 100.",
             color: "#44aaff",
           },
           {
             heading: "⚖️ VIGILANTE",
             body:
-              "GREEN stats (good for you):\n  • Public Support — reach 100 to WIN\n  • Confidence — your resolve\n\nRED stats (bad for you):\n  • Evidence Against — detective's proof\n  • Investigation Heat — pressure on you",
+              "GREEN stats (win condition):\n  • Cult Resolve\n  • Public Support\n\nRED stats (lose condition):\n  • Evidence Against\n  • Manhunt Heat\n\nYou win when both green stats hit 100. You lose if either red stat hits 100.",
             color: "#ff4444",
           },
         ],
@@ -116,19 +116,19 @@ export default class InstructionsScene extends Phaser.Scene {
           {
             heading: "🏆 STAT VICTORY",
             body:
-              "Your main WIN stat reaches 100:\n  • Detective: Investigation = 100\n  • Vigilante: Public Support = 100",
+              "You win when both of your GREEN stats reach 100.",
             color: "#00ff00",
           },
           {
             heading: "💀 STAT DEFEAT",
             body:
-              "Your LOSE stat reaches 100 and you lose:\n  • Detective loses if Team Morale = 100\n  • Vigilante loses if Investigation Heat = 100",
+              "You lose when any of your RED stats reaches 100.",
             color: "#ff4444",
           },
           {
             heading: "🃏 OUT OF CARDS",
             body:
-              "When both players run out of cards, a final score is calculated:\n\nScore = Green Stats − Red Stats\n\nHigher score wins! If tied, the player closer to their win stat takes it.",
+              "When both players run out of cards, a final score is calculated:\n\nScore = Green Stats − Red Stats\n\nHigher score wins! If tied, the player with higher combined GREEN progress takes it.",
             color: "#ffd700",
           },
         ],
@@ -169,7 +169,7 @@ export default class InstructionsScene extends Phaser.Scene {
           {
             heading: "🎯 BALANCE OFFENSE & DEFENSE",
             body:
-              "Don't just push your win stat. Some cards raise the opponent's red stats to threaten them with defeat.",
+              "Don't just push your green win path. Some cards raise the opponent's red danger stats to threaten defeat.",
           },
           {
             heading: "🃏 MANAGE YOUR DECK",

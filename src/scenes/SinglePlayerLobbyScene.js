@@ -52,7 +52,7 @@ export default class SinglePlayerLobbyScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.detectiveDesc = this.add
-      .text(centerX + 30, 475, "Uncover the truth with evidence\nand investigation", {
+      .text(centerX + 30, 475, "Max both GREEN stats to win.\nIf a RED stat hits 100, you lose.", {
         fontFamily: "Arial, sans-serif",
         fontSize: "18px",
         color: "#aaaaaa",
@@ -85,7 +85,7 @@ export default class SinglePlayerLobbyScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.vigilanteDesc = this.add
-      .text(centerX + 30, 715, "Win the public's support\nand deliver justice", {
+      .text(centerX + 30, 715, "Max both GREEN stats to win.\nIf a RED stat hits 100, you lose.", {
         fontFamily: "Arial, sans-serif",
         fontSize: "18px",
         color: "#aaaaaa",

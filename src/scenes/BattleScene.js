@@ -1927,35 +1927,35 @@ export default class BattleScene extends Phaser.Scene {
 
   checkGameOver() {
     // Check player's win/lose conditions using character-specific logic
-    const playerWinStat = this.playerCharacter.winCondition.stat;
-    const playerLoseStat = this.playerCharacter.loseCondition.stat;
-    const opponentWinStat = this.opponentCharacter.winCondition.stat;
-    const opponentLoseStat = this.opponentCharacter.loseCondition.stat;
+    const playerWinStats = this.playerCharacter.winCondition.stats || [this.playerCharacter.winCondition.stat];
+    const playerLoseStats = this.playerCharacter.loseCondition.stats || [this.playerCharacter.loseCondition.stat];
+    const opponentWinStats = this.opponentCharacter.winCondition.stats || [this.opponentCharacter.winCondition.stat];
+    const opponentLoseStats = this.opponentCharacter.loseCondition.stats || [this.opponentCharacter.loseCondition.stat];
 
-    // Player wins if their win stat reaches 100
-    if (this.playerStats[playerWinStat] >= 100) {
-      console.log(`Game Over! Player wins - ${playerWinStat} reached 100`);
+    // Player wins if all required green stats reach threshold
+    if (GameLogic.isConditionMet(this.playerStats, this.playerCharacter.winCondition)) {
+      console.log(`Game Over! Player wins - ${playerWinStats.join(", ")} reached target`);
       this.gameOver("player", `${this.playerCharacter.winCondition.message}`);
       return true;
     }
 
-    // Player loses if their lose stat reaches 100
-    if (this.playerStats[playerLoseStat] >= 100) {
-      console.log(`Game Over! Player loses - ${playerLoseStat} reached 100`);
+    // Player loses if any red danger stat reaches threshold
+    if (GameLogic.isConditionMet(this.playerStats, this.playerCharacter.loseCondition)) {
+      console.log(`Game Over! Player loses - ${playerLoseStats.join(", ")} danger threshold hit`);
       this.gameOver("opponent", `${this.playerCharacter.loseCondition.message}`);
       return true;
     }
 
-    // Opponent wins if their win stat reaches 100
-    if (this.opponentStats[opponentWinStat] >= 100) {
-      console.log(`Game Over! Opponent wins - ${opponentWinStat} reached 100`);
+    // Opponent wins if all required green stats reach threshold
+    if (GameLogic.isConditionMet(this.opponentStats, this.opponentCharacter.winCondition)) {
+      console.log(`Game Over! Opponent wins - ${opponentWinStats.join(", ")} reached target`);
       this.gameOver("opponent", `${this.opponentCharacter.winCondition.message}`);
       return true;
     }
 
-    // Opponent loses if their lose stat reaches 100
-    if (this.opponentStats[opponentLoseStat] >= 100) {
-      console.log(`Game Over! Opponent loses - ${opponentLoseStat} reached 100`);
+    // Opponent loses if any red danger stat reaches threshold
+    if (GameLogic.isConditionMet(this.opponentStats, this.opponentCharacter.loseCondition)) {
+      console.log(`Game Over! Opponent loses - ${opponentLoseStats.join(", ")} danger threshold hit`);
       this.gameOver("player", `${this.opponentCharacter.loseCondition.message}`);
       return true;
     }
@@ -1993,13 +1993,13 @@ export default class BattleScene extends Phaser.Scene {
       } else if (opponentScore > playerScore) {
         this.gameOver("opponent", `All cards played!\n${opponentName} score: ${opponentScore}\n${playerName} score: ${playerScore}`);
       } else {
-        // True tie - player with higher win stat wins
-        const playerWinProgress = this.playerStats[playerWinStat];
-        const opponentWinProgress = this.opponentStats[opponentWinStat];
+        // True tie - player with higher combined green progress wins
+        const playerWinProgress = playerWinStats.reduce((total, stat) => total + this.playerStats[stat], 0);
+        const opponentWinProgress = opponentWinStats.reduce((total, stat) => total + this.opponentStats[stat], 0);
         if (playerWinProgress >= opponentWinProgress) {
-          this.gameOver("player", `All cards played! Tied at ${playerScore} — tiebreaker: your ${playerWinStat} was higher`);
+          this.gameOver("player", `All cards played! Tied at ${playerScore} — tiebreaker: your combined green progress was higher`);
         } else {
-          this.gameOver("opponent", `All cards played! Tied at ${playerScore} — tiebreaker: opponent's ${opponentWinStat} was higher`);
+          this.gameOver("opponent", `All cards played! Tied at ${playerScore} — tiebreaker: opponent's combined green progress was higher`);
         }
       }
       return true;

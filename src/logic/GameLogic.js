@@ -2,6 +2,21 @@
  * GameLogic - Handles stat calculations and win/loss conditions
  */
 export default class GameLogic {
+  static isConditionMet(stats, condition) {
+    const threshold = condition.threshold ?? 100;
+    const direction = condition.direction || "atLeast";
+    const statList = condition.stats || (condition.stat ? [condition.stat] : []);
+    const mode = condition.mode || "any";
+
+    const checks = statList.map((stat) => {
+      const value = stats[stat] ?? 0;
+      return direction === "atMost" ? value <= threshold : value >= threshold;
+    });
+
+    if (checks.length === 0) return false;
+    return mode === "all" ? checks.every(Boolean) : checks.some(Boolean);
+  }
+
   static clampStat(value) {
     return Math.max(0, Math.min(100, value));
   }
@@ -18,40 +33,24 @@ export default class GameLogic {
     return newStats;
   }
 
-  static checkWinConditions(stats) {
-    // Check L win condition
-    if (stats.investigation >= 100) {
+  static checkWinConditions(stats, character, opponentCharacter) {
+    if (!character || !opponentCharacter) {
+      return { gameOver: false };
+    }
+
+    if (this.isConditionMet(stats, character.winCondition)) {
       return {
         gameOver: true,
-        winner: "Detective L",
-        reason: "Investigation complete!",
+        winner: character.displayName,
+        reason: character.winCondition.message,
       };
     }
 
-    // Check L loss condition
-    if (stats.morale >= 100) {
+    if (this.isConditionMet(stats, character.loseCondition)) {
       return {
         gameOver: true,
-        winner: "Kira",
-        reason: "L's Morale collapsed!",
-      };
-    }
-
-    // Check Kira win condition
-    if (stats.publicOpinion >= 100) {
-      return {
-        gameOver: true,
-        winner: "Kira",
-        reason: "Public Opinion reached 100!",
-      };
-    }
-
-    // Check Kira loss condition
-    if (stats.pressure >= 100) {
-      return {
-        gameOver: true,
-        winner: "Detective L",
-        reason: "Pressure too high!",
+        winner: opponentCharacter.displayName,
+        reason: character.loseCondition.message,
       };
     }
 

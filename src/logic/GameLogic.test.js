@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import GameLogic from "./GameLogic.js";
+import { characters } from "../data/characters.js";
 
 const zero = { investigation: 0, morale: 0, publicOpinion: 0, pressure: 0 };
 
@@ -29,21 +30,31 @@ describe("applyEffects", () => {
 });
 
 describe("checkWinConditions", () => {
-  // Characterisation tests: these record what the current implementation does,
-  // so a future change to the win rules shows up as a deliberate test edit.
-  it("is not over while every stat is below 100", () => {
-    expect(GameLogic.checkWinConditions({ ...zero, investigation: 99 }).gameOver).toBe(false);
+  const detective = characters["Independent Detective"];
+  const vigilante = characters["Vigilante"];
+
+  it("is not over while win/lose conditions are unmet", () => {
+    expect(GameLogic.checkWinConditions({ ...zero, investigation: 99, morale: 99 }, detective, vigilante).gameOver).toBe(false);
   });
 
-  it.each([
-    ["investigation", "Detective L"],
-    ["morale", "Kira"],
-    ["publicOpinion", "Kira"],
-    ["pressure", "Detective L"],
-  ])("%s at 100 ends the match in favour of %s", (stat, winner) => {
-    const result = GameLogic.checkWinConditions({ ...zero, [stat]: 100 });
+  it("returns detective as winner when both detective green stats are full", () => {
+    const result = GameLogic.checkWinConditions(
+      { ...zero, investigation: 100, morale: 100 },
+      detective,
+      vigilante,
+    );
     expect(result.gameOver).toBe(true);
-    expect(result.winner).toBe(winner);
+    expect(result.winner).toBe("Detective");
+  });
+
+  it("returns vigilante as winner when detective hits a red danger threshold", () => {
+    const result = GameLogic.checkWinConditions(
+      { ...zero, publicOpinion: 100 },
+      detective,
+      vigilante,
+    );
+    expect(result.gameOver).toBe(true);
+    expect(result.winner).toBe("Vigilante");
   });
 });
 

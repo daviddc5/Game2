@@ -13,7 +13,7 @@ export const lCards = [
     selfEffects: {
       investigation: 0,
       morale: 12,
-      publicOpinion: 15,
+      publicOpinion: -8,
       pressure: 0,
     },
     opponentEffects: {
@@ -66,7 +66,7 @@ export const lCards = [
   {
     id: "l_press_interview",
     name: "Press Interview",
-    description: "Boost team morale publicly",
+    description: "Strengthen task force unity in public",
     energyCost: 5,
     cardType: "NORMAL",
     speed: 5,
@@ -126,7 +126,7 @@ export const lCards = [
   {
     id: "l_task_force_rally",
     name: "Task Force Rally",
-    description: "Rally the team together",
+    description: "Rebuild task force unity under pressure",
     energyCost: 4,
     cardType: "QUICK",
     speed: 7,
@@ -146,7 +146,7 @@ export const lCards = [
   {
     id: "l_public_statement",
     name: "Public Statement",
-    description: "Reassure the team and public",
+    description: "Calm public panic and steady your team",
     energyCost: 4,
     cardType: "QUICK",
     speed: 9,
@@ -172,8 +172,8 @@ export const lCards = [
     speed: 2,
     selfEffects: {
       investigation: 0,
-      morale: 0,
-      publicOpinion: 18,
+      morale: 8,
+      publicOpinion: -10,
       pressure: 0,
     },
     opponentEffects: {
@@ -186,7 +186,7 @@ export const lCards = [
   {
     id: "l_counter_propaganda",
     name: "Counter Propaganda",
-    description: "Challenge the vigilante's public support",
+    description: "Disrupt support for the vigilante's cause",
     energyCost: 3,
     cardType: "QUICK",
     speed: 9,
@@ -206,7 +206,7 @@ export const lCards = [
   {
     id: "l_forensic_breakthrough",
     name: "Forensic Breakthrough",
-    description: "Major evidence discovery puts heat on the killer",
+    description: "Link clues into a stronger evidence chain",
     energyCost: 7,
     cardType: "POWER",
     speed: 4,
@@ -330,7 +330,7 @@ export const kiraCards = [
   {
     id: "kira_plant_false_leads",
     name: "Plant False Leads",
-    description: "Mislead the investigation",
+    description: "Break the detective's evidence chain",
     energyCost: 5,
     cardType: "NORMAL",
     speed: 6,
@@ -450,7 +450,7 @@ export const kiraCards = [
   {
     id: "kira_smear_campaign",
     name: "Smear Campaign",
-    description: "Turn public opinion against the detective team",
+    description: "Trigger public panic around the detective team",
     energyCost: 6,
     cardType: "POWER",
     speed: 3,
