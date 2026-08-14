@@ -66,6 +66,8 @@ Update the progress count in the phase headings as you go.
 
 #### 🔒 Gate B — baseline (do this before U0)
 
+⚠️ *All of Gate B requires humans — the agent cannot run it.* The pre-fix build is tagged `baseline-pre-ux` (2026-08-14); `git checkout baseline-pre-ux` to run the baseline against the original.
+
 Run the current build past five people who have never played, and **write the answers down**. Without this there is no way to prove any of the work below helped.
 
 - [ ] **GB.1** — Mid-match screenshot, "who is winning?" Record how many of five get it right, and how long they take.
@@ -73,22 +75,26 @@ Run the current build past five people who have never played, and **write the an
 - [ ] **GB.3** — "Would you play again?" Record yes/no. This is the question the original feedback was about.
 - [ ] **GB.4** — Record one sentence each on what confused them most.
 
-### Phase 0 — Correctness (blocks everything) · 0/5
+### Phase 0 — Correctness (blocks everything) · 5/5 ✅
 
 The UI currently instructs Detective players to do the thing that loses them the game. Nothing else in this document matters until this is fixed.
 
-- [ ] **U0** — Set up Vitest (`npm i -D vitest`, `"test": "vitest run"`). `GameLogic` is a static class with no Phaser dependency and `CardResolver` imports only `GameLogic`, so both test standalone with no mocking. There is currently no test infrastructure in the repo at all. *Doubles as the P14 Harness test gate — see [OBJECTIVES.md](OBJECTIVES.md).*
-- [ ] **U1** — Fix the Detective's `morale` contradiction in `characters.js`: it is coloured green with `isGreen: true` ("want high"), listed in `negativeStats`, and is the `loseCondition` at `>= 100`. Decide which is true and make all three agree.
-- [ ] **U2** — Audit the other seven stat label/colour pairs for the same class of contradiction. Check `isGreen` against `positiveStats`/`negativeStats` against the win/lose conditions for both characters.
-- [ ] **U3** — Relabel all four stats so the name says *whose* it is. "Team Morale" reads as the player's but is really the Vigilante's confidence. There are four shared values, not eight — the label is the only thing distinguishing them.
-- [ ] **U4** — Reconcile `GameLogic.checkWinConditions()` with the `winCondition`/`loseCondition` objects in `characters.js`. It currently hardcodes thresholds and returns the names `"Detective L"` and `"Kira"`, which also leaks the pre-pivot Death Note naming to the player.
+- [x] **U0** — Set up Vitest (`npm i -D vitest`, `"test": "vitest run"`). `GameLogic` is a static class with no Phaser dependency and `CardResolver` imports only `GameLogic`, so both test standalone with no mocking. There is currently no test infrastructure in the repo at all. *Doubles as the P14 Harness test gate — see [OBJECTIVES.md](OBJECTIVES.md).* ✅ 2026-08-14 · cf069af
+- [x] **U1** — Fix the Detective's `morale` contradiction in `characters.js`: it is coloured green with `isGreen: true` ("want high"), listed in `negativeStats`, and is the `loseCondition` at `>= 100`. Decide which is true and make all three agree. ✅ 2026-08-14 · cf069af
+- [x] **U2** — Audit the other seven stat label/colour pairs for the same class of contradiction. Check `isGreen` against `positiveStats`/`negativeStats` against the win/lose conditions for both characters. **Found a second, mirror-image contradiction:** `pressure` was rendered red for the Detective while rising it triggers the Vigilante's lose condition and therefore *wins* the Detective the game. The Vigilante's four stats were all correct. ✅ 2026-08-14 · cf069af
+- [x] **U3** — Relabel all four stats so the name says *whose* it is. "Team Morale" reads as the player's but is really the Vigilante's confidence. There are four shared values, not eight — the label is the only thing distinguishing them. ✅ 2026-08-14 · cf069af
+- [x] **U4** — Reconcile `GameLogic.checkWinConditions()` with the `winCondition`/`loseCondition` objects in `characters.js`. It currently hardcodes thresholds and returns the names `"Detective L"` and `"Kira"`, which also leaks the pre-pivot Death Note naming to the player. **Note:** this method turned out to be unused — `BattleScene` duplicates the win logic inline at 1938-1959, so live win detection was never affected by the wrong names. Duplication tracked as U28. ✅ 2026-08-14 · cf069af
 
 #### 🔒 Gate 0 — the fix is real
 
-- [ ] **G0.1** — Unit tests cover every win and lose condition for both characters, driven from `characters.js` rather than hardcoded values. Red before U4, green after.
-- [ ] **G0.2** — Play a full match as the Detective. Confirm no bar rendered green causes a loss when filled.
-- [ ] **G0.3** — Play a full match as the Vigilante. Same check.
-- [ ] **G0.4** — Show the battle screen to one person who has not played. Ask: "point at the bars you want to go up." Their answer must match what actually wins. **This is the test that would have caught U1 originally.**
+- [x] **G0.1** — Unit tests cover every win and lose condition for both characters, driven from `characters.js` rather than hardcoded values. Red before U4, green after. ✅ 2026-08-14 · cf069af — 26 tests, `npm test`
+- [ ] **G0.2** — ⚠️ *Human required — agent cannot verify.* Play a full match as the Detective. Confirm no bar rendered green causes a loss when filled.
+- [ ] **G0.3** — ⚠️ *Human required.* Play a full match as the Vigilante. Same check.
+- [ ] **G0.4** — ⚠️ *Human required.* Show the battle screen to one person who has not played. Ask: "point at the bars you want to go up." Their answer must match what actually wins. **This is the test that would have caught U1 originally.**
+
+#### Follow-up raised during Phase 0
+
+- [ ] **U28** — `BattleScene.js:1938-1959` duplicates the win/lose logic that `GameLogic.checkWinConditions()` implements, and only the BattleScene copy actually runs. Make BattleScene call GameLogic so there is one implementation, or delete the unused method. Two copies of a rule is how U1 survived.
 
 ### Phase 0.5 — Design pass (before building new UI) · 0/3
 
