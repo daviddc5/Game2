@@ -417,6 +417,75 @@ Elements that must fit on the battle screen:
 - a hand of up to 5 cards
 ```
 
+### Redesign prompt — use this once the game is deployed
+
+Open the live game, take screenshots of the battle screen as **both** characters (mid-match, bars part-filled), and attach them with this prompt.
+
+```
+I need you to redesign the battle screen of my card game. Screenshots of the
+current version attached.
+
+THE GAME
+1v1 simultaneous card battle, Detective vs Vigilante, noir tone. Both players
+pick a card face-down, they flip together, and resolve by priority. Phaser 3,
+canvas 750x1334 portrait, Scale.FIT centred.
+
+THE SIZING TRAP
+The canvas renders at roughly half scale on a phone (~390pt wide). Every number
+below is in the 750-wide design space:
+- minimum body text 24px (renders ~12pt)
+- minimum touch target 90px (renders ~47pt)
+- keep 80px clear top and bottom for notch and home indicator
+Current labels are 10-14px, which lands around 5-7pt on a real phone. Unreadable.
+
+THE CORE PROBLEM — read this carefully, it is the actual brief
+There are EIGHT stat bars on screen: the player has four, the opponent has four.
+But only FOUR of the eight can end the match:
+- each character's win stat (theirs reaching 100 wins them the game)
+- each character's lose stat (theirs reaching 100 loses them the game)
+The other four have no win/lose role. They only matter in a rare
+deck-exhaustion tiebreak.
+
+Right now all eight bars render identically, so a new player has no way to tell
+which four matter. Feedback from real players is that the game is hard to
+understand and they disengage. This is my main suspect.
+
+I want the redesign to make the decisive stats unmissable and the rest clearly
+secondary — or argue that the secondary four should be cut from the screen
+entirely.
+
+ALSO MUST FIT
+- both character portraits (detailed pixel art)
+- energy counter per player (0-10)
+- central staging area: two face-down cards that flip and resolve
+- a momentum bar showing who is ahead at a glance
+- a narration overlay for dramatic text during resolution
+- hand of up to 5 cards, 180x260 each, currently overlapping in a fan
+- a confirm button that appears when a card is selected
+
+COLOUR RULE
+Green means "this helps me", red means "this hurts me" — ONE rule, applied once.
+A real bug in this game had a stat coloured green while filling it lost you the
+match, because the colour was decided per-stat in a data file. Also make it
+colour-blind safe: pair every colour with a second cue.
+
+STYLE PROBLEM
+The portraits are detailed pixel art. The UI is flat rectangles with plain
+borders. They look like two different games. Reconcile them, assuming I cannot
+commission new portraits.
+
+DELIVERABLE
+A single self-contained HTML page I can open, showing three genuinely different
+layouts drawn to scale at 750x1334, side by side, each region labelled with its
+pixel dimensions. Include the palette and a type scale with no step below 24px.
+
+For each layout give me one sentence on what it prioritises and what it gives up.
+Make them three different bets about what matters most — not three variations of
+one idea.
+
+Then tell me which you would ship and why.
+```
+
 ### U5 — Battle screen layout
 
 ```
