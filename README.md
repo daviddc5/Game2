@@ -104,7 +104,7 @@ The game will be available at `http://localhost:5173`
 
 ## 📦 Deployment
 
-The game is deployed to **Google Cloud Run**. See [DEPLOYMENT.md](DEPLOYMENT.md) for full setup instructions.
+The game is deployed to **Google Cloud Run**. See [DEPLOYMENT.md](docs/DEPLOYMENT.md) for full setup instructions.
 
 ```bash
 # Deploy to Cloud Run
@@ -133,8 +133,8 @@ npm run deploy
 
 ## 📖 Documentation
 
-- [GDD.md](GDD.md) — Full Game Design Document (mechanics, cards, roadmap)
-- [DEPLOYMENT.md](DEPLOYMENT.md) — Google Cloud Run deployment guide
+- [GDD.md](docs/GDD.md) — Full Game Design Document (mechanics, cards, roadmap)
+- [DEPLOYMENT.md](docs/DEPLOYMENT.md) — Google Cloud Run deployment guide
 - [OBJECTIVES.md](docs/OBJECTIVES.md) — Harness CI/CD and UX objectives
 - [UX_IMPROVEMENTS.md](docs/UX_IMPROVEMENTS.md) — Engagement diagnosis and plan
 - [design-notes/](docs/design-notes/) — Character art prompts and open design ideas
