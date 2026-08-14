@@ -100,6 +100,8 @@ The UI currently instructs Detective players to do the thing that loses them the
 
 Narration, the momentum bar, and simplified cards all need somewhere to live. Build them into the current layout and then redesign, and each gets built twice.
 
+*Claude can produce U5 and U6 as a page you look at and react to, rather than prose. Copy-paste prompts are in [Appendix — Design Prompts](#appendix--design-prompts). Claude can do layout, colour, type and spacing; it cannot produce the pixel-art portraits, which is why U7 is a decision rather than a deliverable.*
+
 - [ ] **U5** — Agree one battle-screen layout at 750x1334 with deliberate space for the momentum bar, narration overlay, and compact stats. Mockup first, no code.
 - [ ] **U6** — Define a named colour palette and type scale. "Green means good" becomes one rule applied once, instead of a per-stat decision that produced U1.
 - [ ] **U7** — Decide the art direction. The pixel-art portraits and the flat-rectangle UI currently belong to two different games.
@@ -373,4 +375,121 @@ The match ends and a screen appears. Ending is the moment that decides whether a
 - "Play again" as the default focused action, on the same character, with no re-selection
 
 ---
+
+---
+
+## Appendix — Design Prompts
+
+Copy-paste prompts for the Phase 0.5 design pass. Each is self-contained — no need to explain the game first.
+
+### Shared context (paste at the top of any of these)
+
+```
+I'm designing the battle screen for a 1v1 simultaneous card game called
+Shadows of Judgment. Detective vs Vigilante, noir tone, pixel-art character
+portraits, built in Phaser 3.
+
+Canvas: 750x1334 portrait, Phaser Scale.FIT, centred. It renders at roughly
+half scale on a phone (~390pt wide), so every size below is in the 750-wide
+design space:
+- minimum body text 24px (renders ~12pt)
+- minimum touch target 90px (renders ~47pt)
+- assume a notch and a home indicator; keep 80px clear top and bottom
+
+There are only FOUR underlying stats, shared by both players. Each character
+relabels them, and the label states whose it is:
+  Detective sees: Your Evidence / Their Confidence / Their Support / Heat On Them
+  Vigilante sees: Evidence On You / Your Confidence / Your Support / Heat On You
+Green = rising it helps you. Red = rising it hurts you. First stat to 100 ends
+the match.
+
+Elements that must fit on the battle screen:
+- opponent portrait + their four stat bars + their energy
+- a central staging area showing two face-down cards that flip and resolve
+- a momentum bar showing who is ahead at a glance
+- a narration overlay for dramatic text during resolution
+- player portrait + four stat bars + energy
+- a confirm button that appears on card select
+- a hand of up to 5 cards
+```
+
+### U5 — Battle screen layout
+
+```
+[paste shared context]
+
+Give me three distinct layout options for this screen as a single self-contained
+HTML page I can open — drawn to scale at 750x1334, side by side, with each region
+labelled and its pixel dimensions annotated.
+
+Optimise for: a new player can tell who is winning within 5 seconds, and can read
+every label at arm's length on a phone.
+
+For each option, give me one sentence on what it prioritises and what it sacrifices.
+Don't give me three variations of the same idea — make them genuinely different bets
+about what matters most.
+```
+
+### U6 — Palette and type scale
+
+```
+[paste shared context]
+
+Define a colour palette and type scale as a self-contained HTML page showing
+swatches and specimens.
+
+Requirements:
+- dark, noir, high contrast — this gets played on phones in bright rooms
+- "green means good, red means bad" must be ONE rule with one green and one red,
+  not a per-element choice. A previous bug had one stat coloured green while
+  filling it lost you the game, because the colour was decided per stat in a
+  data file.
+- colour-blind safe: green vs red must stay distinguishable, so pair every
+  colour with a second cue (icon, arrow direction, or position)
+- a type scale with no step below 24px, and named roles (stat label, card name,
+  card body, narration, button)
+- show every colour against the intended background, with contrast ratios
+```
+
+### U7 — Art direction
+
+```
+[paste shared context]
+
+My problem: the character portraits are detailed pixel art, but the UI is flat
+rectangles with plain borders. They look like two different games.
+
+Give me three ways to reconcile them, ranked by how much work each is, assuming
+I cannot commission new portraits. For each, describe concretely what changes
+about the UI — borders, edges, textures, corners, typography — and show a small
+HTML mockup of a single card and a single stat bar in that style.
+```
+
+### U18 — Card face (Phase 2, but visual)
+
+```
+[paste shared context]
+
+Redesign the card face. Current problem: each card modifies up to four stats with
+raw numbers like "+15 Investigation, -8 Public Pressure, +10 opponent Suspicion",
+which nobody can evaluate at a glance mid-turn.
+
+Card is 180x260 in the 750-wide space. Cards overlap in a fan with only ~140px of
+each visible, so the left strip has to carry identity on its own.
+
+Design a face that answers "is this good for me, and how strong?" in under a
+second, with the full breakdown available only on tap-to-enlarge. Show it as HTML
+at real size, including how a row of five overlapping cards reads.
+```
+
+### Portraits (extends `design-notes/CharacterDesignNotes.MD`)
+
+The existing generation prompts for the two portraits are in that file — reuse them verbatim for style consistency. To add expressions for the winning/losing states in U19, append to the existing prompt rather than writing a new one:
+
+```
+[paste the existing prompt from CharacterDesignNotes.MD]
+
+...same character, same style, same lighting, same framing.
+Change only the expression to: <winning / losing / desperate>.
+```
 
