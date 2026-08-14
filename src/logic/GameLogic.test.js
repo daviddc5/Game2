@@ -14,8 +14,12 @@ describe("clampStat", () => {
 
 describe("applyEffects", () => {
   it("adds effects and clamps the result", () => {
-    expect(GameLogic.applyEffects({ ...zero, investigation: 95 }, { investigation: 20 }))
-      .toMatchObject({ investigation: 100 });
+    expect(
+      GameLogic.applyEffects(
+        { ...zero, investigation: 95 },
+        { investigation: 20 },
+      ),
+    ).toMatchObject({ investigation: 100 });
   });
 
   it("ignores stats that do not exist", () => {
@@ -34,7 +38,13 @@ describe("checkWinConditions", () => {
   const vigilante = characters["Vigilante"];
 
   it("is not over while win/lose conditions are unmet", () => {
-    expect(GameLogic.checkWinConditions({ ...zero, investigation: 99, morale: 99 }, detective, vigilante).gameOver).toBe(false);
+    expect(
+      GameLogic.checkWinConditions(
+        { ...zero, investigation: 99, morale: 99 },
+        detective,
+        vigilante,
+      ).gameOver,
+    ).toBe(false);
   });
 
   it("returns detective as winner when both detective green stats are full", () => {
@@ -74,7 +84,9 @@ describe("determineResolutionOrder", () => {
   });
 
   it("breaks a speed tie in the player's favour", () => {
-    expect(GameLogic.determineResolutionOrder(quick, { ...quick })).toBe("player");
+    expect(GameLogic.determineResolutionOrder(quick, { ...quick })).toBe(
+      "player",
+    );
   });
 
   it("handles a passed turn on either side", () => {

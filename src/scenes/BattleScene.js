@@ -40,9 +40,9 @@ export default class BattleScene extends Phaser.Scene {
 
     // Check if PASS button should be shown initially
     this.updatePassButtonVisibility();
-    
+
     // Register shutdown event to clean up properly when scene stops
-    this.events.once('shutdown', this.shutdown, this);
+    this.events.once("shutdown", this.shutdown, this);
   }
 
   initializeGameState() {
@@ -481,44 +481,87 @@ export default class BattleScene extends Phaser.Scene {
       console.log("Creating/recreating confirm buttons");
       this.createConfirmButton();
     }
-    
+
     // Position the buttons above the selected card (which is now locked elevated)
     this.positionActionButtonsAtCard(cardIndex);
-    
+
     // Show buttons
     this.confirmButton.setVisible(true);
-    console.log("✅ Confirm button shown at position:", this.confirmButton.x, this.confirmButton.y);
-    
+    console.log(
+      "✅ Confirm button shown at position:",
+      this.confirmButton.x,
+      this.confirmButton.y,
+    );
+
     // DEBUG: Verify each element is actually visible
     console.log("🔍 BUTTON DEBUG INFO:");
-    console.log("  - viewButtonGlow:", this.viewButtonGlow?.visible, "depth:", this.viewButtonGlow?.depth);
-    console.log("  - viewButtonBg:", this.viewButtonBg?.visible, "depth:", this.viewButtonBg?.depth);
-    console.log("  - viewButtonText:", this.viewButtonText?.visible, "depth:", this.viewButtonText?.depth);
-    console.log("  - confirmButtonGlow:", this.confirmButtonGlow?.visible, "depth:", this.confirmButtonGlow?.depth);
-    console.log("  - confirmButtonBg:", this.confirmButtonBg?.visible, "depth:", this.confirmButtonBg?.depth);
-    console.log("  - confirmButtonText:", this.confirmButtonText?.visible, "depth:", this.confirmButtonText?.depth);
+    console.log(
+      "  - viewButtonGlow:",
+      this.viewButtonGlow?.visible,
+      "depth:",
+      this.viewButtonGlow?.depth,
+    );
+    console.log(
+      "  - viewButtonBg:",
+      this.viewButtonBg?.visible,
+      "depth:",
+      this.viewButtonBg?.depth,
+    );
+    console.log(
+      "  - viewButtonText:",
+      this.viewButtonText?.visible,
+      "depth:",
+      this.viewButtonText?.depth,
+    );
+    console.log(
+      "  - confirmButtonGlow:",
+      this.confirmButtonGlow?.visible,
+      "depth:",
+      this.confirmButtonGlow?.depth,
+    );
+    console.log(
+      "  - confirmButtonBg:",
+      this.confirmButtonBg?.visible,
+      "depth:",
+      this.confirmButtonBg?.depth,
+    );
+    console.log(
+      "  - confirmButtonText:",
+      this.confirmButtonText?.visible,
+      "depth:",
+      this.confirmButtonText?.depth,
+    );
     console.log("  - Camera bounds:", this.cameras.main.worldView);
-    console.log("  - Element count in array:", this.actionButtonElements.length);
+    console.log(
+      "  - Element count in array:",
+      this.actionButtonElements.length,
+    );
   }
 
   createConfirmButton() {
     console.log("Creating action buttons");
-    
+
     // Store button elements for group management
     this.actionButtonElements = [];
-    
+
     const baseX = 375;
     const baseY = 750; // Moved up for better mobile accessibility (was 850)
 
     // VIEW button (left) - Circular with glow
-    const viewButtonGlow = this.add.circle(baseX - 60, baseY, 45, 0x4444ff, 0.6);
+    const viewButtonGlow = this.add.circle(
+      baseX - 60,
+      baseY,
+      45,
+      0x4444ff,
+      0.6,
+    );
     viewButtonGlow.setDepth(1500).setVisible(false);
     this.actionButtonElements.push(viewButtonGlow);
-    
+
     const viewButtonBg = this.add.circle(baseX - 60, baseY, 38, 0x4444ff);
     viewButtonBg.setDepth(1501).setVisible(false);
     this.actionButtonElements.push(viewButtonBg);
-    
+
     const viewButtonText = this.add
       .text(baseX - 60, baseY, "👁", {
         fontSize: "28px",
@@ -529,7 +572,7 @@ export default class BattleScene extends Phaser.Scene {
       .setDepth(1502)
       .setVisible(false);
     this.actionButtonElements.push(viewButtonText);
-    
+
     const viewLabel = this.add
       .text(baseX - 60, baseY + 28, "VIEW", {
         fontSize: "11px",
@@ -555,14 +598,20 @@ export default class BattleScene extends Phaser.Scene {
     });
 
     // CONFIRM button (right) - Circular with glow
-    const confirmButtonGlow = this.add.circle(baseX + 60, baseY, 45, 0x00aa00, 0.6);
+    const confirmButtonGlow = this.add.circle(
+      baseX + 60,
+      baseY,
+      45,
+      0x00aa00,
+      0.6,
+    );
     confirmButtonGlow.setDepth(1500).setVisible(false);
     this.actionButtonElements.push(confirmButtonGlow);
-    
+
     const confirmButtonBg = this.add.circle(baseX + 60, baseY, 38, 0x00aa00);
     confirmButtonBg.setDepth(1501).setVisible(false);
     this.actionButtonElements.push(confirmButtonBg);
-    
+
     const confirmButtonText = this.add
       .text(baseX + 60, baseY, "▶", {
         fontSize: "26px",
@@ -573,7 +622,7 @@ export default class BattleScene extends Phaser.Scene {
       .setDepth(1502)
       .setVisible(false);
     this.actionButtonElements.push(confirmButtonText);
-    
+
     const confirmLabel = this.add
       .text(baseX + 60, baseY + 28, "PLAY", {
         fontSize: "11px",
@@ -607,14 +656,18 @@ export default class BattleScene extends Phaser.Scene {
     this.confirmButtonGlow = confirmButtonGlow;
     this.confirmButtonText = confirmButtonText;
     this.confirmLabel = confirmLabel;
-    
+
     // For compatibility, create a pseudo-container object
     this.cardActionButtons = {
       setVisible: (visible) => {
-        console.log(`🔧 Setting ${this.actionButtonElements.length} button elements to visible=${visible}`);
+        console.log(
+          `🔧 Setting ${this.actionButtonElements.length} button elements to visible=${visible}`,
+        );
         this.actionButtonElements.forEach((el, index) => {
           el.setVisible(visible);
-          console.log(`  - Element ${index}: visible=${el.visible}, depth=${el.depth}, x=${el.x}, y=${el.y}, alpha=${el.alpha}`);
+          console.log(
+            `  - Element ${index}: visible=${el.visible}, depth=${el.depth}, x=${el.x}, y=${el.y}, alpha=${el.alpha}`,
+          );
         });
       },
       setPosition: (x, y) => {
@@ -624,25 +677,39 @@ export default class BattleScene extends Phaser.Scene {
         this.viewButtonBg.setPosition(baseX - 60 + offsetX, baseY + offsetY);
         this.viewButtonText.setPosition(baseX - 60 + offsetX, baseY + offsetY);
         this.viewLabel.setPosition(baseX - 60 + offsetX, baseY + 28 + offsetY);
-        this.confirmButtonGlow.setPosition(baseX + 60 + offsetX, baseY + offsetY);
+        this.confirmButtonGlow.setPosition(
+          baseX + 60 + offsetX,
+          baseY + offsetY,
+        );
         this.confirmButtonBg.setPosition(baseX + 60 + offsetX, baseY + offsetY);
-        this.confirmButtonText.setPosition(baseX + 60 + offsetX, baseY + offsetY);
-        this.confirmLabel.setPosition(baseX + 60 + offsetX, baseY + 28 + offsetY);
-        console.log(`📍 Buttons repositioned to ${x}, ${y} (offset: ${offsetX}, ${offsetY})`);
+        this.confirmButtonText.setPosition(
+          baseX + 60 + offsetX,
+          baseY + offsetY,
+        );
+        this.confirmLabel.setPosition(
+          baseX + 60 + offsetX,
+          baseY + 28 + offsetY,
+        );
+        console.log(
+          `📍 Buttons repositioned to ${x}, ${y} (offset: ${offsetX}, ${offsetY})`,
+        );
       },
       setDepth: (depth) => {
-        this.actionButtonElements.forEach(el => el.setDepth(depth));
+        this.actionButtonElements.forEach((el) => el.setDepth(depth));
       },
       setAlpha: (alpha) => {
-        this.actionButtonElements.forEach(el => el.setAlpha(alpha));
+        this.actionButtonElements.forEach((el) => el.setAlpha(alpha));
       },
       x: baseX,
-      y: baseY
+      y: baseY,
     };
-    
+
     this.confirmButton = this.cardActionButtons;
-    
-    console.log("✅ Action buttons created successfully, element count:", this.actionButtonElements.length);
+
+    console.log(
+      "✅ Action buttons created successfully, element count:",
+      this.actionButtonElements.length,
+    );
   }
 
   // Position the action buttons above the elevated card
@@ -651,7 +718,7 @@ export default class BattleScene extends Phaser.Scene {
       console.warn("⚠️ cardActionButtons not created yet");
       return;
     }
-    
+
     if (!this.cardHand) {
       console.warn("⚠️ cardHand not available, using fallback position");
       // Fallback: center of screen, above hand area
@@ -661,13 +728,15 @@ export default class BattleScene extends Phaser.Scene {
       console.log("Using fallback position: 375, 750");
       return;
     }
-    
+
     const center = this.cardHand.getCardCenter
       ? this.cardHand.getCardCenter(cardIndex)
       : null;
-      
+
     if (!center) {
-      console.warn(`⚠️ Could not get center for card ${cardIndex}, using fallback position`);
+      console.warn(
+        `⚠️ Could not get center for card ${cardIndex}, using fallback position`,
+      );
       // Fallback: center of screen, above hand area
       this.cardActionButtons.setPosition(375, 750);
       this.cardActionButtons.x = 375;
@@ -985,8 +1054,7 @@ export default class BattleScene extends Phaser.Scene {
 
     const character =
       target === "player" ? this.playerCharacter : this.opponentCharacter;
-    const stats =
-      target === "player" ? this.playerStats : this.opponentStats;
+    const stats = target === "player" ? this.playerStats : this.opponentStats;
     this.statsModal.show(target, character, stats);
   }
 
@@ -996,16 +1064,18 @@ export default class BattleScene extends Phaser.Scene {
 
   showEnlargedCardView(cardDataArg) {
     // Use passed cardData, or fall back to hovered/selected card (for singleplayer)
-    const card = cardDataArg ||
-                 this.hoveredCard ||
-                 (this.selectedCard ? this.selectedCard.card : null);
+    const card =
+      cardDataArg ||
+      this.hoveredCard ||
+      (this.selectedCard ? this.selectedCard.card : null);
     if (!card) {
       console.warn("No card data available for enlarged view");
       return;
     }
 
     // Track whether this was called from card selection (has Play button) or from revealed card view (click to close)
-    const isFromCardSelection = !cardDataArg && (this.hoveredCard || this.selectedCard);
+    const isFromCardSelection =
+      !cardDataArg && (this.hoveredCard || this.selectedCard);
 
     // Hide action buttons while viewing enlarged card
     if (this.cardActionButtons) {
@@ -1223,7 +1293,12 @@ export default class BattleScene extends Phaser.Scene {
         confirmButtonBg.setFillStyle(0x00aa00);
       });
 
-      allElements.push(backButtonBg, backButtonText, confirmButtonBg, confirmButtonText);
+      allElements.push(
+        backButtonBg,
+        backButtonText,
+        confirmButtonBg,
+        confirmButtonText,
+      );
     } else {
       // View-only mode (from revealed cards): click anywhere to close
       const closeText = this.add
@@ -1927,42 +2002,90 @@ export default class BattleScene extends Phaser.Scene {
 
   checkGameOver() {
     // Check player's win/lose conditions using character-specific logic
-    const playerWinStats = this.playerCharacter.winCondition.stats || [this.playerCharacter.winCondition.stat];
-    const playerLoseStats = this.playerCharacter.loseCondition.stats || [this.playerCharacter.loseCondition.stat];
-    const opponentWinStats = this.opponentCharacter.winCondition.stats || [this.opponentCharacter.winCondition.stat];
-    const opponentLoseStats = this.opponentCharacter.loseCondition.stats || [this.opponentCharacter.loseCondition.stat];
+    const playerWinStats = this.playerCharacter.winCondition.stats || [
+      this.playerCharacter.winCondition.stat,
+    ];
+    const playerLoseStats = this.playerCharacter.loseCondition.stats || [
+      this.playerCharacter.loseCondition.stat,
+    ];
+    const opponentWinStats = this.opponentCharacter.winCondition.stats || [
+      this.opponentCharacter.winCondition.stat,
+    ];
+    const opponentLoseStats = this.opponentCharacter.loseCondition.stats || [
+      this.opponentCharacter.loseCondition.stat,
+    ];
 
     // Player wins if all required green stats reach threshold
-    if (GameLogic.isConditionMet(this.playerStats, this.playerCharacter.winCondition)) {
-      console.log(`Game Over! Player wins - ${playerWinStats.join(", ")} reached target`);
+    if (
+      GameLogic.isConditionMet(
+        this.playerStats,
+        this.playerCharacter.winCondition,
+      )
+    ) {
+      console.log(
+        `Game Over! Player wins - ${playerWinStats.join(", ")} reached target`,
+      );
       this.gameOver("player", `${this.playerCharacter.winCondition.message}`);
       return true;
     }
 
     // Player loses if any red danger stat reaches threshold
-    if (GameLogic.isConditionMet(this.playerStats, this.playerCharacter.loseCondition)) {
-      console.log(`Game Over! Player loses - ${playerLoseStats.join(", ")} danger threshold hit`);
-      this.gameOver("opponent", `${this.playerCharacter.loseCondition.message}`);
+    if (
+      GameLogic.isConditionMet(
+        this.playerStats,
+        this.playerCharacter.loseCondition,
+      )
+    ) {
+      console.log(
+        `Game Over! Player loses - ${playerLoseStats.join(", ")} danger threshold hit`,
+      );
+      this.gameOver(
+        "opponent",
+        `${this.playerCharacter.loseCondition.message}`,
+      );
       return true;
     }
 
     // Opponent wins if all required green stats reach threshold
-    if (GameLogic.isConditionMet(this.opponentStats, this.opponentCharacter.winCondition)) {
-      console.log(`Game Over! Opponent wins - ${opponentWinStats.join(", ")} reached target`);
-      this.gameOver("opponent", `${this.opponentCharacter.winCondition.message}`);
+    if (
+      GameLogic.isConditionMet(
+        this.opponentStats,
+        this.opponentCharacter.winCondition,
+      )
+    ) {
+      console.log(
+        `Game Over! Opponent wins - ${opponentWinStats.join(", ")} reached target`,
+      );
+      this.gameOver(
+        "opponent",
+        `${this.opponentCharacter.winCondition.message}`,
+      );
       return true;
     }
 
     // Opponent loses if any red danger stat reaches threshold
-    if (GameLogic.isConditionMet(this.opponentStats, this.opponentCharacter.loseCondition)) {
-      console.log(`Game Over! Opponent loses - ${opponentLoseStats.join(", ")} danger threshold hit`);
-      this.gameOver("player", `${this.opponentCharacter.loseCondition.message}`);
+    if (
+      GameLogic.isConditionMet(
+        this.opponentStats,
+        this.opponentCharacter.loseCondition,
+      )
+    ) {
+      console.log(
+        `Game Over! Opponent loses - ${opponentLoseStats.join(", ")} danger threshold hit`,
+      );
+      this.gameOver(
+        "player",
+        `${this.opponentCharacter.loseCondition.message}`,
+      );
       return true;
     }
 
     // Check if both players are out of cards
-    const playerOutOfCards = this.hand.length === 0 && (!this.playerDeck || this.playerDeck.length === 0);
-    const opponentOutOfCards = !this.opponentDeck || this.opponentDeck.length === 0;
+    const playerOutOfCards =
+      this.hand.length === 0 &&
+      (!this.playerDeck || this.playerDeck.length === 0);
+    const opponentOutOfCards =
+      !this.opponentDeck || this.opponentDeck.length === 0;
     if (playerOutOfCards && opponentOutOfCards) {
       // Calculate score: green stats minus red stats for each player
       const playerGreenStats = this.playerCharacter.statColors;
@@ -1970,7 +2093,12 @@ export default class BattleScene extends Phaser.Scene {
       let playerScore = 0;
       let opponentScore = 0;
 
-      for (const stat of ['investigation', 'morale', 'publicOpinion', 'pressure']) {
+      for (const stat of [
+        "investigation",
+        "morale",
+        "publicOpinion",
+        "pressure",
+      ]) {
         if (playerGreenStats[stat].isGreen) {
           playerScore += this.playerStats[stat];
         } else {
@@ -1983,23 +2111,43 @@ export default class BattleScene extends Phaser.Scene {
         }
       }
 
-      console.log(`Out of cards! Player score: ${playerScore}, Opponent score: ${opponentScore}`);
+      console.log(
+        `Out of cards! Player score: ${playerScore}, Opponent score: ${opponentScore}`,
+      );
 
       const playerName = this.playerCharacter.displayName;
       const opponentName = this.opponentCharacter.displayName;
 
       if (playerScore > opponentScore) {
-        this.gameOver("player", `All cards played!\n${playerName} score: ${playerScore}\n${opponentName} score: ${opponentScore}`);
+        this.gameOver(
+          "player",
+          `All cards played!\n${playerName} score: ${playerScore}\n${opponentName} score: ${opponentScore}`,
+        );
       } else if (opponentScore > playerScore) {
-        this.gameOver("opponent", `All cards played!\n${opponentName} score: ${opponentScore}\n${playerName} score: ${playerScore}`);
+        this.gameOver(
+          "opponent",
+          `All cards played!\n${opponentName} score: ${opponentScore}\n${playerName} score: ${playerScore}`,
+        );
       } else {
         // True tie - player with higher combined green progress wins
-        const playerWinProgress = playerWinStats.reduce((total, stat) => total + this.playerStats[stat], 0);
-        const opponentWinProgress = opponentWinStats.reduce((total, stat) => total + this.opponentStats[stat], 0);
+        const playerWinProgress = playerWinStats.reduce(
+          (total, stat) => total + this.playerStats[stat],
+          0,
+        );
+        const opponentWinProgress = opponentWinStats.reduce(
+          (total, stat) => total + this.opponentStats[stat],
+          0,
+        );
         if (playerWinProgress >= opponentWinProgress) {
-          this.gameOver("player", `All cards played! Tied at ${playerScore} — tiebreaker: your combined green progress was higher`);
+          this.gameOver(
+            "player",
+            `All cards played! Tied at ${playerScore} — tiebreaker: your combined green progress was higher`,
+          );
         } else {
-          this.gameOver("opponent", `All cards played! Tied at ${playerScore} — tiebreaker: opponent's combined green progress was higher`);
+          this.gameOver(
+            "opponent",
+            `All cards played! Tied at ${playerScore} — tiebreaker: opponent's combined green progress was higher`,
+          );
         }
       }
       return true;
@@ -2013,7 +2161,10 @@ export default class BattleScene extends Phaser.Scene {
     let normalizedWinner;
     if (winner === "player" || winner === "opponent") {
       normalizedWinner = winner;
-    } else if (winner === this.playerCharacter.displayName || winner === this.playerCharacter.name) {
+    } else if (
+      winner === this.playerCharacter.displayName ||
+      winner === this.playerCharacter.name
+    ) {
       normalizedWinner = "player";
     } else {
       normalizedWinner = "opponent";
@@ -2270,7 +2421,7 @@ export default class BattleScene extends Phaser.Scene {
       NetworkManager.onOpponentCardPlayed = null;
       NetworkManager.onOpponentDisconnected = null;
     }
-    
+
     // Clear button references so they get recreated on next scene start
     this.confirmButton = null;
     this.cardActionButtons = null;
@@ -2406,6 +2557,4 @@ export default class BattleScene extends Phaser.Scene {
       this.handlePass();
     }
   }
-
 }
-

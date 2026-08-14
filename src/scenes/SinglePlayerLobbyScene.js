@@ -52,13 +52,18 @@ export default class SinglePlayerLobbyScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.detectiveDesc = this.add
-      .text(centerX + 30, 475, "Max both GREEN stats to win.\nIf a RED stat hits 100, you lose.", {
-        fontFamily: "Arial, sans-serif",
-        fontSize: "18px",
-        color: "#aaaaaa",
-        align: "center",
-        lineSpacing: 2,
-      })
+      .text(
+        centerX + 30,
+        475,
+        "Max both GREEN stats to win.\nIf a RED stat hits 100, you lose.",
+        {
+          fontFamily: "Arial, sans-serif",
+          fontSize: "18px",
+          color: "#aaaaaa",
+          align: "center",
+          lineSpacing: 2,
+        },
+      )
       .setOrigin(0.5, 0);
 
     // === VIGILANTE OPTION ===
@@ -85,13 +90,18 @@ export default class SinglePlayerLobbyScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.vigilanteDesc = this.add
-      .text(centerX + 30, 715, "Max both GREEN stats to win.\nIf a RED stat hits 100, you lose.", {
-        fontFamily: "Arial, sans-serif",
-        fontSize: "18px",
-        color: "#aaaaaa",
-        align: "center",
-        lineSpacing: 2,
-      })
+      .text(
+        centerX + 30,
+        715,
+        "Max both GREEN stats to win.\nIf a RED stat hits 100, you lose.",
+        {
+          fontFamily: "Arial, sans-serif",
+          fontSize: "18px",
+          color: "#aaaaaa",
+          align: "center",
+          lineSpacing: 2,
+        },
+      )
       .setOrigin(0.5, 0);
 
     // Start Game button (hidden until character selected)
@@ -158,10 +168,10 @@ export default class SinglePlayerLobbyScene extends Phaser.Scene {
 
     // Start button
     this.startButton.on("pointerover", () =>
-      this.startButton.setBackgroundColor("#00dd00")
+      this.startButton.setBackgroundColor("#00dd00"),
     );
     this.startButton.on("pointerout", () =>
-      this.startButton.setBackgroundColor("#00aa00")
+      this.startButton.setBackgroundColor("#00aa00"),
     );
     this.startButton.on("pointerdown", () => {
       if (this.selectedCharacter) {
@@ -172,10 +182,10 @@ export default class SinglePlayerLobbyScene extends Phaser.Scene {
 
     // Back button
     this.backButton.on("pointerover", () =>
-      this.backButton.setBackgroundColor("#333333")
+      this.backButton.setBackgroundColor("#333333"),
     );
     this.backButton.on("pointerout", () =>
-      this.backButton.setBackgroundColor("transparent")
+      this.backButton.setBackgroundColor("transparent"),
     );
     this.backButton.on("pointerdown", () => {
       this.scene.start("MenuScene");

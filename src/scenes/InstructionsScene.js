@@ -74,18 +74,15 @@ export default class InstructionsScene extends Phaser.Scene {
         sections: [
           {
             heading: "THE GAME",
-            body:
-              "A strategic card battle between a Detective trying to uncover the truth and a Vigilante seeking public support.\n\nBoth players play cards simultaneously each turn. Cards affect stats for both you and your opponent.",
+            body: "A strategic card battle between a Detective trying to uncover the truth and a Vigilante seeking public support.\n\nBoth players play cards simultaneously each turn. Cards affect stats for both you and your opponent.",
           },
           {
             heading: "GOAL",
-            body:
-              "Win by maxing both GREEN stats to 100.\nLose if any RED stat reaches 100.",
+            body: "Win by maxing both GREEN stats to 100.\nLose if any RED stat reaches 100.",
           },
           {
             heading: "TURNS",
-            body:
-              "1. Both players pick a card\n2. Cards are revealed simultaneously\n3. Stats are updated\n4. Draw new cards\n5. Repeat!",
+            body: "1. Both players pick a card\n2. Cards are revealed simultaneously\n3. Stats are updated\n4. Draw new cards\n5. Repeat!",
           },
         ],
       },
@@ -96,14 +93,12 @@ export default class InstructionsScene extends Phaser.Scene {
         sections: [
           {
             heading: "🔍 DETECTIVE",
-            body:
-              "GREEN stats (win condition):\n  • Evidence Chain\n  • Task Force Unity\n\nRED stats (lose condition):\n  • Public Panic\n  • Case Doubt\n\nYou win when both green stats hit 100. You lose if either red stat hits 100.",
+            body: "GREEN stats (win condition):\n  • Evidence Chain\n  • Task Force Unity\n\nRED stats (lose condition):\n  • Public Panic\n  • Case Doubt\n\nYou win when both green stats hit 100. You lose if either red stat hits 100.",
             color: "#44aaff",
           },
           {
             heading: "⚖️ VIGILANTE",
-            body:
-              "GREEN stats (win condition):\n  • Cult Resolve\n  • Public Support\n\nRED stats (lose condition):\n  • Evidence Against\n  • Manhunt Heat\n\nYou win when both green stats hit 100. You lose if either red stat hits 100.",
+            body: "GREEN stats (win condition):\n  • Cult Resolve\n  • Public Support\n\nRED stats (lose condition):\n  • Evidence Against\n  • Manhunt Heat\n\nYou win when both green stats hit 100. You lose if either red stat hits 100.",
             color: "#ff4444",
           },
         ],
@@ -115,20 +110,17 @@ export default class InstructionsScene extends Phaser.Scene {
         sections: [
           {
             heading: "🏆 STAT VICTORY",
-            body:
-              "You win when both of your GREEN stats reach 100.",
+            body: "You win when both of your GREEN stats reach 100.",
             color: "#00ff00",
           },
           {
             heading: "💀 STAT DEFEAT",
-            body:
-              "You lose when any of your RED stats reaches 100.",
+            body: "You lose when any of your RED stats reaches 100.",
             color: "#ff4444",
           },
           {
             heading: "🃏 OUT OF CARDS",
-            body:
-              "When both players run out of cards, a final score is calculated:\n\nScore = Green Stats − Red Stats\n\nHigher score wins! If tied, the player with higher combined GREEN progress takes it.",
+            body: "When both players run out of cards, a final score is calculated:\n\nScore = Green Stats − Red Stats\n\nHigher score wins! If tied, the player with higher combined GREEN progress takes it.",
             color: "#ffd700",
           },
         ],
@@ -140,18 +132,15 @@ export default class InstructionsScene extends Phaser.Scene {
         sections: [
           {
             heading: "🎴 CARDS",
-            body:
-              "Each card has:\n  • Energy cost — shown on the card\n  • Self effects — changes to YOUR stats\n  • Opponent effects — changes to THEIR stats\n\nGreen numbers help you, red numbers hurt.",
+            body: "Each card has:\n  • Energy cost — shown on the card\n  • Self effects — changes to YOUR stats\n  • Opponent effects — changes to THEIR stats\n\nGreen numbers help you, red numbers hurt.",
           },
           {
             heading: "⚡ ENERGY",
-            body:
-              "You start with limited energy and gain +5 each turn. If you can't afford a card, you must pass.\n\nCheaper cards are weaker but let you save energy for powerful plays later!",
+            body: "You start with limited energy and gain +5 each turn. If you can't afford a card, you must pass.\n\nCheaper cards are weaker but let you save energy for powerful plays later!",
           },
           {
             heading: "🛡️ COUNTER CARDS",
-            body:
-              "Some cards are COUNTER type — they cancel the opponent's card effects if played on the same turn!",
+            body: "Some cards are COUNTER type — they cancel the opponent's card effects if played on the same turn!",
             color: "#ff8800",
           },
         ],
@@ -163,23 +152,19 @@ export default class InstructionsScene extends Phaser.Scene {
         sections: [
           {
             heading: "📊 WATCH BOTH SIDES",
-            body:
-              "Tap VIEW to see both your stats and your opponent's. Know when they're close to winning — or losing!",
+            body: "Tap VIEW to see both your stats and your opponent's. Know when they're close to winning — or losing!",
           },
           {
             heading: "🎯 BALANCE OFFENSE & DEFENSE",
-            body:
-              "Don't just push your green win path. Some cards raise the opponent's red danger stats to threaten defeat.",
+            body: "Don't just push your green win path. Some cards raise the opponent's red danger stats to threaten defeat.",
           },
           {
             heading: "🃏 MANAGE YOUR DECK",
-            body:
-              "You draw 2 cards per turn (max 4 in hand). If the game goes to scoring, every stat matters — green helps, red hurts.",
+            body: "You draw 2 cards per turn (max 4 in hand). If the game goes to scoring, every stat matters — green helps, red hurts.",
           },
           {
             heading: "⚡ ENERGY TIMING",
-            body:
-              "Sometimes it's better to play a cheap card now and save energy for a big play next turn.",
+            body: "Sometimes it's better to play a cheap card now and save energy for a big play next turn.",
           },
         ],
       },
@@ -197,26 +182,30 @@ export default class InstructionsScene extends Phaser.Scene {
     let y = 120;
 
     // Title
-    const title = this.add.text(cx, y, page.title, {
-      fontFamily: "DeathNote",
-      fontSize: "52px",
-      color: "#ffffff",
-      align: "center",
-      stroke: "#000000",
-      strokeThickness: 4,
-    }).setOrigin(0.5);
+    const title = this.add
+      .text(cx, y, page.title, {
+        fontFamily: "DeathNote",
+        fontSize: "52px",
+        color: "#ffffff",
+        align: "center",
+        stroke: "#000000",
+        strokeThickness: 4,
+      })
+      .setOrigin(0.5);
     this.pageContainer.add(title);
     y += 60;
 
     // Subtitle
     if (page.subtitle) {
-      const sub = this.add.text(cx, y, page.subtitle, {
-        fontFamily: "Arial, sans-serif",
-        fontSize: "22px",
-        color: "#aaaaaa",
-        fontStyle: "italic",
-        align: "center",
-      }).setOrigin(0.5);
+      const sub = this.add
+        .text(cx, y, page.subtitle, {
+          fontFamily: "Arial, sans-serif",
+          fontSize: "22px",
+          color: "#aaaaaa",
+          fontStyle: "italic",
+          align: "center",
+        })
+        .setOrigin(0.5);
       this.pageContainer.add(sub);
       y += 40;
     }
@@ -230,24 +219,28 @@ export default class InstructionsScene extends Phaser.Scene {
     for (const section of page.sections) {
       const headingColor = section.color || "#ffd700";
 
-      const heading = this.add.text(cx, y, section.heading, {
-        fontFamily: "Arial, sans-serif",
-        fontSize: "24px",
-        color: headingColor,
-        fontStyle: "bold",
-        align: "center",
-      }).setOrigin(0.5);
+      const heading = this.add
+        .text(cx, y, section.heading, {
+          fontFamily: "Arial, sans-serif",
+          fontSize: "24px",
+          color: headingColor,
+          fontStyle: "bold",
+          align: "center",
+        })
+        .setOrigin(0.5);
       this.pageContainer.add(heading);
       y += 30;
 
-      const body = this.add.text(cx, y, section.body, {
-        fontFamily: "Arial, sans-serif",
-        fontSize: "20px",
-        color: "#cccccc",
-        align: "left",
-        wordWrap: { width: 620 },
-        lineSpacing: 4,
-      }).setOrigin(0.5, 0);
+      const body = this.add
+        .text(cx, y, section.body, {
+          fontFamily: "Arial, sans-serif",
+          fontSize: "20px",
+          color: "#cccccc",
+          align: "left",
+          wordWrap: { width: 620 },
+          lineSpacing: 4,
+        })
+        .setOrigin(0.5, 0);
       this.pageContainer.add(body);
       y += body.height + 25;
     }
@@ -255,7 +248,9 @@ export default class InstructionsScene extends Phaser.Scene {
     // Update navigation
     this.prevBtn.setVisible(index > 0);
     this.nextBtn.setText(index < this.pages.length - 1 ? "NEXT ▶" : "DONE ▶");
-    this.nextBtn.setColor(index < this.pages.length - 1 ? "#00aaff" : "#00ff00");
+    this.nextBtn.setColor(
+      index < this.pages.length - 1 ? "#00aaff" : "#00ff00",
+    );
 
     // If on last page, DONE goes back to menu
     this.nextBtn.removeAllListeners("pointerdown");
@@ -266,9 +261,7 @@ export default class InstructionsScene extends Phaser.Scene {
     }
 
     // Page indicator dots
-    const dots = this.pages
-      .map((_, i) => (i === index ? "●" : "○"))
-      .join("  ");
+    const dots = this.pages.map((_, i) => (i === index ? "●" : "○")).join("  ");
     this.pageIndicator.setText(dots);
   }
 

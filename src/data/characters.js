@@ -24,7 +24,8 @@ export const characters = {
       stats: ["investigation", "morale"],
       mode: "all",
       threshold: 100,
-      message: "The detective has sealed the case and the task force is fully united!",
+      message:
+        "The detective has sealed the case and the task force is fully united!",
     },
     loseCondition: {
       stats: ["publicOpinion", "pressure"],
@@ -56,7 +57,8 @@ export const characters = {
       stats: ["morale", "publicOpinion"],
       mode: "all",
       threshold: 100,
-      message: "The vigilante's followers are unified and fully behind the cause!",
+      message:
+        "The vigilante's followers are unified and fully behind the cause!",
     },
     loseCondition: {
       stats: ["investigation", "pressure"],

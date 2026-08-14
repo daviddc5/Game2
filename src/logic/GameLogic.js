@@ -5,7 +5,8 @@ export default class GameLogic {
   static isConditionMet(stats, condition) {
     const threshold = condition.threshold ?? 100;
     const direction = condition.direction || "atLeast";
-    const statList = condition.stats || (condition.stat ? [condition.stat] : []);
+    const statList =
+      condition.stats || (condition.stat ? [condition.stat] : []);
     const mode = condition.mode || "any";
 
     const checks = statList.map((stat) => {
@@ -65,20 +66,20 @@ export default class GameLogic {
    */
   static determineResolutionOrder(playerCard, aiCard) {
     // If both passed, return none
-    if (!playerCard && !aiCard) return 'none';
-    
+    if (!playerCard && !aiCard) return "none";
+
     // If only one card played, that one resolves
-    if (!playerCard) return 'ai';
-    if (!aiCard) return 'player';
+    if (!playerCard) return "ai";
+    if (!aiCard) return "player";
 
     // Check for COUNTER cards - they always resolve first
     const playerIsCounter = playerCard.cardType === "COUNTER";
     const aiIsCounter = aiCard.cardType === "COUNTER";
 
     if (playerIsCounter && !aiIsCounter) {
-      return 'player';
+      return "player";
     } else if (aiIsCounter && !playerIsCounter) {
-      return 'ai';
+      return "ai";
     }
 
     // If both are counters OR neither are counters, compare speeds
@@ -86,12 +87,12 @@ export default class GameLogic {
     const aiSpeed = aiCard.speed || 0;
 
     if (playerSpeed > aiSpeed) {
-      return 'player';
+      return "player";
     } else if (aiSpeed > playerSpeed) {
-      return 'ai';
+      return "ai";
     } else {
       // Same speed - player goes first (tie breaker)
-      return 'player';
+      return "player";
     }
   }
 }

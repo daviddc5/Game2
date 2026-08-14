@@ -61,13 +61,18 @@ export default class MultiplayerLobbyScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.detectiveDesc = this.add
-      .text(centerX + 30, 475, "Max both GREEN stats to win.\nIf a RED stat hits 100, you lose.", {
-        fontFamily: "Arial, sans-serif",
-        fontSize: "18px",
-        color: "#aaaaaa",
-        align: "center",
-        lineSpacing: 2,
-      })
+      .text(
+        centerX + 30,
+        475,
+        "Max both GREEN stats to win.\nIf a RED stat hits 100, you lose.",
+        {
+          fontFamily: "Arial, sans-serif",
+          fontSize: "18px",
+          color: "#aaaaaa",
+          align: "center",
+          lineSpacing: 2,
+        },
+      )
       .setOrigin(0.5, 0);
 
     // === VIGILANTE OPTION ===
@@ -91,13 +96,18 @@ export default class MultiplayerLobbyScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     this.vigilanteDesc = this.add
-      .text(centerX + 30, 715, "Max both GREEN stats to win.\nIf a RED stat hits 100, you lose.", {
-        fontFamily: "Arial, sans-serif",
-        fontSize: "18px",
-        color: "#aaaaaa",
-        align: "center",
-        lineSpacing: 2,
-      })
+      .text(
+        centerX + 30,
+        715,
+        "Max both GREEN stats to win.\nIf a RED stat hits 100, you lose.",
+        {
+          fontFamily: "Arial, sans-serif",
+          fontSize: "18px",
+          color: "#aaaaaa",
+          align: "center",
+          lineSpacing: 2,
+        },
+      )
       .setOrigin(0.5, 0);
 
     // Find Match button (initially hidden)
@@ -141,7 +151,10 @@ export default class MultiplayerLobbyScene extends Phaser.Scene {
   setupButtons() {
     // Detective card
     this.detectiveBg.on("pointerover", () => {
-      if (!this.isSearching && this.selectedCharacter !== "Independent Detective") {
+      if (
+        !this.isSearching &&
+        this.selectedCharacter !== "Independent Detective"
+      ) {
         this.detectiveBg.setFillStyle(0x1a3a5c);
         this.detectiveBg.setStrokeStyle(3, 0x00aaff);
       }
