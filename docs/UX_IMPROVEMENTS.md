@@ -8,10 +8,12 @@ LinkedIn feedback: the game concept is cool but it's **hard to understand and ha
 
 ## Diagnosis
 
-### 1. Not 8 stats — 4 shared stats wearing 8 different names
-There are only four underlying values in `GameLogic`: `investigation`, `morale`, `publicOpinion`, `pressure`. Each character relabels all four. The *same* bar reads "Team Morale" to the Detective and "Confidence" to the Vigilante.
+### 1. Eight bars on screen, but only four decide anything
+Each player has their own four stats — `playerStats` and `opponentStats` are separate objects, each panel labelled from its own character. So there are eight bars on screen.
 
-This is worse than eight independent stats, because the player must hold two meanings for one number. Most successful card games have 1-2 stats (health, mana).
+Of those eight, **only four can end the match**: each character's `winCondition` stat and their `loseCondition` stat. The remaining four have no win/lose role and only affect the rare deck-exhaustion tiebreak.
+
+So the player is asked to track eight bars, half of which are almost decorative, with nothing on screen distinguishing the decisive ones. Most successful card games have 1-2 stats (health, mana). **This is the real "too many stats" problem, and no task in this document currently fixes it — see U29.**
 
 ### 2. Win/lose conditions are confusing
 "Get your green stat to 100 but don't let your red stat hit 100" - and the opponent's conditions are *different*. Players must learn two rule sets.
@@ -81,8 +83,8 @@ The UI currently instructs Detective players to do the thing that loses them the
 
 - [x] **U0** — Set up Vitest (`npm i -D vitest`, `"test": "vitest run"`). `GameLogic` is a static class with no Phaser dependency and `CardResolver` imports only `GameLogic`, so both test standalone with no mocking. There is currently no test infrastructure in the repo at all. *Doubles as the P14 Harness test gate — see [OBJECTIVES.md](OBJECTIVES.md).* ✅ 2026-08-14 · cf069af
 - [x] **U1** — Fix the Detective's `morale` contradiction in `characters.js`: it is coloured green with `isGreen: true` ("want high"), listed in `negativeStats`, and is the `loseCondition` at `>= 100`. Decide which is true and make all three agree. ✅ 2026-08-14 · cf069af
-- [x] **U2** — Audit the other seven stat label/colour pairs for the same class of contradiction. Check `isGreen` against `positiveStats`/`negativeStats` against the win/lose conditions for both characters. **Found a second, mirror-image contradiction:** `pressure` was rendered red for the Detective while rising it triggers the Vigilante's lose condition and therefore *wins* the Detective the game. The Vigilante's four stats were all correct. ✅ 2026-08-14 · cf069af
-- [x] **U3** — Relabel all four stats so the name says *whose* it is. "Team Morale" reads as the player's but is really the Vigilante's confidence. There are four shared values, not eight — the label is the only thing distinguishing them. ✅ 2026-08-14 · cf069af
+- [x] **U2** — Audit the other seven stat label/colour pairs. **Outcome: no second bug.** I first reported one — that the Detective's `pressure` should be green — but that came from a wrong model in which the four stats were shared between players. They are not. The Detective's `pressure` has no role in either player's win or lose condition, so its colour is a design choice, not a correctness issue. Reverted. Only U1 was a real defect. ✅ 2026-08-14 · 75f2c8b
+- [x] **U3** — ~~Relabel all four stats so the name says whose it is.~~ **Task was based on a false premise and has been reverted.** It assumed the two panels shared one set of stats, so labels had to disambiguate ownership. Each panel actually shows its own character's stats, so "Their Confidence" on your own panel is wrong. All eight labels restored to the originals. The real labelling problem is different and is now U29. ✅ 2026-08-14 · 75f2c8b
 - [x] **U4** — Reconcile `GameLogic.checkWinConditions()` with the `winCondition`/`loseCondition` objects in `characters.js`. It currently hardcodes thresholds and returns the names `"Detective L"` and `"Kira"`, which also leaks the pre-pivot Death Note naming to the player. **Note:** this method turned out to be unused — `BattleScene` duplicates the win logic inline at 1938-1959, so live win detection was never affected by the wrong names. Duplication tracked as U28. ✅ 2026-08-14 · cf069af
 
 #### 🔒 Gate 0 — the fix is real
@@ -93,6 +95,8 @@ The UI currently instructs Detective players to do the thing that loses them the
 - [ ] **G0.4** — ⚠️ *Human required.* Show the battle screen to one person who has not played. Ask: "point at the bars you want to go up." Their answer must match what actually wins. **This is the test that would have caught U1 originally.**
 
 #### Follow-up raised during Phase 0
+
+- [ ] **U29** — Distinguish the four decisive bars from the four that are near-decorative. Each character's `winCondition` and `loseCondition` stats end the match; the other two only affect the deck-exhaustion tiebreak, yet all eight render identically. Options: show only the decisive two per player, visually demote the other two, or give the inert two a real mechanical role. **This is diagnosis #1 and nothing else in this document addresses it.**
 
 - [ ] **U28** — `BattleScene.js:1938-1959` duplicates the win/lose logic that `GameLogic.checkWinConditions()` implements, and only the BattleScene copy actually runs. Make BattleScene call GameLogic so there is one implementation, or delete the unused method. Two copies of a rule is how U1 survived.
 
