@@ -8,11 +8,24 @@ LinkedIn feedback: the game concept is cool but it's **hard to understand and ha
 
 ## Diagnosis
 
-### 1. Too many stats to track (8 total)
-Each character has 4 stats, some "good" and some "bad," working differently per character. Most successful card games have 1-2 stats (health, mana).
+### 1. Not 8 stats — 4 shared stats wearing 8 different names
+There are only four underlying values in `GameLogic`: `investigation`, `morale`, `publicOpinion`, `pressure`. Each character relabels all four. The *same* bar reads "Team Morale" to the Detective and "Confidence" to the Vigilante.
+
+This is worse than eight independent stats, because the player must hold two meanings for one number. Most successful card games have 1-2 stats (health, mana).
 
 ### 2. Win/lose conditions are confusing
 "Get your green stat to 100 but don't let your red stat hit 100" - and the opponent's conditions are *different*. Players must learn two rule sets.
+
+### 2b. 🔴 The colours actively lie to the Detective
+In `characters.js`, the Detective's `morale` stat is:
+- labelled **"Team Morale"** — sounds like it belongs to the player
+- coloured **green**, `isGreen: true`, commented *"want high"*
+- listed in **`negativeStats`** — contradicting the line above it
+- the Detective's **`loseCondition` at `>= 100`**
+
+So a new Detective player sees a green bar called "Team Morale", correctly infers that green means push it up, pushes it up, and **loses the game**. `statColors.isGreen` feeds `isPositive` straight into the stat bars at `BattleScene.js:238-239`, so this renders exactly as described.
+
+No amount of narration or tutorial fixes a UI that tells players to do the thing that kills them. **Fix this before anything else in this document.**
 
 ### 3. No learning-by-doing
 The 5-page tutorial is a wall of text. Players must read and memorize rules before they can play. Successful games teach through guided first turns.
@@ -29,6 +42,26 @@ Players need to understand energy costs, speed/priority, card types, AND stat ef
 ---
 
 ## Planned Improvements
+
+### Priority 0: Correctness & Visual Redesign (do first)
+
+#### 0A. Fix the contradictory stat signals
+- Make `statColors.isGreen` agree with `positiveStats` / `negativeStats` for every stat on both characters. Right now the Detective's `morale` disagrees with itself.
+- Reconcile `GameLogic.checkWinConditions()` with the `winCondition` / `loseCondition` objects in `characters.js`. The logic currently hardcodes thresholds and returns the names `"Detective L"` and `"Kira"`, ignoring the character definitions entirely.
+- Relabel the four stats so each name says **whose** it is. "Team Morale" reads as the player's; it is really the Vigilante's confidence. Names like "Their Confidence" / "Your Evidence" remove the ambiguity for free.
+
+#### 0B. Visual redesign pass before building new UI
+Every Priority 1 and 2 item needs somewhere to live: the narration overlay needs screen space, the momentum bar needs a home, simplified cards change the hand's footprint. Building those into the current layout and *then* redesigning means building each one twice.
+
+Design the target battle screen first, then build into it:
+- One agreed layout for the battle screen at 750x1334, with the momentum bar, narration overlay, and compact stat display placed deliberately rather than fitted around what already exists.
+- A named colour palette and type scale, so "green means good" is a rule applied once rather than a per-stat decision.
+- A minimum type size. Several current labels are 10-14px in a 750-wide canvas that renders at roughly half scale on a phone — around 5-7pt on screen. Nothing below ~24px in design space survives on a real device.
+- Decide the art direction explicitly: the pixel-art portraits and the flat rectangle UI currently belong to two different games.
+
+*Claude can generate layout mockups and palette options for this step before any code changes.*
+
+---
 
 ### Priority 1: Visual Storytelling & Narrative Feedback
 
@@ -99,6 +132,55 @@ Players need to understand energy costs, speed/priority, card types, AND stat ef
 
 ---
 
+### Priority 3: Game Feel
+
+The current diagnosis is entirely about *comprehension*. "Loses engagement" is a separate failure: a player can understand the game perfectly and still be bored. These are the cheapest fixes per unit of engagement.
+
+#### 3A. Sound — there is none at all
+`grep` finds zero audio in the codebase. No card sound, no hit, no music. Silence reads as "unfinished prototype" faster than any visual problem, and this is the highest impact-per-hour item in the document.
+- Card select, card confirm, card reveal
+- Distinct counter/cancel sting — the most dramatic moment in the game currently passes in silence
+- Stat gain vs stat loss tones
+- Win and lose stings
+- One ambient loop, with a mute toggle
+
+#### 3B. Juice
+There are 16 tweens across the entire UI. Every interaction currently just *happens*, with no physical feedback:
+- Button press states — depress, not just a colour swap
+- Cards snap and settle rather than teleport
+- Damage/gain numbers float off the stat bars (`+12` rising and fading)
+- Stat bars overshoot slightly and settle
+- Portrait reacts on big swings
+
+#### 3C. Turn pacing
+`BattleScene.js` has stacked `delayedCall`s of 800ms, 1000ms, 1000ms, 500ms, 800ms and a 2000ms hold. Add those up across a turn and the player spends several seconds per turn watching nothing happen.
+- Time one full turn end to end and write the number down before changing anything.
+- Overlap animations instead of queueing them.
+- Let a tap skip any resolution animation. Returning players should never be forced to sit through a sequence they have seen fifty times.
+
+#### 3D. The first thirty seconds
+Before the tutorial can teach anything, the player has to still be there.
+- Count taps from load to first card played. Every one before the first meaningful decision is a place to lose someone.
+- The title screen should state what the game *is* in one line, not just offer buttons.
+- Consider dropping the player straight into a match against the AI, with character select offered afterwards.
+
+#### 3E. Win/lose payoff
+The match ends and a screen appears. Ending is the moment that decides whether a player starts a second match:
+- Show the final momentum swing, not just the result
+- One line on *why* they won or lost, tied to the stat that ended it
+- "Play again" as the default focused action, on the same character, with no re-selection
+
+---
+
+### Priority 4: Reasons to Return (later)
+
+Not for this pass, but worth recording since engagement was the complaint:
+- Persist a local record: matches played, win rate per character, longest streak
+- Per-character win/loss tracking gives a reason to try the other side
+- Daily "beat the AI on hard" style challenge
+
+---
+
 ## Files to Create
 
 | File | Purpose |
@@ -107,6 +189,8 @@ Players need to understand energy costs, speed/priority, card types, AND stat ef
 | `src/ui/MomentumBar.js` | Tug-of-war progress indicator |
 | `src/ui/NarrativeOverlay.js` | Dramatic text overlay during card resolution |
 | `src/scenes/TutorialBattleScene.js` | Interactive tutorial scene |
+| `src/ui/FloatingNumber.js` | Rising `+12` / `-8` feedback on stat changes |
+| `src/audio/SoundManager.js` | Central sound playback + mute toggle |
 
 ## Files to Modify
 
@@ -118,24 +202,41 @@ Players need to understand energy costs, speed/priority, card types, AND stat ef
 | `src/logic/CardResolver.js` | Integrate narration generation + screen effects |
 | `src/scenes/BattleScene.js` | Add momentum bar, narrative overlay, screen effects, tutorial hooks |
 | `src/scenes/MenuScene.js` | Add "LEARN TO PLAY" tutorial button |
+| `src/data/characters.js` | Fix contradictory `isGreen` values; relabel stats to say whose they are |
+| `src/logic/GameLogic.js` | Read win/lose conditions from `characters.js` instead of hardcoding |
+| `src/scenes/GameOverScene.js` | Show the deciding stat and why; default to "play again" |
+| `src/scenes/BootScene.js` | Preload audio |
 
 ---
 
 ## Implementation Order
 
-1. Add `playNarration` to all cards in `cards.js`
-2. Create `narration.js` (narrative generation logic)
-3. Create `NarrativeOverlay.js` (dramatic text display)
-4. Create `MomentumBar.js` (tug-of-war bar)
-5. Modify `CardResolver.js` (narration + screen effects)
-6. Modify `BattleLog.js` (story-driven log)
-7. Modify `CardHand.js` (simplified card display)
-8. Modify `BattleScene.js` (integrate all new systems)
-9. Create `TutorialBattleScene.js` (interactive tutorial)
-10. Modify `MenuScene.js` (add tutorial button)
-11. Update `main.js` config to register new scene
+**Phase 0 — correctness and design (before any new UI)**
+1. Fix `isGreen` contradictions and relabel stats in `characters.js`
+2. Reconcile `GameLogic.checkWinConditions()` with the character definitions
+3. Agree the redesigned battle screen layout, palette, and type scale
 
----
+**Phase 1 — game feel (cheapest engagement wins)**
+4. `SoundManager.js` + preload; card, counter, win/lose sounds
+5. `FloatingNumber.js` and stat bar overshoot
+6. Audit turn timing; overlap animations; add tap-to-skip
+
+**Phase 2 — comprehension**
+7. `MomentumBar.js` — who is winning, at a glance
+8. Simplified card effect display in `CardHand.js`
+9. `GameOverScene.js` payoff pass
+
+**Phase 3 — storytelling**
+10. Add `playNarration` to all cards in `cards.js`
+11. `narration.js` generation logic
+12. `NarrativeOverlay.js` + screen effects in `CardResolver.js`
+13. `BattleLog.js` into a story log
+
+**Phase 4 — teaching**
+14. `TutorialBattleScene.js`
+15. "LEARN TO PLAY" button in `MenuScene.js`, register scene in config
+
+Sound and juice move ahead of narration deliberately: they are far less work, they benefit every future change, and they address "loses engagement" directly rather than through comprehension.
 
 ## Success Criteria
 
@@ -144,3 +245,14 @@ Players need to understand energy costs, speed/priority, card types, AND stat ef
 - A player can learn the game by playing the tutorial without reading any text walls
 - Cards are easy to evaluate at a glance (simplified display with arrows)
 - The detective vs vigilante theme is *felt*, not just read
+
+## How to Test It
+
+The criteria above are unfalsifiable as written. Make them measurable with five people who have never played:
+
+1. Show a mid-match screenshot. Ask "who is winning?" — target 4 of 5 correct within 5 seconds.
+2. Hand over the tutorial with no explanation. Ask them to teach the rules back afterwards.
+3. Watch where they stop. The turn number where attention drops is the pacing problem, and it is the one number worth tracking across builds.
+4. Ask one question at the end: "would you play again?" That is the actual metric the LinkedIn feedback was about.
+
+Record the answers before the changes as a baseline. Without it there is no way to know whether any of this worked.
