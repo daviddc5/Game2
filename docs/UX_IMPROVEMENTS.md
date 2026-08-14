@@ -55,6 +55,8 @@ When you finish a task in this file, update it in the same change:
 4. If you discover new work, add it as a new `U<n>` under the right phase rather than expanding an existing task.
 5. Never tick a box you have not verified. "The code looks right" is not verification — run it, or say plainly that you did not.
 6. Keep the phase ordering intact. If something must jump the queue, move the line and say why in the commit message.
+7. **Do not start a phase until the previous phase's test gate is fully ticked.** A gate is not paperwork — it is the only evidence the work did what it claimed.
+8. Every gate re-runs `npm test`. A phase that breaks an earlier phase's tests is not finished.
 
 Update the progress count in the phase headings as you go.
 
@@ -62,14 +64,31 @@ Update the progress count in the phase headings as you go.
 
 ## Task List
 
-### Phase 0 — Correctness (blocks everything) · 0/4
+#### 🔒 Gate B — baseline (do this before U0)
+
+Run the current build past five people who have never played, and **write the answers down**. Without this there is no way to prove any of the work below helped.
+
+- [ ] **GB.1** — Mid-match screenshot, "who is winning?" Record how many of five get it right, and how long they take.
+- [ ] **GB.2** — Let them play one match unaided. Record the turn number where attention visibly drops.
+- [ ] **GB.3** — "Would you play again?" Record yes/no. This is the question the original feedback was about.
+- [ ] **GB.4** — Record one sentence each on what confused them most.
+
+### Phase 0 — Correctness (blocks everything) · 0/5
 
 The UI currently instructs Detective players to do the thing that loses them the game. Nothing else in this document matters until this is fixed.
 
+- [ ] **U0** — Set up Vitest (`npm i -D vitest`, `"test": "vitest run"`). `GameLogic` is a static class with no Phaser dependency and `CardResolver` imports only `GameLogic`, so both test standalone with no mocking. There is currently no test infrastructure in the repo at all. *Doubles as the P14 Harness test gate — see [OBJECTIVES.md](OBJECTIVES.md).*
 - [ ] **U1** — Fix the Detective's `morale` contradiction in `characters.js`: it is coloured green with `isGreen: true` ("want high"), listed in `negativeStats`, and is the `loseCondition` at `>= 100`. Decide which is true and make all three agree.
 - [ ] **U2** — Audit the other seven stat label/colour pairs for the same class of contradiction. Check `isGreen` against `positiveStats`/`negativeStats` against the win/lose conditions for both characters.
 - [ ] **U3** — Relabel all four stats so the name says *whose* it is. "Team Morale" reads as the player's but is really the Vigilante's confidence. There are four shared values, not eight — the label is the only thing distinguishing them.
 - [ ] **U4** — Reconcile `GameLogic.checkWinConditions()` with the `winCondition`/`loseCondition` objects in `characters.js`. It currently hardcodes thresholds and returns the names `"Detective L"` and `"Kira"`, which also leaks the pre-pivot Death Note naming to the player.
+
+#### 🔒 Gate 0 — the fix is real
+
+- [ ] **G0.1** — Unit tests cover every win and lose condition for both characters, driven from `characters.js` rather than hardcoded values. Red before U4, green after.
+- [ ] **G0.2** — Play a full match as the Detective. Confirm no bar rendered green causes a loss when filled.
+- [ ] **G0.3** — Play a full match as the Vigilante. Same check.
+- [ ] **G0.4** — Show the battle screen to one person who has not played. Ask: "point at the bars you want to go up." Their answer must match what actually wins. **This is the test that would have caught U1 originally.**
 
 ### Phase 0.5 — Design pass (before building new UI) · 0/3
 
@@ -78,6 +97,12 @@ Narration, the momentum bar, and simplified cards all need somewhere to live. Bu
 - [ ] **U5** — Agree one battle-screen layout at 750x1334 with deliberate space for the momentum bar, narration overlay, and compact stats. Mockup first, no code.
 - [ ] **U6** — Define a named colour palette and type scale. "Green means good" becomes one rule applied once, instead of a per-stat decision that produced U1.
 - [ ] **U7** — Decide the art direction. The pixel-art portraits and the flat-rectangle UI currently belong to two different games.
+
+#### 🔒 Gate 0.5 — the design is buildable
+
+- [ ] **G0.5.1** — Every Phase 1-4 element has a defined position in the mockup: momentum bar, narration overlay, compact stats, hand, staging area. Nothing gets "fitted in later".
+- [ ] **G0.5.2** — Smallest text in the design is ≥24px in the 750-wide space.
+- [ ] **G0.5.3** — Palette checked in a bright room and a dim one. Phones get used in both.
 
 ### Phase 1 — Touch and feel · 0/9
 
@@ -93,11 +118,28 @@ Addresses the "loses engagement" half of the feedback. Cheapest wins per hour of
 - [ ] **U15** — Stat bar overshoot and settle. (Floating `+12`/`-8` numbers already exist and work — see Already Done.)
 - [ ] **U16** — Time one full turn end to end and write the number down. Overlap the stacked `delayedCall`s (800 + 1000 + 1000 + 500 + 800, plus a 2000ms hold) and let a tap skip any resolution animation.
 
+#### 🔒 Gate 1 — it feels responsive on a real device
+
+**On an actual phone, not a desktop browser at a narrow window.** Nothing in this phase can be validated with a mouse.
+
+- [ ] **G1.1** — Every button gives visible feedback within ~100ms of touch. Tap each one and watch.
+- [ ] **G1.2** — A card cannot be played by a single accidental tap. Preview and confirm are distinct actions.
+- [ ] **G1.3** — Read every label on the battle screen at arm's length without squinting.
+- [ ] **G1.4** — Turn time measured end to end and compared against the U16 baseline. Write both numbers down.
+- [ ] **G1.5** — Mute toggle survives a reload.
+- [ ] **G1.6** — `npm test` green.
+
 ### Phase 2 — Comprehension · 0/3
 
 - [ ] **U17** — `MomentumBar.js`: one horizontal tug-of-war bar showing who is ahead without needing to parse individual stats. `(playerWin - playerRisk) - (opponentWin - opponentRisk)`, animated each turn.
 - [ ] **U18** — Simplified card effect display in `CardHand.js`: coloured arrows ("YOU: +++" / "FOE: --") on the face, full stat breakdown only in the enlarged view.
 - [ ] **U19** — `GameOverScene` payoff: show the final momentum swing, one line on *why* they won or lost tied to the deciding stat, and make "play again" the default action with no character re-selection.
+
+#### 🔒 Gate 2 — a stranger can tell who is winning
+
+- [ ] **G2.1** — Show a mid-match screenshot to five people who have never played. Ask "who is winning?" **Target: 4 of 5 correct within 5 seconds.** Record the score; this is the headline metric.
+- [ ] **G2.2** — Same five people, shown one card: "is this good for you or bad?" Correct without opening the detail view.
+- [ ] **G2.3** — `npm test` green.
 
 ### Phase 3 — Storytelling · 0/4
 
@@ -106,15 +148,38 @@ Addresses the "loses engagement" half of the feedback. Cheapest wins per hour of
 - [ ] **U22** — `NarrativeOverlay.js` plus screen effects wired into `CardResolver.js`: shake on power cards, red flash on counters, glow on large stat changes.
 - [ ] **U23** — Turn `BattleLog` into a story log: short narrative sentences, colour-coded by impact, with turn context. Add entry transitions (currently 0 tweens).
 
+#### 🔒 Gate 3 — the narration tells the truth
+
+- [ ] **G3.1** — Read ten consecutive battle log entries aloud. They should form a story, not a list.
+- [ ] **G3.2** — **No narration contradicts what mechanically happened.** The real risk here: dramatic text that says a move landed when it was countered. Check counters, cancels, and zero-effect plays specifically.
+- [ ] **G3.3** — Screen effects do not obscure the cards or bars at the moment the player needs to read them.
+- [ ] **G3.4** — `npm test` green.
+
 ### Phase 4 — Teaching · 0/2
 
 - [ ] **U24** — `TutorialBattleScene.js`: guided first game, one concept per turn (select → energy → momentum → your stats → their stats → counters), predictable AI, skippable at any point.
 - [ ] **U25** — "LEARN TO PLAY" button in `MenuScene`, register the scene in `config.js`.
 
+#### 🔒 Gate 4 — a new player can learn it unaided
+
+- [ ] **G4.1** — Someone who has never played completes the tutorial with no help from you. **Say nothing while they play.**
+- [ ] **G4.2** — Afterwards they explain the rules back correctly: how to win, how to lose, what a counter does.
+- [ ] **G4.3** — Tutorial is skippable at every step without leaving a broken state.
+- [ ] **G4.4** — They answer yes to "would you play again?" — the question the original feedback was actually about.
+- [ ] **G4.5** — `npm test` green.
+
 ### Phase 5 — Reasons to return (later) · 0/2
 
 - [ ] **U26** — Persist matches played, win rate, longest streak locally.
 - [ ] **U27** — Per-character win/loss tracking, to give a reason to try the other side.
+
+---
+
+#### 🔒 Gate 5 — progress persists
+
+- [ ] **G5.1** — Record survives killing and reopening the app.
+- [ ] **G5.2** — A corrupted or absent save does not crash the game.
+- [ ] **G5.3** — `npm test` green.
 
 ---
 
@@ -167,14 +232,14 @@ Recorded so nobody rebuilds them:
 
 ## How to Test It
 
-The criteria above are unfalsifiable as written. Make them measurable with five people who have never played:
+Testing is built into the phases as gates — see Gate B through Gate 5 in the task list above. The short version:
 
-1. Show a mid-match screenshot. Ask "who is winning?" — target 4 of 5 correct within 5 seconds.
-2. Hand over the tutorial with no explanation. Ask them to teach the rules back afterwards.
-3. Watch where they stop. The turn number where attention drops is the pacing problem, and it is the one number worth tracking across builds.
-4. Ask one question at the end: "would you play again?" That is the actual metric the LinkedIn feedback was about.
+- **Gate B** establishes the baseline before any work starts.
+- Each phase gate must be fully ticked before the next phase begins.
+- **G2.1** (4 of 5 strangers name the leader within 5 seconds) is the headline metric.
+- **G4.4** ("would you play again?") is the one the LinkedIn feedback was actually about.
 
-Record the answers before the changes as a baseline. Without it there is no way to know whether any of this worked.
+Compare every score against the Gate B baseline. An improvement you cannot measure against a starting point is an opinion.
 
 ---
 
