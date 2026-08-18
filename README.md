@@ -139,6 +139,14 @@ npm run deploy
 - [UX_IMPROVEMENTS.md](docs/UX_IMPROVEMENTS.md) — Engagement diagnosis and plan
 - [design-notes/](docs/design-notes/) — Character art prompts and open design ideas
 
+### Redesign Artifacts
+
+- [docs/redesign/Shadows of Judgment Redesign.dc.html](docs/redesign/Shadows%20of%20Judgment%20Redesign.dc.html) — Interactive redesign prototype
+- [docs/redesign/support.js](docs/redesign/support.js) — Runtime dependency used by the redesign prototype
+- [docs/redesign/github.md](docs/redesign/github.md) — Redesign implementation notes and source mapping
+- [docs/redesign/screenshots/hud.png](docs/redesign/screenshots/hud.png) — HUD screenshot reference
+- [docs/redesign/assets/](docs/redesign/assets/) — Supporting assets used by the redesign files
+
 ---
 
 ## 🗺️ Roadmap

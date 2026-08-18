@@ -1,0 +1,1747 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;600;700;800;900&family=Barlow+Semi+Condensed:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Permanent+Marker&display=swap" rel="stylesheet">
+<style>
+  body{margin:0;background:#08070A}
+  a{color:#4FC3E8;text-decoration:none}
+  a:hover{color:#9BE0F5}
+  img{image-rendering:pixelated}
+  @keyframes sojPulse{0%,100%{opacity:1}50%{opacity:.35}}
+  @keyframes sojFlip{0%{transform:rotateY(180deg) scale(.92)}100%{transform:rotateY(0deg) scale(1)}}
+  @keyframes sojFloat{0%{transform:translateY(0);opacity:0}18%{opacity:1}100%{transform:translateY(-26px);opacity:0}}
+  @keyframes sojStamp{0%{transform:scale(1.7) rotate(-9deg);opacity:0}55%{transform:scale(.97) rotate(-3deg);opacity:1}100%{transform:scale(1) rotate(-3deg);opacity:1}}
+  @keyframes sojShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(4px)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}
+  @keyframes sojBurn{0%,100%{box-shadow:0 0 0 rgba(255,64,52,0)}50%{box-shadow:0 0 14px rgba(255,64,52,.75)}}
+  @keyframes sojSweep{0%{transform:translateX(-120%)}100%{transform:translateX(320%)}}
+  @keyframes sojRise{0%{transform:translateY(18px);opacity:0}100%{transform:translateY(0);opacity:1}}
+</style>
+</helmet>
+
+<div style="background:#08070A;background-image:radial-gradient(ellipse 80% 50% at 50% 0%,#171320 0%,#08070A 70%);color:#F2EDE4;font-family:'Barlow Semi Condensed',system-ui,sans-serif;padding:0 0 100px;min-height:100vh">
+
+<div style="max-width:1460px;margin:0 auto;padding:0 40px">
+
+<div style="padding:56px 0 34px;display:grid;grid-template-columns:minmax(0,1.25fr) 300px;gap:48px;align-items:end;border-bottom:2px solid #322D3C">
+  <div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
+      <span style="width:9px;height:9px;background:#FF4034;display:block;animation:sojPulse 1.6s infinite"></span>
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.26em;color:#FF6B60">CASE FILE 001 — UX / UI / SYSTEMS REDESIGN</span>
+    </div>
+    <div style="font-family:'Permanent Marker',cursive;font-size:23px;color:#9A93A3;transform:rotate(-1.2deg);margin:0 0 4px 3px">both locks, no fuses —</div>
+    <h1 style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:104px;line-height:.82;letter-spacing:-.005em;margin:0 0 20px;text-transform:uppercase;color:#F2EDE4">Shadows of<br>Judgment<br><span style="color:#4FC3E8">rebuilt</span> <span style="color:#625C6E">for</span> <span style="color:#E0A83C">the thumb</span></h1>
+    <p style="font-size:17.5px;line-height:1.55;color:#B4AEBD;max-width:64ch;margin:0;text-wrap:pretty">A ground-up redesign of the battle experience that leaves your simultaneous-turn engine, energy economy, speed priority and 100-point stat rules <strong style="color:#F2EDE4;font-weight:600">completely intact</strong> — and finally lets a player see who is winning without doing arithmetic.</p>
+  </div>
+  <div style="border:1px solid #322D3C;background:#16141B;padding:0">
+    <div style="border-bottom:1px solid #322D3C;padding:10px 14px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.18em;color:#625C6E">GROUNDED IN YOUR CODE</div>
+    <div style="padding:14px;display:grid;gap:9px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;line-height:1.5;color:#9A93A3">
+      <div>750×1334 · Phaser.Scale.FIT</div>
+      <div style="color:#F2EDE4">playerStats + opponentStats<br><span style="color:#625C6E">= 8 live values, 4 shared keys</span></div>
+      <div>win: mode <span style="color:#35D57F">all</span> ≥ 100 · lose: mode <span style="color:#FF4034">any</span> ≥ 100</div>
+      <div>COUNTER 10 · QUICK 7–9 · NORMAL 4–6 · POWER 1–3</div>
+      <div style="color:#625C6E">read: characters.js · cards.js · GameLogic.js · CardResolver.js · StatBarGroup.js · CardHand.js · BattleScene.js</div>
+    </div>
+  </div>
+</div>
+
+<div style="padding:30px 0 0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:#322D3C;border:1px solid #322D3C">
+  <div style="background:#16141B;padding:16px 18px"><div style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:34px;line-height:.9;color:#35D57F">min()</div><div style="font-size:13.5px;color:#9A93A3;line-height:1.45;margin-top:5px">of your two green stats <em style="font-style:normal;color:#F2EDE4">is</em> your progress. Both must hit 100, so the lower one is the only one that matters.</div></div>
+  <div style="background:#16141B;padding:16px 18px"><div style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:34px;line-height:.9;color:#FF4034">max()</div><div style="font-size:13.5px;color:#9A93A3;line-height:1.45;margin-top:5px">of your two red stats <em style="font-style:normal;color:#F2EDE4">is</em> your danger. Either one kills you, so only the highest counts.</div></div>
+  <div style="background:#16141B;padding:16px 18px"><div style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:34px;line-height:.9;color:#E0A83C">4 rows</div><div style="font-size:13.5px;color:#9A93A3;line-height:1.45;margin-top:5px">hold all 8 numbers. Your four keys and theirs share an axis, so they share a row.</div></div>
+  <div style="background:#16141B;padding:16px 18px"><div style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:34px;line-height:.9;color:#4FC3E8">0 rules</div><div style="font-size:13.5px;color:#9A93A3;line-height:1.45;margin-top:5px">screens required. The win condition is drawn as two padlocks and two burning fuses.</div></div>
+</div>
+
+<div style="padding:64px 0 0">
+  <div style="display:flex;align-items:baseline;gap:14px;margin-bottom:8px">
+    <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#FF4034;letter-spacing:.2em">EXHIBIT A</span>
+    <h2 style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:44px;letter-spacing:.01em;margin:0;text-transform:uppercase;color:#F2EDE4">The build — play it</h2>
+  </div>
+  <p style="font-size:15.5px;color:#9A93A3;margin:0 0 24px;max-width:78ch;line-height:1.55">Real card data from <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:#B4AEBD">src/data/cards.js</span>, real labels from <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:#B4AEBD">characters.js</span>, real resolution order (COUNTER first, then speed, ties to the player). Tap a card, lock it in, watch the reveal. Every screen below is reachable from the strip on the right.</p>
+
+  <div style="display:flex;gap:34px;align-items:flex-start;flex-wrap:wrap">
+
+    <div style="flex:none;position:relative">
+      <div style="position:absolute;top:-1px;left:-1px;width:14px;height:14px;border-top:2px solid #E0A83C;border-left:2px solid #E0A83C"></div>
+      <div style="position:absolute;bottom:-1px;right:-1px;width:14px;height:14px;border-bottom:2px solid #E0A83C;border-right:2px solid #E0A83C"></div>
+      <div style="padding:13px;border:1px solid #322D3C;background:#100E14">
+        <div style="width:375px;height:667px;position:relative;overflow:hidden;background:#0B0A0D;box-shadow:0 0 60px rgba(79,195,232,.07) inset">
+
+          <sc-if value="{{ isTitle }}" hint-placeholder-val="{{ true }}">
+            <div data-screen-label="Title" style="position:absolute;inset:0;display:flex;flex-direction:column;background:#0B0A0D">
+              <div style="position:absolute;inset:0;opacity:.34;background-image:linear-gradient(90deg,#4FC3E8 0%,rgba(0,0,0,0) 45%),linear-gradient(270deg,#E0A83C 0%,rgba(0,0,0,0) 45%)"></div>
+              <div style="position:absolute;left:0;right:0;top:96px;bottom:250px;display:flex">
+                <div style="flex:1;overflow:hidden;position:relative;filter:grayscale(.35) contrast(1.1)"><img src="assets/images/DetectivePortraits/detective-neutral.png" alt="" style="position:absolute;width:180%;height:100%;object-fit:cover;left:-52%;opacity:.72;mask-image:linear-gradient(90deg,#000 55%,transparent 100%)"></div>
+                <div style="flex:1;overflow:hidden;position:relative;filter:grayscale(.35) contrast(1.1)"><img src="assets/images/KillerPortraits/killer-neutral.png" alt="" style="position:absolute;width:180%;height:100%;object-fit:cover;right:-52%;opacity:.72;mask-image:linear-gradient(270deg,#000 55%,transparent 100%)"></div>
+              </div>
+              <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,10,13,.55) 0%,rgba(11,10,13,0) 28%,rgba(11,10,13,.86) 62%,#0B0A0D 100%)"></div>
+              <div style="position:relative;margin-top:auto;padding:0 22px 26px;text-align:center">
+                <div style="font-family:'Permanent Marker',cursive;font-size:15px;color:#FF6B60;transform:rotate(-1.5deg);margin-bottom:6px">a duel of two convictions</div>
+                <div style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:60px;line-height:.8;letter-spacing:-.01em;text-transform:uppercase;color:#F2EDE4;text-shadow:0 3px 0 #0B0A0D">Shadows<br>of Judgment</div>
+                <div style="height:2px;background:linear-gradient(90deg,transparent,#E0A83C,transparent);margin:16px 40px 18px"></div>
+                <div style="display:flex;flex-direction:column;gap:9px">
+                  <div onClick="{{ goMode }}" style="height:56px;display:flex;align-items:center;justify-content:center;gap:10px;background:#E0A83C;color:#14100A;font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:26px;letter-spacing:.1em;cursor:pointer;box-shadow:0 4px 0 #8F6516" style-active="transform:translateY(3px);box-shadow:0 1px 0 #8F6516">▶ TAKE THE CASE</div>
+                  <div style="display:flex;gap:9px">
+                    <div onClick="{{ startTutorial }}" style="flex:1;height:46px;display:flex;align-items:center;justify-content:center;border:1px solid #4B4457;color:#F2EDE4;font-family:'Big Shoulders Display',sans-serif;font-weight:700;font-size:19px;letter-spacing:.08em;cursor:pointer" style-hover="border-color:#4FC3E8;color:#4FC3E8">HOW TO PLAY</div>
+                    <div onClick="{{ goTest }}" style="width:88px;height:46px;display:flex;align-items:center;justify-content:center;border:1px dashed #4B4457;color:#625C6E;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;cursor:pointer" style-hover="color:#E0A83C;border-color:#E0A83C">TEST</div>
+                  </div>
+                </div>
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.16em;color:#4B4457;margin-top:14px">v0.4 · 750×1334 · PORTRAIT ONLY</div>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isMode }}" hint-placeholder-val="{{ true }}">
+            <div data-screen-label="Mode select" style="position:absolute;inset:0;display:flex;flex-direction:column;padding:18px 20px;background:#0B0A0D">
+              <div onClick="{{ goTitle }}" style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;color:#625C6E;cursor:pointer;margin-bottom:20px">← BACK</div>
+              <div style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:40px;line-height:.85;text-transform:uppercase;color:#F2EDE4;margin-bottom:4px">Pick your<br>opposition</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:#625C6E;margin-bottom:22px">STEP 1 OF 2</div>
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <div onClick="{{ goSelect }}" style="border:1px solid #4B4457;background:linear-gradient(100deg,#1B1622,#16141B);padding:16px 18px;cursor:pointer;position:relative;overflow:hidden" style-hover="border-color:#E0A83C">
+                  <div style="position:absolute;right:-6px;top:-6px;font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:74px;color:#211E28;line-height:1">01</div>
+                  <div style="position:relative"><div style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:29px;letter-spacing:.03em;color:#F2EDE4;line-height:1">SINGLE PLAYER</div>
+                  <div style="font-size:14px;color:#9A93A3;margin-top:3px;line-height:1.4">The machine reads your energy and guesses. Best place to learn the mind game.</div>
+                  <div style="display:flex;gap:6px;margin-top:9px"><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;border:1px solid #35D57F;color:#35D57F;padding:2px 6px">RECOMMENDED</span><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;border:1px solid #4B4457;color:#9A93A3;padding:2px 6px">~4 MIN</span></div></div>
+                </div>
+                <div onClick="{{ goSelect }}" style="border:1px solid #322D3C;background:#16141B;padding:16px 18px;cursor:pointer;position:relative;overflow:hidden" style-hover="border-color:#4FC3E8">
+                  <div style="position:absolute;right:-6px;top:-6px;font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:74px;color:#1D1A24;line-height:1">02</div>
+                  <div style="position:relative"><div style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:29px;letter-spacing:.03em;color:#F2EDE4;line-height:1">MULTIPLAYER</div>
+                  <div style="font-size:14px;color:#9A93A3;margin-top:3px;line-height:1.4">One code, two phones, no take-backs. Both players commit blind.</div>
+                  <div style="display:flex;gap:6px;margin-top:9px"><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;border:1px solid #4B4457;color:#9A93A3;padding:2px 6px">ROOM CODE</span><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;border:1px solid #4B4457;color:#9A93A3;padding:2px 6px">LIVE</span></div></div>
+                </div>
+              </div>
+              <div style="margin-top:auto;border-top:1px solid #211E28;padding-top:14px;display:flex;gap:10px;align-items:flex-start">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:16px;color:#E0A83C;line-height:1">⚑</span>
+                <div style="font-size:13px;color:#625C6E;line-height:1.45">Both modes run the identical loop: choose in secret → reveal together → resolve by speed.</div>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isSelect }}" hint-placeholder-val="{{ true }}">
+            <div data-screen-label="Character select" style="position:absolute;inset:0;display:flex;flex-direction:column;background:#0B0A0D">
+              <div style="padding:16px 20px 10px;display:flex;justify-content:space-between;align-items:center">
+                <div onClick="{{ goMode }}" style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;color:#625C6E;cursor:pointer">← BACK</div>
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:#625C6E">STEP 2 OF 2</div>
+              </div>
+              <div style="padding:0 20px 12px"><div style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:38px;line-height:.85;text-transform:uppercase;color:#F2EDE4">Choose a side</div></div>
+
+              <div style="display:flex;gap:0;padding:0 20px">
+                <div onClick="{{ pickDetective }}" style="flex:1;cursor:pointer;border:2px solid {{ detBorder }};background:#16141B;position:relative;overflow:hidden">
+                  <div style="height:118px;overflow:hidden;position:relative"><img src="assets/images/DetectivePortraits/detective-neutral.png" alt="" style="width:100%;height:100%;object-fit:cover;object-position:50% 22%;opacity:{{ detOpacity }}"></div>
+                  <div style="padding:9px 10px 11px"><div style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:21px;line-height:1;color:#4FC3E8">DETECTIVE</div><div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;color:#625C6E;margin-top:3px">PATIENCE · PROOF</div></div>
+                </div>
+                <div onClick="{{ pickVigilante }}" style="flex:1;cursor:pointer;border:2px solid {{ vigBorder }};border-left:none;background:#16141B;position:relative;overflow:hidden">
+                  <div style="height:118px;overflow:hidden;position:relative"><img src="assets/images/KillerPortraits/killer-neutral.png" alt="" style="width:100%;height:100%;object-fit:cover;object-position:50% 18%;opacity:{{ vigOpacity }}"></div>
+                  <div style="padding:9px 10px 11px"><div style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:21px;line-height:1;color:#E0A83C">VIGILANTE</div><div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;color:#625C6E;margin-top:3px">SPEED · CONSEQUENCE</div></div>
+                </div>
+              </div>
+
+              <div style="margin:14px 20px 0;border:1px solid #322D3C;background:#13111A">
+                <div style="padding:9px 12px;border-bottom:1px solid #322D3C;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.16em;color:#625C6E">YOUR WIN CONDITION — BOTH LOCKS</div>
+                <div style="padding:11px 12px;display:grid;gap:9px">
+                  <sc-for list="{{ selGreens }}" as="g" hint-placeholder-count="2">
+                    <div style="display:flex;align-items:center;gap:9px">
+                      <span style="width:20px;height:20px;flex:none;border:1px solid #35D57F;color:#35D57F;display:flex;align-items:center;justify-content:center;font-size:11px">▲</span>
+                      <span style="font-family:'Big Shoulders Display',sans-serif;font-weight:700;font-size:19px;letter-spacing:.02em;color:#F2EDE4;flex:1">{{ g.label }}</span>
+                      <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#35D57F">→ 100</span>
+                    </div>
+                  </sc-for>
+                </div>
+                <div style="padding:9px 12px;border-top:1px solid #322D3C;border-bottom:1px solid #322D3C;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.16em;color:#FF6B60">YOU LOSE — EITHER FUSE</div>
+                <div style="padding:11px 12px;display:grid;gap:9px">
+                  <sc-for list="{{ selReds }}" as="r" hint-placeholder-count="2">
+                    <div style="display:flex;align-items:center;gap:9px">
+                      <span style="width:20px;height:20px;flex:none;border:1px solid #FF4034;color:#FF4034;display:flex;align-items:center;justify-content:center;font-size:11px">▼</span>
+                      <span style="font-family:'Big Shoulders Display',sans-serif;font-weight:700;font-size:19px;letter-spacing:.02em;color:#F2EDE4;flex:1">{{ r.label }}</span>
+                      <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#FF6B60">→ 100</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+
+              <div style="padding:12px 20px 0;font-size:13px;color:#625C6E;line-height:1.45">{{ selBlurb }}</div>
+              <div style="margin-top:auto;padding:0 20px 20px">
+                <div onClick="{{ goBattle }}" style="height:56px;display:flex;align-items:center;justify-content:center;background:{{ sideColor }};color:#14100A;font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:26px;letter-spacing:.1em;cursor:pointer;box-shadow:0 4px 0 rgba(0,0,0,.55)" style-active="transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.55)">ENTER THE NIGHT ▶</div>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isBattle }}" hint-placeholder-val="{{ true }}">
+            <div data-screen-label="Battle HUD" style="position:absolute;inset:0;display:flex;flex-direction:column;background:#0B0A0D">
+
+              <div style="height:30px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 12px;border-bottom:1px solid #211E28;background:#100E14">
+                <div style="display:flex;align-items:center;gap:8px">
+                  <span onClick="{{ goTitle }}" style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#625C6E;cursor:pointer">☰</span>
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:#9A93A3">TURN {{ turnPad }}</span>
+                </div>
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.14em;color:{{ phaseColor }}">{{ phaseLabel }}</div>
+                <div onClick="{{ openLog }}" style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.1em;color:#625C6E;cursor:pointer" style-hover="color:#4FC3E8">LOG ▸</div>
+              </div>
+
+              <div style="flex:none;padding:8px 12px 7px;display:flex;gap:10px;align-items:center;background:linear-gradient(180deg,#151119,#0B0A0D);border-bottom:1px solid #211E28">
+                <div style="width:46px;height:46px;flex:none;border:1px solid {{ foeColor }};overflow:hidden;position:relative"><img src="{{ foePortrait }}" alt="" style="width:100%;height:100%;object-fit:cover;object-position:50% 20%"></div>
+                <div style="flex:1;min-width:0">
+                  <div style="display:flex;align-items:baseline;gap:6px"><span style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:19px;line-height:1;color:{{ foeColor }}">{{ foeName }}</span><span style="font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.12em;color:#625C6E">OPPONENT</span></div>
+                  <div style="display:flex;gap:6px;margin-top:4px">
+                    <div style="display:flex;align-items:center;gap:4px;border:1px solid #2A2533;padding:2px 5px"><span style="font-family:'IBM Plex Mono',monospace;font-size:8.5px;color:#625C6E">SEAL</span><span style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:14px;line-height:1;color:#35D57F">{{ foeSeal }}</span></div>
+                    <div style="display:flex;align-items:center;gap:4px;border:1px solid #2A2533;padding:2px 5px"><span style="font-family:'IBM Plex Mono',monospace;font-size:8.5px;color:#625C6E">DOOM</span><span style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:14px;line-height:1;color:{{ foeDoomColor }}">{{ foeDoom }}</span></div>
+                  </div>
+                </div>
+                <div style="flex:none;text-align:right">
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.1em;color:#625C6E">ENERGY</div>
+                  <div style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:20px;line-height:1;color:#4FC3E8">{{ foeEnergy }}<span style="font-size:11px;color:#4B4457">/10</span></div>
+                </div>
+              </div>
+
+              <div style="flex:none;padding:9px 12px 10px;background:#100E14;border-bottom:1px solid #211E28">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px">
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.16em;color:#4B4457">YOU</span>
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.16em;color:#E0A83C">THE CASE BOARD</span>
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.16em;color:#4B4457">THEM</span>
+                </div>
+                <div style="display:grid;gap:6px">
+                  <sc-for list="{{ axes }}" as="ax" hint-placeholder-count="4">
+                    <div style="display:flex;align-items:center;gap:6px">
+                      <div style="width:26px;flex:none;text-align:right;font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:16px;line-height:1;color:{{ ax.myInk }}">{{ ax.myVal }}</div>
+                      <div style="flex:1;height:13px;background:#1A1720;border:1px solid #2A2533;position:relative;overflow:hidden">
+                        <div style="position:absolute;right:50%;top:0;bottom:0;width:{{ ax.myHalf }}%;background:{{ ax.myFill }}"></div>
+                        <div style="position:absolute;left:50%;top:0;bottom:0;width:{{ ax.theirHalf }}%;background:{{ ax.theirFill }}"></div>
+                        <div style="position:absolute;left:50%;top:-1px;bottom:-1px;width:1px;background:#4B4457;transform:translateX(-50%)"></div>
+                        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center"><span style="font-family:'IBM Plex Mono',monospace;font-size:7.5px;letter-spacing:.14em;color:#F2EDE4;text-shadow:0 0 4px #0B0A0D,0 0 4px #0B0A0D">{{ ax.name }}</span></div>
+                      </div>
+                      <div style="width:26px;flex:none;font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:16px;line-height:1;color:{{ ax.theirInk }}">{{ ax.theirVal }}</div>
+                    </div>
+                  </sc-for>
+                </div>
+                <div style="display:flex;justify-content:space-between;margin-top:6px;font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.1em;color:#4B4457">
+                  <span>▲ LOCK · CLIMB TO 100</span><span>▼ FUSE · DIES AT 100</span>
+                </div>
+              </div>
+
+              <div style="flex:1;position:relative;min-height:0;background:radial-gradient(ellipse 70% 60% at 50% 45%,#1C1726 0%,#0B0A0D 72%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:8px 12px">
+                <div style="position:absolute;inset:0;opacity:{{ dimOpacity }};background:#000;transition:opacity 200ms"></div>
+                <sc-if value="{{ showTheirSlot }}" hint-placeholder-val="{{ true }}">
+                  <div style="position:relative;display:flex;flex-direction:column;align-items:center;gap:3px">
+                    <div style="font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.14em;color:#625C6E">{{ theirSlotLabel }}</div>
+                    <div style="width:96px;height:64px;border:1px solid {{ theirCardBorder }};background:{{ theirCardBg }};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;animation:{{ theirCardAnim }};position:relative;overflow:hidden">
+                      <div style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:13px;line-height:.95;text-align:center;color:#F2EDE4;padding:0 5px">{{ theirCardName }}</div>
+                      <div style="font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.1em;color:{{ theirCardBorder }}">{{ theirCardMeta }}</div>
+                      <sc-if value="{{ theirCancelled }}" hint-placeholder-val="{{ false }}">
+                        <div style="position:absolute;inset:0;background:rgba(11,10,13,.72);display:flex;align-items:center;justify-content:center"><span style="font-family:'Permanent Marker',cursive;font-size:15px;color:#FF4034;transform:rotate(-8deg);border:2px solid #FF4034;padding:1px 6px">CANCELLED</span></div>
+                      </sc-if>
+                    </div>
+                  </div>
+                </sc-if>
+
+                <div style="position:relative;font-family:'Permanent Marker',cursive;font-size:{{ vsSize }}px;color:{{ vsColor }};line-height:1;animation:{{ vsAnim }}">{{ vsText }}</div>
+
+                <sc-if value="{{ showMySlot }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:relative;display:flex;flex-direction:column;align-items:center;gap:3px">
+                    <div style="width:96px;height:64px;border:1px solid {{ myCardBorder }};background:#1A1720;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;position:relative;overflow:hidden">
+                      <div style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:13px;line-height:.95;text-align:center;color:#F2EDE4;padding:0 5px">{{ myCardName }}</div>
+                      <div style="font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.1em;color:{{ myCardBorder }}">{{ myCardMeta }}</div>
+                      <sc-if value="{{ myCancelled }}" hint-placeholder-val="{{ false }}">
+                        <div style="position:absolute;inset:0;background:rgba(11,10,13,.72);display:flex;align-items:center;justify-content:center"><span style="font-family:'Permanent Marker',cursive;font-size:15px;color:#FF4034;transform:rotate(-8deg);border:2px solid #FF4034;padding:1px 6px">CANCELLED</span></div>
+                      </sc-if>
+                    </div>
+                    <div style="font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.14em;color:#625C6E">YOUR PLAY</div>
+                  </div>
+                </sc-if>
+
+                <sc-if value="{{ showDeltas }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:absolute;left:0;right:0;bottom:6px;display:flex;justify-content:center;gap:5px;flex-wrap:wrap;padding:0 8px">
+                    <sc-for list="{{ deltaChips }}" as="d" hint-placeholder-count="3">
+                      <span style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.06em;color:{{ d.color }};border:1px solid {{ d.color }};padding:1px 5px;background:#0B0A0D;animation:sojRise 260ms ease-out both">{{ d.text }}</span>
+                    </sc-for>
+                  </div>
+                </sc-if>
+              </div>
+
+              <div style="flex:none;padding:7px 12px;display:flex;align-items:center;gap:10px;background:linear-gradient(0deg,#151119,#0B0A0D);border-top:1px solid #211E28;border-bottom:1px solid #211E28">
+                <div style="width:38px;height:38px;flex:none;border:1px solid {{ sideColor }};overflow:hidden"><img src="{{ myPortrait }}" alt="" style="width:100%;height:100%;object-fit:cover;object-position:50% 20%"></div>
+                <div style="flex:1;min-width:0">
+                  <div style="display:flex;align-items:center;gap:5px"><span style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:17px;line-height:1;color:{{ sideColor }}">{{ myName }}</span><span style="font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.12em;color:#625C6E">YOU</span></div>
+                  <div style="display:flex;gap:5px;margin-top:3px">
+                    <div style="display:flex;align-items:center;gap:4px;border:1px solid #35D57F;padding:1px 5px"><span style="font-family:'IBM Plex Mono',monospace;font-size:8px;color:#35D57F">SEAL</span><span style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:15px;line-height:1;color:#35D57F">{{ mySeal }}</span><span style="font-family:'IBM Plex Mono',monospace;font-size:7.5px;color:#4B4457">/100</span></div>
+                    <div style="display:flex;align-items:center;gap:4px;border:1px solid {{ myDoomColor }};padding:1px 5px;animation:{{ doomAnim }}"><span style="font-family:'IBM Plex Mono',monospace;font-size:8px;color:{{ myDoomColor }}">DOOM</span><span style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:15px;line-height:1;color:{{ myDoomColor }}">{{ myDoom }}</span><span style="font-family:'IBM Plex Mono',monospace;font-size:7.5px;color:#4B4457">/100</span></div>
+                  </div>
+                </div>
+                <div style="flex:none;text-align:right">
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.1em;color:#625C6E">ENERGY</div>
+                  <div style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:22px;line-height:1;color:{{ sideColor }}">{{ myEnergy }}<span style="font-size:11px;color:#4B4457">/10</span></div>
+                </div>
+              </div>
+
+              <div style="flex:none;height:150px;padding:8px 0 0;overflow-x:auto;overflow-y:hidden;display:flex;gap:7px;background:#0B0A0D;scrollbar-width:none">
+                <div style="width:5px;flex:none"></div>
+                <sc-for list="{{ hand }}" as="c" hint-placeholder-count="4">
+                  <div onClick="{{ c.onPick }}" style="width:100px;flex:none;height:132px;border:1px solid {{ c.border }};background:{{ c.bg }};position:relative;cursor:pointer;transform:translateY({{ c.lift }}px);transition:transform 130ms cubic-bezier(.2,.9,.3,1);opacity:{{ c.opacity }};overflow:hidden">
+                    <div style="height:3px;background:{{ c.typeColor }}"></div>
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:5px 6px 0">
+                      <span style="font-family:'IBM Plex Mono',monospace;font-size:7.5px;letter-spacing:.1em;color:{{ c.typeColor }}">{{ c.glyph }} {{ c.type }}</span>
+                      <span style="width:17px;height:17px;flex:none;border:1px solid {{ c.costColor }};color:{{ c.costColor }};display:flex;align-items:center;justify-content:center;font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:12px">{{ c.cost }}</span>
+                    </div>
+                    <div style="padding:3px 6px 0;font-family:'Big Shoulders Display',sans-serif;font-weight:700;font-size:14px;line-height:.9;color:#F2EDE4;height:25px;overflow:hidden">{{ c.name }}</div>
+                    <div style="display:flex;gap:1px;padding:5px 6px 0">
+                      <sc-for list="{{ c.spine }}" as="s" hint-placeholder-count="10">
+                        <span style="flex:1;height:3px;background:{{ s.on }}"></span>
+                      </sc-for>
+                    </div>
+                    <div style="padding:1px 6px 0;font-family:'IBM Plex Mono',monospace;font-size:7px;letter-spacing:.1em;color:#625C6E">SPD {{ c.speed }}</div>
+                    <div style="padding:5px 6px 0;display:grid;gap:2px">
+                      <sc-for list="{{ c.chips }}" as="ch" hint-placeholder-count="3">
+                        <div style="display:flex;align-items:center;gap:3px"><span style="font-family:'IBM Plex Mono',monospace;font-size:8.5px;font-weight:600;color:{{ ch.color }}">{{ ch.val }}</span><span style="font-family:'IBM Plex Mono',monospace;font-size:7px;letter-spacing:.04em;color:#9A93A3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ ch.label }}</span></div>
+                      </sc-for>
+                      <div style="font-family:'IBM Plex Mono',monospace;font-size:7px;letter-spacing:.08em;color:#625C6E">{{ c.more }}</div>
+                    </div>
+                    <div onClick="{{ c.onInspect }}" style="position:absolute;bottom:0;left:0;right:0;height:18px;border-top:1px solid #2A2533;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:7.5px;letter-spacing:.12em;color:#625C6E;background:#100E14" style-hover="color:#4FC3E8">DETAILS ⓘ</div>
+                  </div>
+                </sc-for>
+                <div style="width:5px;flex:none"></div>
+              </div>
+
+              <div style="flex:none;padding:6px 12px 12px;background:#0B0A0D">
+                <div onClick="{{ onPrimary }}" style="height:56px;display:flex;align-items:center;justify-content:center;gap:8px;background:{{ ctaBg }};border:1px solid {{ ctaBorder }};color:{{ ctaInk }};font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:25px;letter-spacing:.1em;cursor:{{ ctaCursor }};box-shadow:{{ ctaShadow }}" style-active="transform:translateY(3px)">{{ ctaLabel }}</div>
+              </div>
+
+              <sc-if value="{{ showLog }}" hint-placeholder-val="{{ false }}">
+                <div style="position:absolute;inset:0;background:rgba(8,7,10,.86);display:flex;flex-direction:column;justify-content:flex-end">
+                  <div style="background:#13111A;border-top:2px solid #E0A83C;padding:14px 16px 18px;animation:sojRise 180ms ease-out both">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><span style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:22px;letter-spacing:.05em;color:#F2EDE4">CASE LOG</span><span onClick="{{ closeLog }}" style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#9A93A3;cursor:pointer">CLOSE ✕</span></div>
+                    <div style="display:grid;gap:6px;max-height:240px;overflow-y:auto">
+                      <sc-for list="{{ logLines }}" as="l" hint-placeholder-count="4">
+                        <div style="display:flex;gap:8px;border-bottom:1px solid #211E28;padding-bottom:5px"><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#4B4457;flex:none;width:38px">{{ l.turn }}</span><span style="font-size:13px;color:#B4AEBD;line-height:1.4">{{ l.text }}</span></div>
+                      </sc-for>
+                    </div>
+                  </div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ inspecting }}" hint-placeholder-val="{{ false }}">
+                <div style="position:absolute;inset:0;background:rgba(8,7,10,.9);display:flex;align-items:center;justify-content:center;padding:20px" data-screen-label="Card inspect">
+                  <div style="width:100%;background:#13111A;border:1px solid {{ insTypeColor }};animation:sojRise 180ms ease-out both;position:relative">
+                    <div style="height:4px;background:{{ insTypeColor }}"></div>
+                    <div style="padding:14px 16px 4px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+                      <div>
+                        <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.16em;color:{{ insTypeColor }}">{{ insGlyph }} {{ insType }} · RESOLVES {{ insOrder }}</div>
+                        <div style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:30px;line-height:.95;color:#F2EDE4;margin-top:3px">{{ insName }}</div>
+                      </div>
+                      <span onClick="{{ closeInspect }}" style="width:30px;height:30px;flex:none;border:1px solid #4B4457;color:#9A93A3;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer">✕</span>
+                    </div>
+                    <div style="padding:0 16px 12px;font-family:'Permanent Marker',cursive;font-size:14px;color:#9A93A3;line-height:1.35">“{{ insDesc }}”</div>
+                    <div style="display:flex;border-top:1px solid #211E28;border-bottom:1px solid #211E28">
+                      <div style="flex:1;padding:9px 12px;border-right:1px solid #211E28"><div style="font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.14em;color:#625C6E">ENERGY</div><div style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:24px;line-height:1;color:{{ insCostColor }}">{{ insCost }}<span style="font-size:12px;color:#4B4457"> / {{ myEnergy }}</span></div></div>
+                      <div style="flex:1;padding:9px 12px;border-right:1px solid #211E28"><div style="font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.14em;color:#625C6E">SPEED</div><div style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:24px;line-height:1;color:#F2EDE4">{{ insSpeed }}<span style="font-size:12px;color:#4B4457"> / 10</span></div></div>
+                      <div style="flex:1;padding:9px 12px"><div style="font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.14em;color:#625C6E">CANCELS</div><div style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:24px;line-height:1;color:{{ insCancelColor }}">{{ insCancels }}</div></div>
+                    </div>
+                    <div style="padding:12px 16px">
+                      <div style="font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.16em;color:#625C6E;margin-bottom:8px">WHAT IT DOES</div>
+                      <div style="display:grid;gap:7px">
+                        <sc-for list="{{ insEffects }}" as="e" hint-placeholder-count="3">
+                          <div style="display:flex;align-items:center;gap:8px;border-left:2px solid {{ e.color }};padding:2px 0 2px 8px">
+                            <span style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:20px;line-height:1;color:{{ e.color }};min-width:34px">{{ e.val }}</span>
+                            <span style="font-size:14px;color:#F2EDE4;line-height:1.3;flex:1">{{ e.sentence }}</span>
+                            <span style="font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.1em;color:#625C6E;border:1px solid #322D3C;padding:1px 4px">{{ e.tag }}</span>
+                          </div>
+                        </sc-for>
+                      </div>
+                    </div>
+                    <div style="padding:0 16px 14px;display:flex;gap:8px">
+                      <div onClick="{{ closeInspect }}" style="flex:none;width:92px;height:48px;border:1px solid #4B4457;color:#9A93A3;display:flex;align-items:center;justify-content:center;font-family:'Big Shoulders Display',sans-serif;font-weight:700;font-size:18px;letter-spacing:.08em;cursor:pointer">BACK</div>
+                      <div onClick="{{ pickFromInspect }}" style="flex:1;height:48px;background:{{ insPickBg }};color:{{ insPickInk }};display:flex;align-items:center;justify-content:center;font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:21px;letter-spacing:.08em;cursor:pointer">{{ insPickLabel }}</div>
+                    </div>
+                  </div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ tutorialOn }}" hint-placeholder-val="{{ false }}">
+                <div style="position:absolute;inset:0;background:rgba(8,7,10,.8)">
+                  <div style="position:absolute;left:10px;right:10px;top:{{ tipTop }}px;border:2px solid #E0A83C;background:#13111A;padding:13px 15px;animation:sojRise 200ms ease-out both">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                      <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.16em;color:#E0A83C">STEP {{ tipStep }} OF 5</span>
+                      <span onClick="{{ skipTutorial }}" style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;color:#625C6E;cursor:pointer">SKIP ALL</span>
+                    </div>
+                    <div style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:26px;line-height:.95;color:#F2EDE4;margin-bottom:5px">{{ tipTitle }}</div>
+                    <div style="font-size:14.5px;line-height:1.45;color:#B4AEBD">{{ tipBody }}</div>
+                    <div style="display:flex;gap:8px;align-items:center;margin-top:11px">
+                      <div style="display:flex;gap:4px;flex:1">
+                        <sc-for list="{{ tipDots }}" as="d" hint-placeholder-count="5">
+                          <span style="width:16px;height:3px;background:{{ d.on }}"></span>
+                        </sc-for>
+                      </div>
+                      <div onClick="{{ nextTip }}" style="height:42px;padding:0 20px;background:#E0A83C;color:#14100A;display:flex;align-items:center;justify-content:center;font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:19px;letter-spacing:.08em;cursor:pointer">{{ tipCta }}</div>
+                    </div>
+                  </div>
+                </div>
+              </sc-if>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isOver }}" hint-placeholder-val="{{ false }}">
+            <div data-screen-label="Game over" style="position:absolute;inset:0;background:#0B0A0D;display:flex;flex-direction:column">
+              <div style="height:250px;flex:none;position:relative;overflow:hidden">
+                <img src="{{ overPortrait }}" alt="" style="width:100%;height:100%;object-fit:cover;object-position:50% 22%;filter:{{ overFilter }}">
+                <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,10,13,.1),#0B0A0D 92%)"></div>
+                <div style="position:absolute;left:0;right:0;bottom:14px;text-align:center">
+                  <div style="font-family:'Permanent Marker',cursive;font-size:44px;color:{{ overColor }};transform:rotate(-3deg);animation:sojStamp 420ms cubic-bezier(.2,1.5,.4,1) both;display:inline-block;border:4px solid {{ overColor }};padding:2px 18px;line-height:1.05">{{ overVerdict }}</div>
+                </div>
+              </div>
+              <div style="padding:14px 18px 0;text-align:center">
+                <div style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:23px;line-height:1;color:#F2EDE4">{{ overHeadline }}</div>
+                <div style="font-size:14px;color:#9A93A3;margin-top:5px;line-height:1.4">{{ overReason }}</div>
+              </div>
+              <div style="margin:16px 18px 0;border:1px solid #322D3C">
+                <div style="padding:8px 12px;border-bottom:1px solid #322D3C;display:flex;justify-content:space-between"><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.16em;color:#625C6E">FINAL BOARD</span><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;color:#625C6E">{{ turnPad }} TURNS</span></div>
+                <div style="padding:10px 12px;display:grid;gap:7px">
+                  <sc-for list="{{ axes }}" as="ax" hint-placeholder-count="4">
+                    <div style="display:flex;align-items:center;gap:8px">
+                      <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;color:#9A93A3;flex:1">{{ ax.name }}</span>
+                      <span style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:18px;line-height:1;color:{{ ax.myInk }}">{{ ax.myVal }}</span>
+                      <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#4B4457">vs</span>
+                      <span style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:18px;line-height:1;color:{{ ax.theirInk }}">{{ ax.theirVal }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+                <div style="padding:9px 12px;border-top:1px solid #322D3C;display:flex;justify-content:space-between;align-items:center">
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.12em;color:#625C6E">DECIDED BY</span>
+                  <span style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:17px;letter-spacing:.03em;color:{{ overColor }}">{{ overDecider }}</span>
+                </div>
+              </div>
+              <div style="margin-top:auto;padding:0 18px 18px;display:flex;flex-direction:column;gap:8px">
+                <div onClick="{{ rematch }}" style="height:56px;display:flex;align-items:center;justify-content:center;background:{{ sideColor }};color:#14100A;font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:25px;letter-spacing:.1em;cursor:pointer;box-shadow:0 4px 0 rgba(0,0,0,.55)" style-active="transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.55)">RUN IT AGAIN ▶</div>
+                <div onClick="{{ goTitle }}" style="height:44px;display:flex;align-items:center;justify-content:center;border:1px solid #4B4457;color:#9A93A3;font-family:'Big Shoulders Display',sans-serif;font-weight:700;font-size:18px;letter-spacing:.08em;cursor:pointer">MAIN MENU</div>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isTest }}" hint-placeholder-val="{{ false }}">
+            <div data-screen-label="Test mode" style="position:absolute;inset:0;background:#0B0A0D;display:flex;flex-direction:column;padding:14px 14px 16px">
+              <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px dashed #4B4457;padding-bottom:9px;margin-bottom:12px">
+                <div style="display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;background:#E0A83C;animation:sojPulse 1.2s infinite"></span><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.16em;color:#E0A83C">TEST HARNESS</span></div>
+                <span onClick="{{ goTitle }}" style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#625C6E;cursor:pointer">EXIT ✕</span>
+              </div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;color:#625C6E;margin-bottom:7px">1 · SET ANY STAT</div>
+              <div style="display:grid;gap:6px;margin-bottom:13px">
+                <sc-for list="{{ testStats }}" as="t" hint-placeholder-count="4">
+                  <div style="display:flex;align-items:center;gap:8px;border:1px solid #211E28;padding:5px 7px;background:#13111A">
+                    <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:{{ t.color }};width:74px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ t.label }}</span>
+                    <div style="flex:1;height:8px;background:#1A1720;position:relative"><div style="position:absolute;left:0;top:0;bottom:0;width:{{ t.pct }}%;background:{{ t.color }}"></div></div>
+                    <span style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:15px;line-height:1;color:#F2EDE4;width:24px;text-align:right">{{ t.val }}</span>
+                    <span onClick="{{ t.dec }}" style="width:24px;height:24px;flex:none;border:1px solid #4B4457;color:#9A93A3;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:12px;cursor:pointer">−</span>
+                    <span onClick="{{ t.inc }}" style="width:24px;height:24px;flex:none;border:1px solid #4B4457;color:#9A93A3;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:12px;cursor:pointer">+</span>
+                    <span onClick="{{ t.max }}" style="width:30px;height:24px;flex:none;border:1px solid #FF4034;color:#FF4034;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:9px;cursor:pointer">100</span>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;color:#625C6E;margin-bottom:7px">2 · FORCE THE DRAW</div>
+              <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:13px">
+                <sc-for list="{{ testCards }}" as="tc" hint-placeholder-count="6">
+                  <span onClick="{{ tc.force }}" style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.04em;border:1px solid {{ tc.color }};color:{{ tc.color }};padding:3px 6px;cursor:pointer;background:#13111A">{{ tc.name }}</span>
+                </sc-for>
+              </div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;color:#625C6E;margin-bottom:7px">3 · JUMP</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+                <div onClick="{{ testToReveal }}" style="height:40px;border:1px solid #4FC3E8;color:#4FC3E8;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;cursor:pointer">SKIP TO REVEAL</div>
+                <div onClick="{{ testWin }}" style="height:40px;border:1px solid #35D57F;color:#35D57F;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;cursor:pointer">FORCE WIN</div>
+                <div onClick="{{ testLose }}" style="height:40px;border:1px solid #FF4034;color:#FF4034;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;cursor:pointer">FORCE LOSS</div>
+                <div onClick="{{ testCritical }}" style="height:40px;border:1px solid #FFB020;color:#FFB020;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;cursor:pointer">FUSE AT 92</div>
+              </div>
+              <div style="margin-top:auto;display:flex;gap:6px;align-items:flex-start;border-top:1px dashed #4B4457;padding-top:10px">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:#E0A83C">⚑</span>
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;line-height:1.5;color:#625C6E">Same visual language as the game, dashed borders + amber only. A tester never confuses this with a real match.</div>
+              </div>
+              <div onClick="{{ goBattle }}" style="margin-top:10px;height:48px;background:#E0A83C;color:#14100A;display:flex;align-items:center;justify-content:center;font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:21px;letter-spacing:.08em;cursor:pointer">APPLY &amp; PLAY ▶</div>
+            </div>
+          </sc-if>
+
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:8px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.14em;color:#4B4457">
+        <span>375 × 667 CSS · 750 × 1334 GAME UNITS</span><span>{{ screenTag }}</span>
+      </div>
+    </div>
+
+    <div style="flex:none;width:290px;display:flex;flex-direction:column;gap:16px">
+      <div style="border:1px solid #322D3C;background:#16141B">
+        <div style="padding:9px 12px;border-bottom:1px solid #322D3C;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.16em;color:#625C6E">JUMP TO SCREEN</div>
+        <div style="padding:10px;display:grid;gap:5px">
+          <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="7">
+            <div onClick="{{ n.go }}" style="display:flex;align-items:center;gap:8px;padding:7px 9px;border:1px solid {{ n.border }};background:{{ n.bg }};cursor:pointer" style-hover="border-color:#E0A83C">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#4B4457;width:14px">{{ n.num }}</span>
+              <span style="font-family:'Big Shoulders Display',sans-serif;font-weight:700;font-size:17px;letter-spacing:.04em;color:{{ n.ink }};flex:1">{{ n.label }}</span>
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:{{ n.ink }}">{{ n.mark }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="border:1px solid #322D3C;background:#16141B">
+        <div style="padding:9px 12px;border-bottom:1px solid #322D3C;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.16em;color:#625C6E">FORCE A MOMENT</div>
+        <div style="padding:10px;display:grid;gap:5px">
+          <div onClick="{{ momentReveal }}" style="padding:8px 10px;border:1px solid #4B4457;cursor:pointer;font-size:13.5px;color:#F2EDE4" style-hover="border-color:#4FC3E8">▶ Play a full turn</div>
+          <div onClick="{{ momentCounter }}" style="padding:8px 10px;border:1px solid #4B4457;cursor:pointer;font-size:13.5px;color:#F2EDE4" style-hover="border-color:#A86BFF">⟡ Counter cancels a POWER</div>
+          <div onClick="{{ testCritical }}" style="padding:8px 10px;border:1px solid #4B4457;cursor:pointer;font-size:13.5px;color:#F2EDE4" style-hover="border-color:#FFB020">⚠ Fuse at 92 — danger state</div>
+          <div onClick="{{ startTutorial }}" style="padding:8px 10px;border:1px solid #4B4457;cursor:pointer;font-size:13.5px;color:#F2EDE4" style-hover="border-color:#E0A83C">◉ First-time tutorial</div>
+          <div onClick="{{ testWin }}" style="padding:8px 10px;border:1px solid #4B4457;cursor:pointer;font-size:13.5px;color:#F2EDE4" style-hover="border-color:#35D57F">✓ Case sealed — victory</div>
+          <div onClick="{{ resetAll }}" style="padding:8px 10px;border:1px dashed #4B4457;cursor:pointer;font-size:13px;color:#9A93A3" style-hover="color:#F2EDE4">↺ Reset to turn 4</div>
+        </div>
+      </div>
+
+      <div style="border:1px solid #322D3C;background:#16141B;padding:12px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.16em;color:#625C6E;margin-bottom:9px">LIVE STATE</div>
+        <div style="display:grid;gap:5px;font-family:'IBM Plex Mono',monospace;font-size:10px;line-height:1.4;color:#9A93A3">
+          <div>side <span style="color:#F2EDE4">{{ sideKey }}</span> · turn <span style="color:#F2EDE4">{{ turnPad }}</span> · phase <span style="color:#F2EDE4">{{ phaseKey }}</span></div>
+          <div>you <span style="color:#35D57F">seal {{ mySeal }}</span> / <span style="color:#FF4034">doom {{ myDoom }}</span> · e{{ myEnergy }}</div>
+          <div>foe <span style="color:#35D57F">seal {{ foeSeal }}</span> / <span style="color:#FF4034">doom {{ foeDoom }}</span> · e{{ foeEnergy }}</div>
+          <div style="color:#625C6E">seal = min(greens) · doom = max(reds)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+</div>
+
+
+<div style="background:#08070A;color:#F2EDE4;font-family:'Barlow Semi Condensed',system-ui,sans-serif;padding:0 0 40px">
+<div style="max-width:1460px;margin:0 auto;padding:0 40px">
+
+  <div style="padding:66px 0 0">
+    <div style="display:flex;align-items:baseline;gap:14px;margin-bottom:8px">
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#FF4034;letter-spacing:.2em">EXHIBIT B</span>
+      <h2 style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:44px;margin:0;text-transform:uppercase;color:#F2EDE4">Product vision &amp; visual direction</h2>
+    </div>
+    <p style="font-size:16.5px;line-height:1.6;color:#B4AEBD;max-width:100ch;margin:0 0 30px;text-wrap:pretty"><strong style="color:#F2EDE4;font-weight:600">Vision.</strong> Shadows of Judgment is a four-minute noir standoff played with one thumb: two people chase justice by opposite means, choose in secret, and learn together what it cost. The redesign makes that fantasy legible by turning eight abstract numbers into two physical ideas — <strong style="color:#35D57F;font-weight:600">locks you are prying open</strong> and <strong style="color:#FF4034;font-weight:600">fuses burning toward you</strong> — and by collapsing the win rule into two words a player already understands: SEAL and DOOM. Because both sides read the same four axes at opposite polarity, every row on the board is an argument: the number that saves you is the number that buries them. Nothing about the simultaneous-turn engine changes. We simply stop asking players to do arithmetic under time pressure and start letting them feel the score.</p>
+
+    <div style="display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:22px;margin-bottom:22px">
+      <div style="border:1px solid #322D3C;background:#16141B;padding:22px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.18em;color:#625C6E;margin-bottom:16px">TYPOGRAPHY — 3 WORKING FAMILIES + 1 VOICE</div>
+        <div style="border-bottom:1px solid #211E28;padding-bottom:14px;margin-bottom:14px">
+          <div style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:52px;line-height:.85;text-transform:uppercase;color:#F2EDE4">Big Shoulders 900</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#9A93A3;margin-top:7px;line-height:1.6">DISPLAY — stat numbers, card names, buttons, verdicts · 700–900 · ALL CAPS · 14–60px<br><span style="color:#625C6E">Condensed enough to fit "Task Force Unity" in a 100px card without dropping under 14px.</span></div>
+        </div>
+        <div style="border-bottom:1px solid #211E28;padding-bottom:14px;margin-bottom:14px">
+          <div style="font-family:'Barlow Semi Condensed',sans-serif;font-weight:500;font-size:27px;color:#F2EDE4">Barlow Semi Condensed 400–600</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#9A93A3;margin-top:7px;line-height:1.6">UI — effect sentences, tutorial copy, blurbs · <span style="color:#625C6E">13px floor in modals, 14.5px in tutorial</span></div>
+        </div>
+        <div style="border-bottom:1px solid #211E28;padding-bottom:14px;margin-bottom:14px">
+          <div style="font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:21px;color:#F2EDE4">IBM Plex Mono 400–600</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#9A93A3;margin-top:7px;line-height:1.6">DATA — labels, SPD, turn counter, deltas, log, test mode · tracking .10–.20em · 7.5–11px<br><span style="color:#625C6E">Never used for sentences. This is the evidence-tag voice.</span></div>
+        </div>
+        <div>
+          <div style="font-family:'Permanent Marker',cursive;font-size:26px;color:#E0A83C">Permanent Marker</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#9A93A3;margin-top:7px;line-height:1.6">VOICE — the killer's hand. Verdict stamps, CANCELLED, card flavour quotes, taglines only.<br><span style="color:#625C6E">Replaces Death Note.ttf: keeps the handwritten menace, ships with a real licence (OFL). Hard cap: 4 appearances per screen.</span></div>
+        </div>
+      </div>
+
+      <div style="border:1px solid #322D3C;background:#16141B;padding:22px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.18em;color:#625C6E;margin-bottom:16px">TWO CHANNELS THAT NEVER MIX</div>
+        <div style="border:1px solid #2A2533;padding:15px;margin-bottom:12px">
+          <div style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:20px;letter-spacing:.04em;color:#F2EDE4;margin-bottom:8px">CHANNEL 1 — STATUS <span style="color:#625C6E;font-size:14px">green / red / amber</span></div>
+          <div style="font-size:13.5px;line-height:1.55;color:#9A93A3">Answers <em style="font-style:normal;color:#F2EDE4">"is this good for me?"</em> — nothing else is allowed to use these three hues. Lock progress, fuse danger, deltas, thresholds.</div>
+        </div>
+        <div style="border:1px solid #2A2533;padding:15px;margin-bottom:12px">
+          <div style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:20px;letter-spacing:.04em;color:#F2EDE4;margin-bottom:8px">CHANNEL 2 — IDENTITY <span style="color:#4FC3E8;font-size:14px">cyan</span> <span style="color:#625C6E;font-size:14px">/</span> <span style="color:#E0A83C;font-size:14px">brass</span></div>
+          <div style="font-size:13.5px;line-height:1.55;color:#9A93A3">Answers <em style="font-style:normal;color:#F2EDE4">"whose is this?"</em> — portraits frames, name plates, your primary button. Pulled straight from the existing pixel art: the detective's cold evidence-room teal, the vigilante's brass desk lamp.</div>
+        </div>
+        <div style="border:1px solid #A86BFF;padding:15px">
+          <div style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:20px;letter-spacing:.04em;color:#F2EDE4;margin-bottom:8px">THE BUG THIS FIXES</div>
+          <div style="font-size:13.5px;line-height:1.55;color:#9A93A3">Today card borders are <span style="color:#FF4034">red</span>=COUNTER, <span style="color:#4FC3E8">blue</span>=QUICK, <span style="color:#35D57F">green</span>=NORMAL, <span style="color:#E0A83C">gold</span>=POWER — the same red and green that mean "dying" and "winning" on the stat bars. A new player reads a green-bordered card as a good card. <strong style="color:#F2EDE4;font-weight:600">Card type moves to shape: a glyph, a word, and a 10-notch speed spine.</strong> Only COUNTER keeps a hue (violet <span style="color:#A86BFF">⟡</span>) because interrupts must pop.</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.18em;color:#625C6E;margin-bottom:12px">SEMANTIC TOKENS</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:1px;background:#322D3C;border:1px solid #322D3C;margin-bottom:34px">
+      <div style="background:#16141B"><div style="height:50px;background:repeating-linear-gradient(90deg,#35D57F 0 5px,#20A867 5px 7px)"></div><div style="padding:11px 13px"><div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#F2EDE4">--lock / success</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#625C6E;margin:3px 0 6px">#35D57F · solid weave</div><div style="font-size:12px;color:#9A93A3;line-height:1.45">Green stats only. Always with ▲.</div></div></div>
+      <div style="background:#16141B"><div style="height:50px;background:repeating-linear-gradient(135deg,#FF4034 0 4px,#A82A20 4px 8px)"></div><div style="padding:11px 13px"><div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#F2EDE4">--fuse / danger</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#625C6E;margin:3px 0 6px">#FF4034 · 45° hatch</div><div style="font-size:12px;color:#9A93A3;line-height:1.45">Red stats only. Always with ▼.</div></div></div>
+      <div style="background:#16141B"><div style="height:50px;background:#FFB020"></div><div style="padding:11px 13px"><div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#F2EDE4">--warning</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#625C6E;margin:3px 0 6px">#FFB020</div><div style="font-size:12px;color:#9A93A3;line-height:1.45">DOOM 70–84. Timer under 5s.</div></div></div>
+      <div style="background:#16141B"><div style="height:50px;background:#9A93A3"></div><div style="padding:11px 13px"><div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#F2EDE4">--neutral</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#625C6E;margin:3px 0 6px">#9A93A3 · dim #625C6E</div><div style="font-size:12px;color:#9A93A3;line-height:1.45">Safe values, labels, secondary.</div></div></div>
+      <div style="background:#16141B"><div style="height:50px;background:#0B0A0D;border-bottom:1px solid #322D3C"></div><div style="padding:11px 13px"><div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#F2EDE4">--bg-void</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#625C6E;margin:3px 0 6px">#0B0A0D · panel #16141B</div><div style="font-size:12px;color:#9A93A3;line-height:1.45">raised #211E28 · line #322D3C</div></div></div>
+      <div style="background:#16141B"><div style="height:50px;background:linear-gradient(90deg,#4FC3E8 50%,#E0A83C 50%)"></div><div style="padding:11px 13px"><div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#F2EDE4">--accent-det / --accent-vig</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#625C6E;margin:3px 0 6px">#4FC3E8 · #E0A83C</div><div style="font-size:12px;color:#9A93A3;line-height:1.45">Identity + your primary CTA.</div></div></div>
+    </div>
+
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.18em;color:#625C6E;margin-bottom:12px">UI STYLE LANGUAGE</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;margin-bottom:12px">
+      <div style="border:1px solid #322D3C;background:#16141B;padding:18px">
+        <div style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:22px;color:#F2EDE4;margin-bottom:12px">PANELS — PINNED, NOT FLOATING</div>
+        <div style="border:1px solid #322D3C;background:#211E28;padding:12px;margin-bottom:11px;position:relative">
+          <span style="position:absolute;top:-1px;left:-1px;width:10px;height:10px;border-top:2px solid #E0A83C;border-left:2px solid #E0A83C"></span>
+          <span style="position:absolute;bottom:-1px;right:-1px;width:10px;height:10px;border-bottom:2px solid #E0A83C;border-right:2px solid #E0A83C"></span>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.16em;color:#625C6E">ACTIVE PANEL</div>
+          <div style="font-size:13px;color:#9A93A3;margin-top:5px;line-height:1.45">0px radius. 1px #322D3C hairline. Bracket corners mark the one panel that wants your attention.</div>
+        </div>
+        <div style="font-size:12.5px;color:#625C6E;line-height:1.55">No drop shadows on dark, no glass, no blur. Depth is one hairline plus a radial vignette behind the table. Everything is bolted to the frame — a board, not a website.</div>
+      </div>
+      <div style="border:1px solid #322D3C;background:#16141B;padding:18px">
+        <div style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:22px;color:#F2EDE4;margin-bottom:12px">BUTTONS — ARCADE WEIGHT</div>
+        <div style="display:grid;gap:8px;margin-bottom:11px">
+          <div style="height:52px;background:#4FC3E8;color:#0A1418;display:flex;align-items:center;justify-content:center;font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:24px;letter-spacing:.1em;box-shadow:0 4px 0 #1E6F8C;cursor:pointer" style-active="transform:translateY(3px);box-shadow:0 1px 0 #1E6F8C">LOCK IT IN ▶</div>
+          <div style="height:44px;border:1px solid #4B4457;color:#F2EDE4;display:flex;align-items:center;justify-content:center;font-family:'Big Shoulders Display',sans-serif;font-weight:700;font-size:18px;letter-spacing:.08em;cursor:pointer" style-hover="border-color:#4FC3E8;color:#4FC3E8">SECONDARY</div>
+          <div style="height:44px;background:#13111A;border:1px solid #211E28;color:#4B4457;display:flex;align-items:center;justify-content:center;font-family:'Big Shoulders Display',sans-serif;font-weight:700;font-size:18px;letter-spacing:.08em">WAITING…</div>
+        </div>
+        <div style="font-size:12.5px;color:#625C6E;line-height:1.55">56px tall in battle, full width minus 24px, hard 4px bottom shadow, press = 3px downshift. It should feel like a switch being thrown, not a link being clicked.</div>
+      </div>
+      <div style="border:1px solid #322D3C;background:#16141B;padding:18px">
+        <div style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:22px;color:#F2EDE4;margin-bottom:12px">OVERLAYS — NEVER FULL BLACKOUT</div>
+        <div style="border:1px solid #2A2533;padding:12px;margin-bottom:11px;background:rgba(8,7,10,.86)">
+          <div style="font-family:'Permanent Marker',cursive;font-size:16px;color:#FF4034;transform:rotate(-4deg);display:inline-block;border:3px solid #FF4034;padding:0 8px">CANCELLED</div>
+          <div style="font-size:13px;color:#9A93A3;margin-top:9px;line-height:1.45">rgba(8,7,10,.86) scrim, 180ms rise from +18px. Verdict stamps land at 420ms with an overshoot.</div>
+        </div>
+        <div style="font-size:12.5px;color:#625C6E;line-height:1.55">The Case Board stays lit under every overlay except the verdict — you never lose sight of the score while reading a card.</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding:56px 0 0">
+    <div style="display:flex;align-items:baseline;gap:14px;margin-bottom:8px">
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#FF4034;letter-spacing:.2em">EXHIBIT C</span>
+      <h2 style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:44px;margin:0;text-transform:uppercase;color:#F2EDE4">Battle information architecture</h2>
+    </div>
+    <p style="font-size:15.5px;line-height:1.6;color:#9A93A3;max-width:96ch;margin:0 0 26px">Today the screen shows eight bars of equal weight and asks the player to work out what they mean. The redesign gives every band one job and one question, in this order.</p>
+
+    <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:26px;margin-bottom:26px">
+      <div style="display:grid;gap:11px;align-content:start">
+        <div style="border:1px solid #322D3C;background:#16141B;padding:15px 17px;display:flex;gap:13px">
+          <span style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:38px;line-height:.78;color:#35D57F">1</span>
+          <div><div style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:21px;color:#F2EDE4;line-height:1">AM I WINNING OR DYING?</div><div style="font-size:13.5px;color:#9A93A3;line-height:1.5;margin-top:4px"><strong style="color:#F2EDE4;font-weight:600">SEAL and DOOM chips</strong> on both name rails. Two numbers per player, one green one red, biggest type in their band. Read in under a second, from the thumb rest.</div></div>
+        </div>
+        <div style="border:1px solid #322D3C;background:#16141B;padding:15px 17px;display:flex;gap:13px">
+          <span style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:38px;line-height:.78;color:#E0A83C">2</span>
+          <div><div style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:21px;color:#F2EDE4;line-height:1">WHY?</div><div style="font-size:13.5px;color:#9A93A3;line-height:1.5;margin-top:4px"><strong style="color:#F2EDE4;font-weight:600">The Case Board</strong> — four axis rows, all eight values, mine left theirs right. Consulted, not scanned. This is where a player learns which lever to pull.</div></div>
+        </div>
+        <div style="border:1px solid #322D3C;background:#16141B;padding:15px 17px;display:flex;gap:13px">
+          <span style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:38px;line-height:.78;color:#4FC3E8">3</span>
+          <div><div style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:21px;color:#F2EDE4;line-height:1">WHAT DO I DO?</div><div style="font-size:13.5px;color:#9A93A3;line-height:1.5;margin-top:4px"><strong style="color:#F2EDE4;font-weight:600">Hand + one button</strong>, bottom 210px, inside thumb reach. Max four cards visible, horizontally scrollable, one primary action that changes label with phase.</div></div>
+        </div>
+        <div style="border:1px dashed #4B4457;padding:13px 16px">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.16em;color:#625C6E;margin-bottom:6px">DEMOTED TO ON-DEMAND</div>
+          <div style="font-size:13px;color:#9A93A3;line-height:1.5">Full stat history · deck count · card catalogue · opponent energy history · settings · rules. All one tap away, none resident. The battle log becomes a sheet you pull, not a scrolling box that eats 90px forever.</div>
+        </div>
+      </div>
+
+      <div style="border:1px solid #322D3C;background:#16141B;padding:20px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.18em;color:#E0A83C;margin-bottom:12px">HOW THE TWO WIN RULES ARE DRAWN</div>
+        <div style="display:grid;gap:14px">
+          <div style="border-left:3px solid #35D57F;padding:2px 0 2px 13px">
+            <div style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:23px;color:#35D57F;line-height:1">▲ TWO LOCKS — mode "all"</div>
+            <div style="font-size:14px;color:#B4AEBD;line-height:1.5;margin-top:5px">Both green stats must reach 100, so the binding number is the lower of the two. Show it as one figure: <span style="font-family:'IBM Plex Mono',monospace;color:#F2EDE4">SEAL = min(g1, g2)</span>. A player pushing 100/40 instantly sees SEAL 40 and knows exactly which lock is stuck. The row itself shows both values; the chip shows the truth.</div>
+          </div>
+          <div style="border-left:3px solid #FF4034;padding:2px 0 2px 13px">
+            <div style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:23px;color:#FF4034;line-height:1">▼ TWO FUSES — mode "any"</div>
+            <div style="font-size:14px;color:#B4AEBD;line-height:1.5;margin-top:5px">Either red stat at 100 ends the match, so only the worst one matters: <span style="font-family:'IBM Plex Mono',monospace;color:#F2EDE4">DOOM = max(r1, r2)</span>. At 70 the chip turns amber, at 85 it turns red and breathes on a 1.1s loop. That single behaviour is the whole "who is in danger" problem, solved.</div>
+          </div>
+          <div style="border:1px solid #2A2533;background:#13111A;padding:13px">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.75;color:#9A93A3">seal = Math.min(...character.positiveStats.map(k =&gt; stats[k]))<br>doom = Math.max(...character.negativeStats.map(k =&gt; stats[k]))<br><span style="color:#625C6E">// both arrays already exist in characters.js — no data changes</span></div>
+          </div>
+          <div style="font-size:13px;color:#625C6E;line-height:1.55">Ten words of copy carry the rest, permanently, under the board: <span style="color:#35D57F">▲ LOCK · CLIMB TO 100</span> and <span style="color:#FF6B60">▼ FUSE · DIES AT 100</span>. There is no rules screen to forget.</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="border:1px solid #322D3C;background:#100E14;padding:20px 22px;overflow-x:auto">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.18em;color:#625C6E;margin-bottom:14px">WIREFRAME — BATTLE HUD · 750 × 1334 GAME UNITS (CSS px in brackets)</div>
+      <pre style="margin:0;font-family:'IBM Plex Mono',monospace;font-size:11.5px;line-height:1.5;color:#B4AEBD">┌──────────────────────────────────────────────┐ ── 0
+│ ☰  TURN 04        CHOOSE YOUR PLAY     LOG ▸ │ 60u  [30] system bar
+├──────────────────────────────────────────────┤
+│ ┌────┐ VIGILANTE  OPPONENT          ENERGY   │
+│ │PORT│ [SEAL 39] [DOOM 55]              5/10 │ 122u [61] foe rail
+│ └────┘                                       │
+├──────────────────────────────────────────────┤
+│  YOU            THE CASE BOARD         THEM  │
+│  58 ▐███████▌·············· THE EVIDENCE  51 │
+│  44 ▐█████▌················ THE RESOLVE   39 │ 224u [112]
+│  37 ▐////▌·················· THE STREET   46 │      4 axis rows
+│  62 ▐//////▌················· THE HEAT    55 │      = all 8 values
+│  ▲ LOCK · CLIMB TO 100    ▼ FUSE · DIES AT 100│
+├──────────────────────────────────────────────┤
+│                                              │
+│              [ THEIR PLAY ]                  │
+│            ╔════════════════╗                │ 380u [190]
+│            ║  ?  HIDDEN     ║                │      the table
+│            ╚════════════════╝                │      (reveal stage)
+│                    vs                        │
+│            ╔════════════════╗                │
+│            ║ INTERROGATION  ║                │
+│            ║ ▲ QUICK · SPD 8║                │
+│            ╚════════════════╝                │
+│              [ YOUR PLAY ]                   │
+│        +10 EVIDENCE  +10 HEAT ▸THEM          │ ← deltas
+├──────────────────────────────────────────────┤
+│ ┌──┐ DETECTIVE  YOU              ENERGY      │
+│ │PT│ [SEAL 44/100] [DOOM 62/100]      6/10   │ 104u [52] your rail
+│ └──┘                                         │
+├──────────────────────────────────────────────┤
+│ ┌───────┐┌───────┐┌───────┐┌───────┐         │
+│ │▲QUICK4││■NORM 6││✦POWER7││▲QUICK4│  ▸ scroll│ 300u [150]
+│ │Interro││Logical││Forensi││Public │         │      hand
+│ │▐▐▐▐▐▐▐││▐▐▐▐▐··││▐▐▐▐···││▐▐▐▐▐▐▐│         │      speed spine
+│ │+10 EVD││+12 EVD││+15 EVD││+10 UNI│         │
+│ │DETAILS││DETAILS││DETAILS││DETAILS│         │
+│ └───────┘└───────┘└───────┘└───────┘         │
+├──────────────────────────────────────────────┤
+│ ▐▐▐▐▐▐▐  L O C K   I T   I N  ▶  ▐▐▐▐▐▐▐     │ 112u [56] primary
+└──────────────────────────────────────────────┘ ── 1334
+   thumb zone ▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔ bottom 38%</pre>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<div style="background:#08070A;color:#F2EDE4;font-family:'Barlow Semi Condensed',system-ui,sans-serif;padding:0 0 40px">
+<div style="max-width:1460px;margin:0 auto;padding:0 40px">
+
+  <div style="padding:56px 0 0">
+    <div style="display:flex;align-items:baseline;gap:14px;margin-bottom:8px">
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#FF4034;letter-spacing:.2em">EXHIBIT D</span>
+      <h2 style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:44px;margin:0;text-transform:uppercase;color:#F2EDE4">Screen by screen</h2>
+    </div>
+    <p style="font-size:15.5px;line-height:1.6;color:#9A93A3;max-width:96ch;margin:0 0 26px">Six surfaces beyond the battle HUD. Each one is playable in Exhibit A — the wireframes below are the handoff spec, with the decisions that changed and why.</p>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(430px,1fr));gap:18px">
+
+      <div style="border:1px solid #322D3C;background:#16141B">
+        <div style="padding:12px 16px;border-bottom:1px solid #322D3C;display:flex;justify-content:space-between;align-items:baseline">
+          <span style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:25px;letter-spacing:.03em;color:#F2EDE4">01 · TITLE</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;color:#625C6E">TitleScene + MenuScene, merged</span>
+        </div>
+        <div style="padding:16px;background:#100E14;border-bottom:1px solid #322D3C"><pre style="margin:0;font-family:'IBM Plex Mono',monospace;font-size:10.5px;line-height:1.45;color:#B4AEBD">┌────────────────────────────┐
+│ ░░░ detective ▏ vigilante ░░│ ← real portraits,
+│ ░░░  facing    ▏  facing  ░░│   cyan/brass rim
+│ ░░░  right     ▏  left    ░░│   light, gradient
+│ ░░░            ▏          ░░│   to void at 62%
+│                            │
+│    a duel of two convictions│ ← marker, rotated
+│      SHADOWS OF JUDGMENT    │   900 wt, 120u
+│    ──────◆──────            │
+│ ┌────────────────────────┐ │
+│ │  ▶  TAKE THE CASE      │ │ 112u primary
+│ └────────────────────────┘ │
+│ ┌──────────────┐┌────────┐ │
+│ │ HOW TO PLAY  ││  TEST  │ │ 92u secondary
+│ └──────────────┘└────────┘ │
+│  v0.4 · 750×1334 · PORTRAIT │
+└────────────────────────────┘</pre></div>
+        <div style="padding:14px 16px;display:grid;gap:7px;font-size:13.5px;line-height:1.5;color:#9A93A3">
+          <div><span style="color:#35D57F;font-family:'IBM Plex Mono',monospace;font-size:10px">FIXED</span> Two scenes collapse into one. Nobody needs a title card that only leads to a menu.</div>
+          <div><span style="color:#35D57F;font-family:'IBM Plex Mono',monospace;font-size:10px">FIXED</span> Four flat text buttons with emoji become one hero action plus two utilities. Mode choice moves to its own step where it can be explained.</div>
+          <div><span style="color:#35D57F;font-family:'IBM Plex Mono',monospace;font-size:10px">FIXED</span> The portraits do the theming work — the screen says "duel" before a word is read.</div>
+        </div>
+      </div>
+
+      <div style="border:1px solid #322D3C;background:#16141B">
+        <div style="padding:12px 16px;border-bottom:1px solid #322D3C;display:flex;justify-content:space-between;align-items:baseline">
+          <span style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:25px;letter-spacing:.03em;color:#F2EDE4">02 · MODE SELECT</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;color:#625C6E">STEP 1 OF 2</span>
+        </div>
+        <div style="padding:16px;background:#100E14;border-bottom:1px solid #322D3C"><pre style="margin:0;font-family:'IBM Plex Mono',monospace;font-size:10.5px;line-height:1.45;color:#B4AEBD">┌────────────────────────────┐
+│ ← BACK                     │
+│ PICK YOUR                  │
+│ OPPOSITION                 │
+│ STEP 1 OF 2                │
+│ ┌────────────────────────┐ │
+│ │ SINGLE PLAYER       01 │ │ ← ghost numeral
+│ │ The machine reads your │ │
+│ │ energy and guesses.    │ │
+│ │ [RECOMMENDED] [~4 MIN] │ │
+│ └────────────────────────┘ │
+│ ┌────────────────────────┐ │
+│ │ MULTIPLAYER         02 │ │
+│ │ One code, two phones,  │ │
+│ │ no take-backs.         │ │
+│ │ [ROOM CODE] [LIVE]     │ │
+│ └────────────────────────┘ │
+│ ⚑ Both modes run the same  │
+│   loop: blind → reveal →   │
+│   resolve by speed.        │
+└────────────────────────────┘</pre></div>
+        <div style="padding:14px 16px;display:grid;gap:7px;font-size:13.5px;line-height:1.5;color:#9A93A3">
+          <div><span style="color:#35D57F;font-family:'IBM Plex Mono',monospace;font-size:10px">FIXED</span> Each mode gets one sentence of consequence and a time estimate, so a first-timer picks single player on purpose instead of by accident.</div>
+          <div><span style="color:#35D57F;font-family:'IBM Plex Mono',monospace;font-size:10px">FIXED</span> The footer note kills the most common wrong assumption — that multiplayer is a different game.</div>
+          <div><span style="color:#4FC3E8;font-family:'IBM Plex Mono',monospace;font-size:10px">NEW</span> Room-code entry stays inside this card on tap; no separate lobby scene for the happy path.</div>
+        </div>
+      </div>
+
+      <div style="border:1px solid #322D3C;background:#16141B">
+        <div style="padding:12px 16px;border-bottom:1px solid #322D3C;display:flex;justify-content:space-between;align-items:baseline">
+          <span style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:25px;letter-spacing:.03em;color:#F2EDE4">03 · CHARACTER SELECT</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;color:#625C6E">THE 10-SECOND RULES MOMENT</span>
+        </div>
+        <div style="padding:16px;background:#100E14;border-bottom:1px solid #322D3C"><pre style="margin:0;font-family:'IBM Plex Mono',monospace;font-size:10.5px;line-height:1.45;color:#B4AEBD">┌────────────────────────────┐
+│ ← BACK           STEP 2 OF 2│
+│ CHOOSE A SIDE              │
+│ ┌───────────┐┌───────────┐ │
+│ │ ░portrait░││ ░portrait░ │ │ ← selected = full
+│ │ DETECTIVE ││ VIGILANTE  │ │   colour + 2px rim
+│ │ PATIENCE  ││ SPEED ·    │ │   unselected = 40%
+│ │ · PROOF   ││ CONSEQUENCE│ │
+│ └───────────┘└───────────┘ │
+│ ┌────────────────────────┐ │
+│ │ YOUR WIN — BOTH LOCKS  │ │
+│ │ ▲ Evidence Chain → 100 │ │ ← pulled live from
+│ │ ▲ Task Force Unity→ 100│ │   characters.js
+│ │ YOU LOSE — EITHER FUSE │ │   winCondition /
+│ │ ▼ Public Panic   → 100 │ │   loseCondition
+│ │ ▼ Case Doubt     → 100 │ │
+│ └────────────────────────┘ │
+│ Slow, methodical, punishing │
+│ to rush.                   │
+│ ┌────────────────────────┐ │
+│ │  ENTER THE NIGHT  ▶    │ │
+│ └────────────────────────┘ │
+└────────────────────────────┘</pre></div>
+        <div style="padding:14px 16px;display:grid;gap:7px;font-size:13.5px;line-height:1.5;color:#9A93A3">
+          <div><span style="color:#E0A83C;font-family:'IBM Plex Mono',monospace;font-size:10px">KEY</span> This screen <em style="font-style:normal;color:#F2EDE4">is</em> the rulebook. Four labelled conditions with ▲/▼ and "→ 100" teach the entire win model in the seconds a player is already spending choosing a side.</div>
+          <div><span style="color:#35D57F;font-family:'IBM Plex Mono',monospace;font-size:10px">FIXED</span> Conditions render from <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#B4AEBD">winCondition.stats</span> / <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#B4AEBD">loseCondition.stats</span>, so a new class in the future documents itself.</div>
+          <div><span style="color:#4FC3E8;font-family:'IBM Plex Mono',monospace;font-size:10px">NEW</span> One-line temperament blurb sets expectation of play speed before the first turn.</div>
+        </div>
+      </div>
+
+      <div style="border:1px solid #322D3C;background:#16141B">
+        <div style="padding:12px 16px;border-bottom:1px solid #322D3C;display:flex;justify-content:space-between;align-items:baseline">
+          <span style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:25px;letter-spacing:.03em;color:#F2EDE4">04 · CARD INSPECT</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;color:#625C6E">MODAL · BOARD STAYS LIT</span>
+        </div>
+        <div style="padding:16px;background:#100E14;border-bottom:1px solid #322D3C"><pre style="margin:0;font-family:'IBM Plex Mono',monospace;font-size:10.5px;line-height:1.45;color:#B4AEBD">┌────────────────────────────┐
+│ ▂▂▂▂▂ type colour bar ▂▂▂▂ │
+│ ⟡ COUNTER · RESOLVES FIRST │
+│ COUNTER STRATEGY        ✕  │ ← 60u title
+│ "Anticipate and counter the │ ← marker, flavour
+│  opponent's move"          │
+│ ┌────────┬────────┬───────┐│
+│ │ ENERGY │ SPEED  │CANCELS││
+│ │  2 / 6 │ 10 /10 │YES ≤6 ││ ← cost vs YOUR
+│ └────────┴────────┴───────┘│   current energy
+│ WHAT IT DOES               │
+│ ▌+12  your Task Force Unity│ ← one line per
+│ ▌ -8  your Public Panic    │   effect, coloured
+│ ▌-12  their Public Support │   by good-for-me
+│ ┌──────┐┌────────────────┐ │
+│ │ BACK ││ SELECT THIS ▶  │ │ 96u actions
+│ └──────┘└────────────────┘ │
+└────────────────────────────┘</pre></div>
+        <div style="padding:14px 16px;display:grid;gap:7px;font-size:13.5px;line-height:1.5;color:#9A93A3">
+          <div><span style="color:#E0A83C;font-family:'IBM Plex Mono',monospace;font-size:10px">KEY</span> Every effect becomes a sentence with a subject: <em style="font-style:normal;color:#F2EDE4">your</em> or <em style="font-style:normal;color:#F2EDE4">their</em>, then the real stat label. No more guessing whether a number lands on you.</div>
+          <div><span style="color:#35D57F;font-family:'IBM Plex Mono',monospace;font-size:10px">FIXED</span> Cost is shown as <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#B4AEBD">2 / 6</span> — the card's cost against your pool — so affordability needs no mental subtraction.</div>
+          <div><span style="color:#35D57F;font-family:'IBM Plex Mono',monospace;font-size:10px">FIXED</span> CANCELS is stated as a fact with its threshold, replacing a rule that currently exists only in code.</div>
+        </div>
+      </div>
+
+      <div style="border:1px solid #322D3C;background:#16141B">
+        <div style="padding:12px 16px;border-bottom:1px solid #322D3C;display:flex;justify-content:space-between;align-items:baseline">
+          <span style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:25px;letter-spacing:.03em;color:#F2EDE4">05 · GAME OVER</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;color:#625C6E">GameOverScene</span>
+        </div>
+        <div style="padding:16px;background:#100E14;border-bottom:1px solid #322D3C"><pre style="margin:0;font-family:'IBM Plex Mono',monospace;font-size:10.5px;line-height:1.45;color:#B4AEBD">┌────────────────────────────┐
+│ ░░░░░░░░░░░░░░░░░░░░░░░░░░ │
+│ ░░ winning / losing ░░░░░░ │ 500u portrait,
+│ ░░ portrait, 250 css ░░░░░ │ desaturated on loss
+│ ░░░░░░░░░░░░░░░░░░░░░░░░░░ │
+│      ╔══════════════╗      │
+│      ║ CASE CLOSED  ║      │ ← marker stamp,
+│      ╚══════════════╝      │   420ms overshoot
+│  You sealed both locks.    │
+│  Evidence Chain and Task   │
+│  Force Unity both hit 100. │
+│ ┌────────────────────────┐ │
+│ │ FINAL BOARD    12 TURNS│ │
+│ │ THE EVIDENCE  100 vs 88│ │ ← same axis order
+│ │ THE RESOLVE   100 vs 41│ │   as the HUD
+│ │ THE STREET     37 vs 62│ │
+│ │ THE HEAT       74 vs 91│ │
+│ │ DECIDED BY  BOTH LOCKS │ │
+│ └────────────────────────┘ │
+│ ┌────────────────────────┐ │
+│ │  RUN IT AGAIN  ▶       │ │
+│ └────────────────────────┘ │
+│ ┌────────────────────────┐ │
+│ │  MAIN MENU             │ │
+│ └────────────────────────┘ │
+└────────────────────────────┘</pre></div>
+        <div style="padding:14px 16px;display:grid;gap:7px;font-size:13.5px;line-height:1.5;color:#9A93A3">
+          <div><span style="color:#E0A83C;font-family:'IBM Plex Mono',monospace;font-size:10px">KEY</span> <strong style="color:#F2EDE4;font-weight:600">DECIDED BY</strong> names the exact stat that ended it. Losing without knowing why is the fastest way to lose a player.</div>
+          <div><span style="color:#35D57F;font-family:'IBM Plex Mono',monospace;font-size:10px">FIXED</span> Final board keeps the HUD's row order and colour logic, so the summary reads like the game, not a receipt.</div>
+          <div><span style="color:#4FC3E8;font-family:'IBM Plex Mono',monospace;font-size:10px">NEW</span> Rematch is the primary action and preserves side + mode. One tap back into a match.</div>
+        </div>
+      </div>
+
+      <div style="border:1px solid #322D3C;background:#16141B">
+        <div style="padding:12px 16px;border-bottom:1px solid #322D3C;display:flex;justify-content:space-between;align-items:baseline">
+          <span style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:25px;letter-spacing:.03em;color:#F2EDE4">06 · TEST MODE</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;color:#625C6E">DASHED + AMBER = NOT A REAL MATCH</span>
+        </div>
+        <div style="padding:16px;background:#100E14;border-bottom:1px solid #322D3C"><pre style="margin:0;font-family:'IBM Plex Mono',monospace;font-size:10.5px;line-height:1.45;color:#B4AEBD">┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐
+│ ● TEST HARNESS      EXIT ✕ │
+│ 1 · SET ANY STAT           │
+│ [Evidence Chain ▐▐▐ 58 −+100]
+│ [Task Force Un. ▐▐   44 −+100]
+│ [Public Panic   ▐    37 −+100]
+│ [Case Doubt     ▐▐▐▐ 62 −+100]
+│ 2 · FORCE THE DRAW         │
+│ [COUNTER STRATEGY][INTERROG]│ ← chips tinted by
+│ [LOGICAL TRAP][SURVEILLANCE]│   card type
+│ 3 · JUMP                   │
+│ ┌──────────┐┌────────────┐ │
+│ │SKIP TO   ││ FORCE WIN  │ │
+│ │REVEAL    ││            │ │
+│ └──────────┘└────────────┘ │
+│ ┌──────────┐┌────────────┐ │
+│ │FORCE LOSS││ FUSE AT 92 │ │
+│ └──────────┘└────────────┘ │
+│ ⚑ same language, dashed +  │
+│   amber only.              │
+│ [ APPLY &amp; PLAY ▶ ]         │
+└ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘</pre></div>
+        <div style="padding:14px 16px;display:grid;gap:7px;font-size:13.5px;line-height:1.5;color:#9A93A3">
+          <div><span style="color:#4FC3E8;font-family:'IBM Plex Mono',monospace;font-size:10px">NEW</span> Covers the five things you asked for: set any stat, force your draw, force their card (long-press a chip), skip to reveal, force win/loss.</div>
+          <div><span style="color:#E0A83C;font-family:'IBM Plex Mono',monospace;font-size:10px">KEY</span> Dashed borders and amber-only accents, everywhere, always. A screenshot from test mode can never be mistaken for the shipping build in a bug report.</div>
+          <div><span style="color:#35D57F;font-family:'IBM Plex Mono',monospace;font-size:10px">FIXED</span> Reachable from the title screen and from the battle menu, not only via a registry flag set two scenes earlier.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding:56px 0 0">
+    <div style="display:flex;align-items:baseline;gap:14px;margin-bottom:8px">
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#FF4034;letter-spacing:.2em">EXHIBIT E</span>
+      <h2 style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:44px;margin:0;text-transform:uppercase;color:#F2EDE4">Card redesign</h2>
+    </div>
+    <p style="font-size:15.5px;line-height:1.6;color:#9A93A3;max-width:96ch;margin:0 0 26px">Current cards are 180×260 with a serif name, a full sentence of flavour, an energy hexagon and a bare "S 8". The name and the flavour text occupy 60% of the face; the two numbers that decide the turn are the smallest things on it. The redesign inverts that budget.</p>
+
+    <div style="display:grid;grid-template-columns:340px minmax(0,1fr);gap:26px;align-items:start;margin-bottom:24px">
+      <div style="border:1px solid #322D3C;background:#100E14;padding:20px;display:flex;flex-direction:column;align-items:center;gap:14px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.18em;color:#625C6E">FRONT OF CARD · 200 × 264 GAME UNITS</div>
+        <div style="width:200px;border:1px solid #322D3C;background:#16141B;position:relative">
+          <div style="height:6px;background:#FF8A3D"></div>
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:9px 11px 0">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;color:#FF8A3D">✦ POWER</span>
+            <span style="width:28px;height:28px;border:1px solid #F2EDE4;color:#F2EDE4;display:flex;align-items:center;justify-content:center;font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:19px">7</span>
+          </div>
+          <div style="padding:6px 11px 0;font-family:'Big Shoulders Display',sans-serif;font-weight:700;font-size:26px;line-height:.9;color:#F2EDE4">Forensic Breakthrough</div>
+          <div style="display:flex;gap:2px;padding:10px 11px 0">
+            <span style="flex:1;height:5px;background:#FF8A3D"></span><span style="flex:1;height:5px;background:#FF8A3D"></span><span style="flex:1;height:5px;background:#FF8A3D"></span><span style="flex:1;height:5px;background:#FF8A3D"></span><span style="flex:1;height:5px;background:#26222E"></span><span style="flex:1;height:5px;background:#26222E"></span><span style="flex:1;height:5px;background:#26222E"></span><span style="flex:1;height:5px;background:#26222E"></span><span style="flex:1;height:5px;background:#26222E"></span><span style="flex:1;height:5px;background:#26222E"></span>
+          </div>
+          <div style="padding:3px 11px 0;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;color:#625C6E">SPD 4</div>
+          <div style="padding:10px 11px 0;display:grid;gap:4px">
+            <div style="display:flex;align-items:center;gap:5px"><span style="font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:#35D57F">+15</span><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#9A93A3">EVIDENCE</span></div>
+            <div style="display:flex;align-items:center;gap:5px"><span style="font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:#35D57F">+15</span><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#9A93A3">HEAT ▸THEM</span></div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#625C6E">+2 MORE</div>
+          </div>
+          <div style="margin-top:10px;height:26px;border-top:1px solid #2A2533;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:#625C6E;background:#100E14">DETAILS ⓘ</div>
+        </div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;line-height:1.65;color:#625C6E;text-align:left;align-self:stretch">1 type strip + glyph + word<br>2 energy cost, boxed, top-right<br>3 name — 2 lines max, clipped<br>4 speed spine — 10 notches<br>5 top 2 effects by magnitude<br>6 "+N MORE" honesty line<br>7 DETAILS strip = 52u tap target</div>
+      </div>
+
+      <div style="display:grid;gap:16px">
+        <div style="border:1px solid #322D3C;background:#16141B;padding:20px">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.18em;color:#E0A83C;margin-bottom:12px">EFFECT LANGUAGE SYSTEM</div>
+          <div style="display:grid;gap:11px;font-size:14px;line-height:1.5;color:#B4AEBD">
+            <div style="display:flex;gap:12px"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#625C6E;flex:none;width:74px;padding-top:2px">GRAMMAR</span><div><span style="font-family:'IBM Plex Mono',monospace;color:#F2EDE4;font-size:13px">[±VALUE] [STAT] [▸THEM?]</span> on the card face; <span style="font-family:'IBM Plex Mono',monospace;color:#F2EDE4;font-size:13px">[±VALUE] [your|their] [Full Stat Label]</span> in the modal. Never a verb — verbs are what made the old descriptions unscannable.</div></div>
+            <div style="display:flex;gap:12px"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#625C6E;flex:none;width:74px;padding-top:2px">COLOUR</span><div>Green if the change helps <em style="font-style:normal;color:#F2EDE4">you</em>, red if it hurts you — computed, never authored. Raising their fuse is green on your card; dropping your own lock is red. One rule, no exceptions, works for both characters from the same data.</div></div>
+            <div style="display:flex;gap:12px"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#625C6E;flex:none;width:74px;padding-top:2px">SIGN</span><div>Always explicit: <span style="color:#35D57F;font-family:'IBM Plex Mono',monospace">+12</span> / <span style="color:#FF4034;font-family:'IBM Plex Mono',monospace">−8</span>. The arrow direction and the colour are independent channels, which is what makes it colour-blind safe.</div></div>
+            <div style="display:flex;gap:12px"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#625C6E;flex:none;width:74px;padding-top:2px">ORDER</span><div>Sorted by absolute magnitude, descending. Biggest consequence first, every card, every time.</div></div>
+            <div style="display:flex;gap:12px"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#625C6E;flex:none;width:74px;padding-top:2px">TRUNCATION</span><div>Two lines on the face, then <span style="font-family:'IBM Plex Mono',monospace;color:#F2EDE4;font-size:13px">+N MORE</span>. Cards with four effects stop lying about being simple.</div></div>
+            <div style="display:flex;gap:12px"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#625C6E;flex:none;width:74px;padding-top:2px">FLAVOUR</span><div>Demoted to the modal, set in marker script, in quotes. It is voice, not information.</div></div>
+          </div>
+        </div>
+
+        <div style="border:1px solid #322D3C;background:#16141B;overflow:hidden">
+          <div style="padding:11px 16px;border-bottom:1px solid #322D3C;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.18em;color:#625C6E">APPLIED TO YOUR REAL DATA</div>
+          <div style="display:grid;grid-template-columns:1.15fr 1fr 1.35fr;background:#322D3C;gap:1px">
+            <div style="background:#13111A;padding:9px 13px;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;color:#625C6E">CARD (cards.js)</div>
+            <div style="background:#13111A;padding:9px 13px;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;color:#625C6E">TODAY'S FACE</div>
+            <div style="background:#13111A;padding:9px 13px;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;color:#625C6E">NEW FACE</div>
+            <div style="background:#16141B;padding:11px 13px;font-size:13.5px;color:#F2EDE4;line-height:1.4">Logical Trap<br><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#625C6E">4 effects, 2 targets</span></div>
+            <div style="background:#16141B;padding:11px 13px;font-size:13px;color:#9A93A3;line-height:1.4">"Set a clever trap for the vigilante" + ⬢5 + S 5</div>
+            <div style="background:#16141B;padding:11px 13px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;line-height:1.55"><span style="color:#B9B2A6">■ NORMAL · 5 · SPD 5</span><br><span style="color:#35D57F">+12 EVIDENCE</span><br><span style="color:#35D57F">+10 HEAT ▸THEM</span><br><span style="color:#625C6E">+2 MORE</span></div>
+            <div style="background:#16141B;padding:11px 13px;font-size:13.5px;color:#F2EDE4;line-height:1.4">Counter Strategy<br><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#625C6E">cancels ≤ speed 6</span></div>
+            <div style="background:#16141B;padding:11px 13px;font-size:13px;color:#9A93A3;line-height:1.4">"Anticipate and counter the opponent's move" — cancel rule invisible</div>
+            <div style="background:#16141B;padding:11px 13px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;line-height:1.55"><span style="color:#A86BFF">⟡ COUNTER · 2 · SPD 10</span><br><span style="color:#35D57F">+12 UNITY</span><br><span style="color:#35D57F">−12 SUPPORT ▸THEM</span><br><span style="color:#A86BFF">CANCELS SPD ≤ 6</span></div>
+            <div style="background:#16141B;padding:11px 13px;font-size:13.5px;color:#F2EDE4;line-height:1.4">Media Manipulation<br><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#625C6E">vigilante · self-heal</span></div>
+            <div style="background:#16141B;padding:11px 13px;font-size:13px;color:#9A93A3;line-height:1.4">"Control the narrative" + ⬢6 + S 1 — reads as weak, is devastating</div>
+            <div style="background:#16141B;padding:11px 13px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;line-height:1.55"><span style="color:#FF8A3D">✦ POWER · 6 · SPD 1</span><br><span style="color:#35D57F">−18 HEAT</span><br><span style="color:#35D57F">−15 UNITY ▸THEM</span><br><span style="color:#625C6E">+1 MORE</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<div style="background:#08070A;color:#F2EDE4;font-family:'Barlow Semi Condensed',system-ui,sans-serif;padding:0 0 90px">
+<div style="max-width:1460px;margin:0 auto;padding:0 40px">
+
+  <div style="padding:56px 0 0">
+    <div style="display:flex;align-items:baseline;gap:14px;margin-bottom:8px">
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#FF4034;letter-spacing:.2em">EXHIBIT F</span>
+      <h2 style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:44px;margin:0;text-transform:uppercase;color:#F2EDE4">Motion — the reveal is the product</h2>
+    </div>
+    <p style="font-size:15.5px;line-height:1.6;color:#9A93A3;max-width:96ch;margin:0 0 22px">Simultaneous selection is your unique hook and right now it resolves in a 300ms bar tween. The whole beat should take about <strong style="color:#F2EDE4;font-weight:600">1.4 seconds</strong> — long enough to feel like a held breath, short enough to play twelve times in four minutes. Total budget below; every number is a Phaser tween duration.</p>
+
+    <div style="border:1px solid #322D3C;background:#16141B;margin-bottom:16px;overflow:hidden">
+      <div style="display:grid;grid-template-columns:150px 92px 1.5fr 1fr;background:#322D3C;gap:1px">
+        <div style="background:#13111A;padding:9px 14px;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;color:#625C6E">BEAT</div>
+        <div style="background:#13111A;padding:9px 14px;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;color:#625C6E">TIMING</div>
+        <div style="background:#13111A;padding:9px 14px;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;color:#625C6E">WHAT MOVES</div>
+        <div style="background:#13111A;padding:9px 14px;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;color:#625C6E">EASE / FEEL</div>
+
+        <div style="background:#16141B;padding:11px 14px;font-family:'Big Shoulders Display',sans-serif;font-weight:700;font-size:18px;color:#F2EDE4">Card pick</div>
+        <div style="background:#16141B;padding:11px 14px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#4FC3E8">120–140ms</div>
+        <div style="background:#16141B;padding:11px 14px;font-size:13.5px;color:#B4AEBD;line-height:1.4">Card lifts 28u, border takes faction colour, CTA label swaps to LOCK IT IN. No scale — scaling reflows the fan.</div>
+        <div style="background:#16141B;padding:11px 14px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#9A93A3;line-height:1.5">cubic-bezier(.2,.9,.3,1)<br>instant, mechanical</div>
+
+        <div style="background:#16141B;padding:11px 14px;font-family:'Big Shoulders Display',sans-serif;font-weight:700;font-size:18px;color:#F2EDE4">Commit</div>
+        <div style="background:#16141B;padding:11px 14px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#4FC3E8">180–260ms</div>
+        <div style="background:#16141B;padding:11px 14px;font-size:13.5px;color:#B4AEBD;line-height:1.4">Chosen card flies to your slot. Their slot appears as a hatched back with "THEY HAVE COMMITTED". Table dims to 42%.</div>
+        <div style="background:#16141B;padding:11px 14px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#9A93A3;line-height:1.5">Power2.easeOut<br>the lamp dims</div>
+
+        <div style="background:#16141B;padding:11px 14px;font-family:'Big Shoulders Display',sans-serif;font-weight:700;font-size:18px;color:#F2EDE4">Hold</div>
+        <div style="background:#16141B;padding:11px 14px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#FFB020">220–320ms</div>
+        <div style="background:#16141B;padding:11px 14px;font-size:13.5px;color:#B4AEBD;line-height:1.4">Nothing moves. Deliberate dead air before the flip — this is the tension, and cutting it is the single easiest way to make the game feel cheap.</div>
+        <div style="background:#16141B;padding:11px 14px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#9A93A3;line-height:1.5">—<br>breath held</div>
+
+        <div style="background:#16141B;padding:11px 14px;font-family:'Big Shoulders Display',sans-serif;font-weight:700;font-size:18px;color:#F2EDE4">Reveal</div>
+        <div style="background:#16141B;padding:11px 14px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#35D57F">300–340ms<br><span style="color:#625C6E">stagger 70ms</span></div>
+        <div style="background:#16141B;padding:11px 14px;font-size:13.5px;color:#B4AEBD;line-height:1.4">Both cards flip on Y, theirs first. Type strip lights, speed spine fills left-to-right. The faster card lands last so it reads as arriving first.</div>
+        <div style="background:#16141B;padding:11px 14px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#9A93A3;line-height:1.5">cubic-bezier(.2,.9,.3,1)<br>a card slapped down</div>
+
+        <div style="background:#16141B;padding:11px 14px;font-family:'Big Shoulders Display',sans-serif;font-weight:700;font-size:18px;color:#A86BFF">Counter clash</div>
+        <div style="background:#16141B;padding:11px 14px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#A86BFF">160ms + 300ms</div>
+        <div style="background:#16141B;padding:11px 14px;font-size:13.5px;color:#B4AEBD;line-height:1.4">Violet flash across the table, 5px horizontal shake, CANCELLED stamped over the dead card at −8°. The cancelled card greys out and does not tween any bars.</div>
+        <div style="background:#16141B;padding:11px 14px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#9A93A3;line-height:1.5">shake ease-out<br>violence, once</div>
+
+        <div style="background:#16141B;padding:11px 14px;font-family:'Big Shoulders Display',sans-serif;font-weight:700;font-size:18px;color:#F2EDE4">Stat changes</div>
+        <div style="background:#16141B;padding:11px 14px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#35D57F">320ms bar<br><span style="color:#625C6E">stagger 60ms</span></div>
+        <div style="background:#16141B;padding:11px 14px;font-size:13.5px;color:#B4AEBD;line-height:1.4">Deltas rise 26u and fade over 800ms while the axis bar tweens and the number counts. Resolution order is honoured: first card's deltas land, then the second's.</div>
+        <div style="background:#16141B;padding:11px 14px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#9A93A3;line-height:1.5">Power2.easeOut<br>consequence, sequenced</div>
+
+        <div style="background:#16141B;padding:11px 14px;font-family:'Big Shoulders Display',sans-serif;font-weight:700;font-size:18px;color:#FFB020">Danger onset</div>
+        <div style="background:#16141B;padding:11px 14px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#FFB020">1100ms loop</div>
+        <div style="background:#16141B;padding:11px 14px;font-size:13.5px;color:#B4AEBD;line-height:1.4">DOOM ≥ 85 gives the chip a slow red glow pulse and the fuse row a 1px inner burn. Starts once, on crossing — never a permanent strobe.</div>
+        <div style="background:#16141B;padding:11px 14px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#9A93A3;line-height:1.5">sine in-out<br>a heartbeat</div>
+
+        <div style="background:#16141B;padding:11px 14px;font-family:'Big Shoulders Display',sans-serif;font-weight:700;font-size:18px;color:#35D57F">Win / lose</div>
+        <div style="background:#16141B;padding:11px 14px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#35D57F">420ms stamp<br><span style="color:#625C6E">+ 600ms hold</span></div>
+        <div style="background:#16141B;padding:11px 14px;font-size:13.5px;color:#B4AEBD;line-height:1.4">Final bar completes, board freezes, portrait crossfades to winning/losing (300ms), verdict stamps in with overshoot. Hold before the buttons fade up — let the room land.</div>
+        <div style="background:#16141B;padding:11px 14px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#9A93A3;line-height:1.5">cubic-bezier(.2,1.5,.4,1)<br>a rubber stamp</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:flex-start;border-left:2px solid #E0A83C;padding:2px 0 2px 14px;margin-bottom:8px">
+      <div style="font-size:13.5px;color:#9A93A3;line-height:1.55;max-width:110ch"><strong style="color:#F2EDE4;font-weight:600">Rule for all of it:</strong> a player who taps LOCK IT IN and immediately taps again must be able to skip to the resolved state. Never trap a thumb behind an animation — every beat above is interruptible, and the "reduce motion" setting collapses the whole sequence to 120ms cross-fades with no shake, no pulse, no stamp overshoot.</div>
+    </div>
+  </div>
+
+  <div style="padding:56px 0 0;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:26px">
+    <div>
+      <div style="display:flex;align-items:baseline;gap:14px;margin-bottom:8px">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#FF4034;letter-spacing:.2em">EXHIBIT G</span>
+        <h2 style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:38px;margin:0;text-transform:uppercase;color:#F2EDE4">Onboarding</h2>
+      </div>
+      <p style="font-size:15px;line-height:1.6;color:#9A93A3;margin:0 0 18px">Five steps, inside the first real match, skippable at every step. No instructions scene, no wall of text before play. Each tip points at the thing it describes and the game waits.</p>
+      <div style="display:grid;gap:9px">
+        <div style="border:1px solid #322D3C;background:#16141B;padding:13px 15px;display:flex;gap:12px"><span style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:26px;line-height:.85;color:#35D57F;flex:none;width:22px">1</span><div><div style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:19px;color:#F2EDE4;line-height:1">TWO LOCKS. OPEN BOTH.</div><div style="font-size:13.5px;color:#9A93A3;line-height:1.45;margin-top:3px">Highlights the two green rows + SEAL chip. Player taps NEXT.</div></div></div>
+        <div style="border:1px solid #322D3C;background:#16141B;padding:13px 15px;display:flex;gap:12px"><span style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:26px;line-height:.85;color:#FF4034;flex:none;width:22px">2</span><div><div style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:19px;color:#F2EDE4;line-height:1">TWO FUSES. SNUFF NEITHER.</div><div style="font-size:13.5px;color:#9A93A3;line-height:1.45;margin-top:3px">Highlights the two red rows + DOOM chip. The word "either" carries the whole OR rule.</div></div></div>
+        <div style="border:1px solid #322D3C;background:#16141B;padding:13px 15px;display:flex;gap:12px"><span style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:26px;line-height:.85;color:#E0A83C;flex:none;width:22px">3</span><div><div style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:19px;color:#F2EDE4;line-height:1">ONE BOARD, BOTH SIDES.</div><div style="font-size:13.5px;color:#9A93A3;line-height:1.45;margin-top:3px">Points at one axis row: your number left, theirs right, colour says who it helps.</div></div></div>
+        <div style="border:1px solid #322D3C;background:#16141B;padding:13px 15px;display:flex;gap:12px"><span style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:26px;line-height:.85;color:#4FC3E8;flex:none;width:22px">4</span><div><div style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:19px;color:#F2EDE4;line-height:1">YOU BOTH CHOOSE BLIND.</div><div style="font-size:13.5px;color:#9A93A3;line-height:1.45;margin-top:3px">Points at the hand and the CTA. Player must actually pick to advance.</div></div></div>
+        <div style="border:1px solid #322D3C;background:#16141B;padding:13px 15px;display:flex;gap:12px"><span style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:26px;line-height:.85;color:#A86BFF;flex:none;width:22px">5</span><div><div style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:19px;color:#F2EDE4;line-height:1">SPEED DECIDES WHO LANDS FIRST.</div><div style="font-size:13.5px;color:#9A93A3;line-height:1.45;margin-top:3px">Fires during the first reveal, pointing at the two speed spines. Ends the tutorial.</div></div></div>
+      </div>
+      <div style="border:1px dashed #4B4457;padding:14px 16px;margin-top:14px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.16em;color:#E0A83C;margin-bottom:8px">PROGRESSIVE DISCLOSURE — WHAT WE DELAY</div>
+        <div style="display:grid;gap:6px;font-size:13.5px;color:#9A93A3;line-height:1.5">
+          <div><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#F2EDE4">TURN 1</span> — locks, fuses, pick, lock in. Nothing else.</div>
+          <div><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#F2EDE4">TURN 2</span> — energy explained the first time a card is unaffordable, as a one-line inline note, not a modal.</div>
+          <div><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#F2EDE4">FIRST COUNTER</span> — the CANCELLED stamp is its own teaching moment; a 2s toast names the rule ("COUNTER beat SPD ≤ 6").</div>
+          <div><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#F2EDE4">MATCH 2</span> — case log, card catalogue, multiplayer surfaced. Nothing before it is needed.</div>
+          <div><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#F2EDE4">NEVER</span> — a rules screen. If a rule needs a screen, the HUD has failed and we fix the HUD.</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div style="display:flex;align-items:baseline;gap:14px;margin-bottom:8px">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#FF4034;letter-spacing:.2em">EXHIBIT H</span>
+        <h2 style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:38px;margin:0;text-transform:uppercase;color:#F2EDE4">Accessibility</h2>
+      </div>
+      <div style="display:grid;gap:12px">
+        <div style="border:1px solid #322D3C;background:#16141B;padding:16px 18px">
+          <div style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:21px;color:#F2EDE4;margin-bottom:9px">COLOUR-BLIND SAFE BY CONSTRUCTION</div>
+          <div style="font-size:13.5px;color:#9A93A3;line-height:1.55;margin-bottom:11px">Green/red is never the only channel. Every status carries <strong style="color:#F2EDE4;font-weight:600">three</strong> redundant cues:</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
+            <div style="border:1px solid #35D57F;padding:10px">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#35D57F;letter-spacing:.12em">LOCK</div>
+              <div style="height:12px;margin:7px 0;background:repeating-linear-gradient(90deg,#35D57F 0 5px,#20A867 5px 7px)"></div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#9A93A3;line-height:1.5">glyph ▲<br>vertical weave<br>fills from left<br>word "SEAL"</div>
+            </div>
+            <div style="border:1px solid #FF4034;padding:10px">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#FF4034;letter-spacing:.12em">FUSE</div>
+              <div style="height:12px;margin:7px 0;background:repeating-linear-gradient(135deg,#FF4034 0 4px,#A82A20 4px 8px)"></div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#9A93A3;line-height:1.5">glyph ▼<br>45° hazard hatch<br>fills from right<br>word "DOOM"</div>
+            </div>
+          </div>
+          <div style="font-size:13px;color:#625C6E;line-height:1.5;margin-top:10px">Test: screenshot the HUD, desaturate it fully, and you can still name every value's polarity. That is the acceptance criterion.</div>
+        </div>
+        <div style="border:1px solid #322D3C;background:#16141B;padding:16px 18px">
+          <div style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:21px;color:#F2EDE4;margin-bottom:9px">TEXT, CONTRAST, TARGETS</div>
+          <div style="display:grid;gap:7px;font-size:13.5px;color:#9A93A3;line-height:1.5">
+            <div><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#F2EDE4">SCALE</span> — one LARGE TEXT toggle, +15% on every UI string. Layout is flex/grid with no fixed text heights, so nothing clips. Stat numbers and card names are already above 14px CSS at 1×.</div>
+            <div><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#F2EDE4">FLOORS</span> — 7.5px mono labels at 2× device pixels = 15px rendered; body 13px CSS min; never below 11px CSS for anything a decision depends on.</div>
+            <div><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#F2EDE4">CONTRAST</span> — ink #F2EDE4 on #0B0A0D is 16.8:1. #FF4034 on panel passes 4.5:1 at 16px+; below that it lightens to #FF8574. Every colour pair in the token table is pre-checked, so implementers never have to judge.</div>
+            <div><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#F2EDE4">TARGETS</span> — primary 112 game units (56 CSS) tall; card 200×264 with a dedicated 52u DETAILS strip so inspect never mis-fires as select; icon buttons 88u minimum with 16u spacing. Nothing interactive above 62% screen height except the log and menu.</div>
+            <div><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#F2EDE4">MOTION</span> — REDUCE MOTION collapses reveal to cross-fades, kills shake/pulse/overshoot, keeps all state changes legible.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding:56px 0 0">
+    <div style="display:flex;align-items:baseline;gap:14px;margin-bottom:8px">
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#FF4034;letter-spacing:.2em">EXHIBIT I</span>
+      <h2 style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:44px;margin:0;text-transform:uppercase;color:#F2EDE4">Design system starter</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:22px">
+      <div style="border:1px solid #322D3C;background:#16141B;overflow:hidden">
+        <div style="padding:11px 16px;border-bottom:1px solid #322D3C;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.18em;color:#625C6E">TOKEN TABLE — ship as tokens.js, consumed by every scene</div>
+        <div style="display:grid;grid-template-columns:1.15fr .85fr 1.5fr;background:#322D3C;gap:1px;font-family:'IBM Plex Mono',monospace">
+          <div style="background:#13111A;padding:8px 13px;font-size:9px;letter-spacing:.14em;color:#625C6E">TOKEN</div>
+          <div style="background:#13111A;padding:8px 13px;font-size:9px;letter-spacing:.14em;color:#625C6E">VALUE</div>
+          <div style="background:#13111A;padding:8px 13px;font-size:9px;letter-spacing:.14em;color:#625C6E">USED FOR</div>
+          <div style="background:#16141B;padding:7px 13px;font-size:11px;color:#F2EDE4">color.lock</div><div style="background:#16141B;padding:7px 13px;font-size:11px;color:#35D57F">0x35D57F</div><div style="background:#16141B;padding:7px 13px;font-size:11px;color:#9A93A3">green stat bars, positive deltas</div>
+          <div style="background:#16141B;padding:7px 13px;font-size:11px;color:#F2EDE4">color.fuse</div><div style="background:#16141B;padding:7px 13px;font-size:11px;color:#FF4034">0xFF4034</div><div style="background:#16141B;padding:7px 13px;font-size:11px;color:#9A93A3">red stat bars, harmful deltas</div>
+          <div style="background:#16141B;padding:7px 13px;font-size:11px;color:#F2EDE4">color.warn</div><div style="background:#16141B;padding:7px 13px;font-size:11px;color:#FFB020">0xFFB020</div><div style="background:#16141B;padding:7px 13px;font-size:11px;color:#9A93A3">doom 70–84, low timer</div>
+          <div style="background:#16141B;padding:7px 13px;font-size:11px;color:#F2EDE4">color.det / .vig</div><div style="background:#16141B;padding:7px 13px;font-size:11px;color:#4FC3E8">0x4FC3E8 <span style="color:#E0A83C">0xE0A83C</span></div><div style="background:#16141B;padding:7px 13px;font-size:11px;color:#9A93A3">identity, your CTA fill</div>
+          <div style="background:#16141B;padding:7px 13px;font-size:11px;color:#F2EDE4">color.void/panel/raised</div><div style="background:#16141B;padding:7px 13px;font-size:11px;color:#9A93A3">0x0B0A0D 0x16141B 0x211E28</div><div style="background:#16141B;padding:7px 13px;font-size:11px;color:#9A93A3">surfaces, 3 levels only</div>
+          <div style="background:#16141B;padding:7px 13px;font-size:11px;color:#F2EDE4">color.line</div><div style="background:#16141B;padding:7px 13px;font-size:11px;color:#9A93A3">0x322D3C</div><div style="background:#16141B;padding:7px 13px;font-size:11px;color:#9A93A3">every border, 1px, no exceptions</div>
+          <div style="background:#16141B;padding:7px 13px;font-size:11px;color:#F2EDE4">color.ink/dim/faint</div><div style="background:#16141B;padding:7px 13px;font-size:11px;color:#9A93A3">0xF2EDE4 0x9A93A3 0x625C6E</div><div style="background:#16141B;padding:7px 13px;font-size:11px;color:#9A93A3">text, 3 levels only</div>
+          <div style="background:#16141B;padding:7px 13px;font-size:11px;color:#F2EDE4">type.display</div><div style="background:#16141B;padding:7px 13px;font-size:11px;color:#9A93A3">BigShoulders 700–900</div><div style="background:#16141B;padding:7px 13px;font-size:11px;color:#9A93A3">28/38/52/120u caps</div>
+          <div style="background:#16141B;padding:7px 13px;font-size:11px;color:#F2EDE4">type.ui / type.data</div><div style="background:#16141B;padding:7px 13px;font-size:11px;color:#9A93A3">Barlow SC / Plex Mono</div><div style="background:#16141B;padding:7px 13px;font-size:11px;color:#9A93A3">26/28/30u · 15/19/21u</div>
+          <div style="background:#16141B;padding:7px 13px;font-size:11px;color:#F2EDE4">space</div><div style="background:#16141B;padding:7px 13px;font-size:11px;color:#9A93A3">8 · 12 · 16 · 24 · 40u</div><div style="background:#16141B;padding:7px 13px;font-size:11px;color:#9A93A3">5-step scale, nothing between</div>
+          <div style="background:#16141B;padding:7px 13px;font-size:11px;color:#F2EDE4">radius</div><div style="background:#16141B;padding:7px 13px;font-size:11px;color:#9A93A3">0</div><div style="background:#16141B;padding:7px 13px;font-size:11px;color:#9A93A3">everything. it is a case file.</div>
+          <div style="background:#16141B;padding:7px 13px;font-size:11px;color:#F2EDE4">dur.fast/base/slow</div><div style="background:#16141B;padding:7px 13px;font-size:11px;color:#9A93A3">130 · 300 · 420ms</div><div style="background:#16141B;padding:7px 13px;font-size:11px;color:#9A93A3">all tweens pick one</div>
+          <div style="background:#16141B;padding:7px 13px;font-size:11px;color:#F2EDE4">type.counter</div><div style="background:#16141B;padding:7px 13px;font-size:11px;color:#A86BFF">0xA86BFF</div><div style="background:#16141B;padding:7px 13px;font-size:11px;color:#9A93A3">the one card-type hue</div>
+        </div>
+      </div>
+
+      <div style="display:grid;gap:14px;align-content:start">
+        <div style="border:1px solid #322D3C;background:#16141B;padding:16px 18px">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.18em;color:#625C6E;margin-bottom:10px">COMPONENTS — 11 TOTAL</div>
+          <div style="display:grid;gap:5px;font-size:13.5px;color:#B4AEBD;line-height:1.4">
+            <div><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#4FC3E8">01</span> AxisRow — one stat key, both players</div>
+            <div><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#4FC3E8">02</span> CaseBoard — 4 AxisRows + legend</div>
+            <div><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#4FC3E8">03</span> StatusChip — SEAL / DOOM, 4 states</div>
+            <div><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#4FC3E8">04</span> PlayerRail — portrait + name + chips + energy</div>
+            <div><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#4FC3E8">05</span> GameCard — face, 4 types, 5 states</div>
+            <div><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#4FC3E8">06</span> CardModal — inspect + effect sentences</div>
+            <div><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#4FC3E8">07</span> TableSlot — face-down, revealed, cancelled</div>
+            <div><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#4FC3E8">08</span> PrimaryButton — phase-driven label</div>
+            <div><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#4FC3E8">09</span> Sheet — log, settings, room code</div>
+            <div><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#4FC3E8">10</span> CoachTip — tutorial step + dots</div>
+            <div><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#4FC3E8">11</span> VerdictStamp — win / lose</div>
+          </div>
+        </div>
+        <div style="border:1px solid #322D3C;background:#16141B;padding:16px 18px">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.18em;color:#625C6E;margin-bottom:10px">STATE VARIANTS — DEFINED ONCE, GLOBAL</div>
+          <div style="display:grid;gap:6px;font-size:13px;color:#9A93A3;line-height:1.45">
+            <div><span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#F2EDE4">default</span> · line border, panel fill</div>
+            <div><span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#F2EDE4">hover</span> · border → faction colour (desktop only; ignored on touch)</div>
+            <div><span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#F2EDE4">press</span> · translateY +6u, bottom shadow → 2u, 90ms</div>
+            <div><span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#F2EDE4">selected</span> · lift 28u, faction border, raised fill, CTA arms</div>
+            <div><span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#F2EDE4">disabled</span> · 45% opacity, cost turns fuse-red, no pointer</div>
+            <div><span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#F2EDE4">critical</span> · fuse border + 1.1s glow pulse (doom ≥ 85)</div>
+            <div><span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#F2EDE4">cancelled</span> · 72% scrim + marker stamp, all tweens skipped</div>
+            <div><span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#F2EDE4">waiting</span> · void fill, faint ink, label "WAITING…"</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding:56px 0 0">
+    <div style="display:flex;align-items:baseline;gap:14px;margin-bottom:8px">
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#FF4034;letter-spacing:.2em">EXHIBIT J</span>
+      <h2 style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:44px;margin:0;text-transform:uppercase;color:#F2EDE4">Before vs after</h2>
+    </div>
+    <div style="border:1px solid #322D3C;background:#16141B;overflow:hidden;margin-bottom:34px">
+      <div style="display:grid;grid-template-columns:.85fr 1.1fr 1.25fr .8fr;background:#322D3C;gap:1px">
+        <div style="background:#13111A;padding:9px 14px;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;color:#625C6E">PROBLEM</div>
+        <div style="background:#13111A;padding:9px 14px;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;color:#FF6B60">BEFORE</div>
+        <div style="background:#13111A;padding:9px 14px;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;color:#35D57F">AFTER</div>
+        <div style="background:#13111A;padding:9px 14px;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;color:#625C6E">MEASURE</div>
+
+        <div style="background:#16141B;padding:11px 14px;font-family:'Big Shoulders Display',sans-serif;font-weight:700;font-size:17px;color:#F2EDE4;line-height:1.05">Who is winning?</div>
+        <div style="background:#16141B;padding:11px 14px;font-size:13px;color:#9A93A3;line-height:1.45">8 equal bars, 2 groups, no summary. Player mentally computes min and max under time pressure.</div>
+        <div style="background:#16141B;padding:11px 14px;font-size:13px;color:#B4AEBD;line-height:1.45">SEAL and DOOM chips per player — <span style="font-family:'IBM Plex Mono',monospace;font-size:12px">min(greens)</span> / <span style="font-family:'IBM Plex Mono',monospace;font-size:12px">max(reds)</span> — biggest numbers in each rail.</div>
+        <div style="background:#16141B;padding:11px 14px;font-size:12.5px;color:#625C6E;line-height:1.4">Ask a tester "who's ahead?" mid-turn. Target: correct in under 2s.</div>
+
+        <div style="background:#16141B;padding:11px 14px;font-family:'Big Shoulders Display',sans-serif;font-weight:700;font-size:17px;color:#F2EDE4;line-height:1.05">What are the rules?</div>
+        <div style="background:#16141B;padding:11px 14px;font-size:13px;color:#9A93A3;line-height:1.45">A separate InstructionsScene nobody reads; win/lose logic invisible during play.</div>
+        <div style="background:#16141B;padding:11px 14px;font-size:13px;color:#B4AEBD;line-height:1.45">Rules are drawn: ▲ climbs to 100, ▼ dies at 100, printed under the board forever. Character select states all four conditions.</div>
+        <div style="background:#16141B;padding:11px 14px;font-size:12.5px;color:#625C6E;line-height:1.4">New player states the win rule after 10s of looking. No prompting.</div>
+
+        <div style="background:#16141B;padding:11px 14px;font-family:'Big Shoulders Display',sans-serif;font-weight:700;font-size:17px;color:#F2EDE4;line-height:1.05">Which card is better?</div>
+        <div style="background:#16141B;padding:11px 14px;font-size:13px;color:#9A93A3;line-height:1.45">Serif name + flavour sentence dominate; effects invisible; "S 8" unexplained; type colour collides with stat colour.</div>
+        <div style="background:#16141B;padding:11px 14px;font-size:13px;color:#B4AEBD;line-height:1.45">Top 2 effects as signed, coloured, targeted lines. 10-notch speed spine. Type by glyph + word. Flavour demoted to modal.</div>
+        <div style="background:#16141B;padding:11px 14px;font-size:12.5px;color:#625C6E;line-height:1.4">Tester picks the higher-impact of two cards without opening either.</div>
+
+        <div style="background:#16141B;padding:11px 14px;font-family:'Big Shoulders Display',sans-serif;font-weight:700;font-size:17px;color:#F2EDE4;line-height:1.05">Whose turn is it?</div>
+        <div style="background:#16141B;padding:11px 14px;font-size:13px;color:#9A93A3;line-height:1.45">"isPlayerTurn" gating with no persistent phase display; CONFIRM appears and vanishes.</div>
+        <div style="background:#16141B;padding:11px 14px;font-size:13px;color:#B4AEBD;line-height:1.45">Phase word always on the system bar; one primary button whose label IS the phase: PICK A CARD → LOCK IT IN → WAITING… → NEXT TURN.</div>
+        <div style="background:#16141B;padding:11px 14px;font-size:12.5px;color:#625C6E;line-height:1.4">Zero taps on dead UI in a recorded session.</div>
+
+        <div style="background:#16141B;padding:11px 14px;font-family:'Big Shoulders Display',sans-serif;font-weight:700;font-size:17px;color:#F2EDE4;line-height:1.05">Why did I lose?</div>
+        <div style="background:#16141B;padding:11px 14px;font-size:13px;color:#9A93A3;line-height:1.45">A win/lose message string and a stats dump.</div>
+        <div style="background:#16141B;padding:11px 14px;font-size:13px;color:#B4AEBD;line-height:1.45">DECIDED BY names the exact stat that crossed 100, over a final board in the same layout as the HUD.</div>
+        <div style="background:#16141B;padding:11px 14px;font-size:12.5px;color:#625C6E;line-height:1.4">Tester names the cause of death unprompted.</div>
+
+        <div style="background:#16141B;padding:11px 14px;font-family:'Big Shoulders Display',sans-serif;font-weight:700;font-size:17px;color:#F2EDE4;line-height:1.05">Does it feel like a duel?</div>
+        <div style="background:#16141B;padding:11px 14px;font-size:13px;color:#9A93A3;line-height:1.45">Cards appear, a 300ms bar tween, a log line. Emoji buttons, three background colours, Arial.</div>
+        <div style="background:#16141B;padding:11px 14px;font-size:13px;color:#B4AEBD;line-height:1.45">Dim → hold → flip → clash → sequenced deltas, 1.4s total. Marker-script verdicts, portrait expression changes, faction cyan vs brass.</div>
+        <div style="background:#16141B;padding:11px 14px;font-size:12.5px;color:#625C6E;line-height:1.4">Testers lean in at reveal. Watch faces, not metrics.</div>
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:baseline;gap:14px;margin-bottom:18px">
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#FF4034;letter-spacing:.2em">EXHIBIT K</span>
+      <h2 style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:44px;margin:0;text-transform:uppercase;color:#F2EDE4">Rollout</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-bottom:20px">
+      <div style="border:1px solid #35D57F;background:#16141B">
+        <div style="padding:12px 16px;border-bottom:1px solid #322D3C"><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.16em;color:#35D57F">PHASE 1 · QUICK WINS THIS WEEK</div><div style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:26px;color:#F2EDE4;line-height:1.05;margin-top:3px">READABILITY, NO NEW ART</div></div>
+        <div style="padding:14px 16px;display:grid;gap:8px;font-size:13.5px;color:#B4AEBD;line-height:1.45">
+          <div>◆ Add <span style="font-family:'IBM Plex Mono',monospace;font-size:12px">seal</span>/<span style="font-family:'IBM Plex Mono',monospace;font-size:12px">doom</span> to GameLogic and render two chips per player. <span style="color:#625C6E">Half a day. Biggest single gain in the document.</span></div>
+          <div>◆ Print the legend under the bars: ▲ CLIMB TO 100 · ▼ DIES AT 100.</div>
+          <div>◆ Recolour card borders off green/red onto the type ramp; add glyph + type word.</div>
+          <div>◆ Replace CONFIRM with the phase-labelled primary button; put the phase word on the top bar.</div>
+          <div>◆ Effect lines on card faces from <span style="font-family:'IBM Plex Mono',monospace;font-size:12px">selfEffects</span>/<span style="font-family:'IBM Plex Mono',monospace;font-size:12px">opponentEffects</span>, top 2 by magnitude.</div>
+          <div>◆ Swap Arial/Georgia for the three real families; drop the unlicensed font.</div>
+          <div>◆ Add the reveal hold (220ms) and the flip stagger. Two tween calls.</div>
+        </div>
+      </div>
+      <div style="border:1px solid #E0A83C;background:#16141B">
+        <div style="padding:12px 16px;border-bottom:1px solid #322D3C"><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.16em;color:#E0A83C">PHASE 2 · 2–3 WEEKS</div><div style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:26px;color:#F2EDE4;line-height:1.05;margin-top:3px">THE NEW HUD</div></div>
+        <div style="padding:14px 16px;display:grid;gap:8px;font-size:13.5px;color:#B4AEBD;line-height:1.45">
+          <div>◆ Build CaseBoard + AxisRow; retire StatBarGroup's two-column layout.</div>
+          <div>◆ Rebuild the hand at 200×264 with the DETAILS strip; horizontal scroll instead of an overlapping fan (the fan hides text on 375px screens).</div>
+          <div>◆ CardModal with effect sentences and cost-vs-pool.</div>
+          <div>◆ Table slots with hatched back, CANCELLED stamp, sequenced deltas.</div>
+          <div>◆ Merge Title+Menu; rebuild character select as the rules moment.</div>
+          <div>◆ Game over: DECIDED BY + final board + portrait expressions.</div>
+          <div>◆ tokens.js, and every scene reads from it.</div>
+        </div>
+      </div>
+      <div style="border:1px solid #4FC3E8;background:#16141B">
+        <div style="padding:12px 16px;border-bottom:1px solid #322D3C"><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.16em;color:#4FC3E8">PHASE 3 · 4–6 WEEKS</div><div style="font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:26px;color:#F2EDE4;line-height:1.05;margin-top:3px">FEEL &amp; ONBOARDING</div></div>
+        <div style="padding:14px 16px;display:grid;gap:8px;font-size:13.5px;color:#B4AEBD;line-height:1.45">
+          <div>◆ Five-step in-match tutorial + progressive disclosure triggers.</div>
+          <div>◆ Full motion pass: counter clash, danger pulse, verdict stamp, portrait crossfades.</div>
+          <div>◆ Test harness as a real surface (stats, forced draws, jumps).</div>
+          <div>◆ Accessibility settings: LARGE TEXT, REDUCE MOTION; desaturation audit.</div>
+          <div>◆ Sound: three cues only — commit, reveal, fuse-critical.</div>
+          <div>◆ Desktop adaptive: same portrait column centred, 1.4× scale, hover states on.</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;margin-bottom:34px">
+      <div style="border:1px solid #322D3C;background:#16141B;padding:18px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.18em;color:#FF6B60;margin-bottom:12px">RISKS &amp; MITIGATIONS</div>
+        <div style="display:grid;gap:11px;font-size:13.5px;line-height:1.5;color:#9A93A3">
+          <div><strong style="color:#F2EDE4;font-weight:600">The Death Note lineage.</strong> An unlicensed TTF plus <span style="font-family:'IBM Plex Mono',monospace;font-size:12px">lCards</span>/<span style="font-family:'IBM Plex Mono',monospace;font-size:12px">kiraCards</span> and "L or Kira" in the GDD is a real problem the moment you charge money or run a Kickstarter. <span style="color:#B4AEBD">Mitigation: ship the OFL marker face, rename the deck exports to <span style="font-family:'IBM Plex Mono',monospace;font-size:12px">detectiveCards</span>/<span style="font-family:'IBM Plex Mono',monospace;font-size:12px">vigilanteCards</span> and the assets to detective/vigilante now, while it is a rename and not a migration. Keep the tone, drop the trademarks.</span></div>
+          <div><strong style="color:#F2EDE4;font-weight:600">SEAL/DOOM could feel abstract.</strong> Two invented words are a bet. <span style="color:#B4AEBD">Mitigation: they are always adjacent to the real labels and the /100 denominator, and the tutorial names them in steps 1–2. If testers stumble, fall back to "BOTH LOCKS 44" and "WORST FUSE 62" — same maths, longer strings.</span></div>
+          <div><strong style="color:#F2EDE4;font-weight:600">Vertical budget on small phones.</strong> 667 CSS px is tight with seven bands. <span style="color:#B4AEBD">Mitigation: the table band is the only flexible one (flex:1, 150–190px). Below 640px it drops first; below 600px the case board collapses row labels to glyphs. Nothing else moves.</span></div>
+          <div><strong style="color:#F2EDE4;font-weight:600">Multiplayer timing.</strong> A 1.4s reveal must be identical on both phones or the drama breaks. <span style="color:#B4AEBD">Mitigation: server sends a single resolution payload with a timestamp; both clients animate from it. Never animate from local prediction.</span></div>
+          <div><strong style="color:#F2EDE4;font-weight:600">Scope creep into deckbuilding.</strong> <span style="color:#B4AEBD">Mitigation: none of this document requires new cards or new mechanics. Ship the read of the game before expanding the game.</span></div>
+        </div>
+      </div>
+      <div style="border:1px solid #322D3C;background:#16141B;padding:18px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.18em;color:#E0A83C;margin-bottom:12px">FILE-LEVEL HANDOFF</div>
+        <div style="display:grid;gap:9px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;line-height:1.6;color:#9A93A3">
+          <div><span style="color:#F2EDE4">src/logic/GameLogic.js</span><br>+ seal() + doom() + isCritical(). No changes to existing conditions.</div>
+          <div><span style="color:#F2EDE4">src/ui/StatBarGroup.js</span><br>→ becomes CaseBoard.js + AxisRow.js. Takes both stat pools instead of one.</div>
+          <div><span style="color:#F2EDE4">src/ui/CardHand.js</span><br>Fan → scroll row. New face layout, DETAILS hit area, type ramp, chips from effects.</div>
+          <div><span style="color:#F2EDE4">src/data/cards.js</span><br>Data unchanged. Optional: add <span style="color:#B4AEBD">cancelsMaxSpeed: 6</span> so the rule stops living in CardResolver.</div>
+          <div><span style="color:#F2EDE4">src/data/characters.js</span><br>Unchanged — positiveStats/negativeStats already power everything above.</div>
+          <div><span style="color:#F2EDE4">src/scenes/BattleScene.js</span><br>80KB is the real risk. Extract phase machine + layout bands before restyling.</div>
+          <div><span style="color:#F2EDE4">NEW src/ui/tokens.js</span><br>The Exhibit I table, verbatim.</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="border:2px solid #E0A83C;background:#100E14;padding:24px 26px">
+      <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:18px">
+        <span style="font-family:'Permanent Marker',cursive;font-size:22px;color:#E0A83C;transform:rotate(-1deg)">do these first</span>
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.18em;color:#625C6E">PRIORITISED ACTION CHECKLIST</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px">
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:11px;border-bottom:1px solid #322D3C;padding-bottom:7px"><span style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:24px;color:#FF4034">P0</span><span style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.14em;color:#9A93A3">CLARITY — SHIP THIS WEEK</span></div>
+          <div style="display:grid;gap:8px;font-size:13.5px;color:#B4AEBD;line-height:1.4">
+            <div style="display:flex;gap:8px"><span style="color:#4B4457;font-family:'IBM Plex Mono',monospace">☐</span> SEAL + DOOM chips on both rails</div>
+            <div style="display:flex;gap:8px"><span style="color:#4B4457;font-family:'IBM Plex Mono',monospace">☐</span> ▲/▼ glyphs + hatch on every bar</div>
+            <div style="display:flex;gap:8px"><span style="color:#4B4457;font-family:'IBM Plex Mono',monospace">☐</span> Permanent legend under the board</div>
+            <div style="display:flex;gap:8px"><span style="color:#4B4457;font-family:'IBM Plex Mono',monospace">☐</span> Card borders off green/red</div>
+            <div style="display:flex;gap:8px"><span style="color:#4B4457;font-family:'IBM Plex Mono',monospace">☐</span> Effect lines on card faces</div>
+            <div style="display:flex;gap:8px"><span style="color:#4B4457;font-family:'IBM Plex Mono',monospace">☐</span> Phase-labelled primary button</div>
+            <div style="display:flex;gap:8px"><span style="color:#4B4457;font-family:'IBM Plex Mono',monospace">☐</span> Win/lose conditions on character select</div>
+            <div style="display:flex;gap:8px"><span style="color:#4B4457;font-family:'IBM Plex Mono',monospace">☐</span> Remove the unlicensed font</div>
+          </div>
+        </div>
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:11px;border-bottom:1px solid #322D3C;padding-bottom:7px"><span style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:24px;color:#FFB020">P1</span><span style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.14em;color:#9A93A3">STRUCTURE — NEXT SPRINT</span></div>
+          <div style="display:grid;gap:8px;font-size:13.5px;color:#B4AEBD;line-height:1.4">
+            <div style="display:flex;gap:8px"><span style="color:#4B4457;font-family:'IBM Plex Mono',monospace">☐</span> CaseBoard replaces the 8-bar layout</div>
+            <div style="display:flex;gap:8px"><span style="color:#4B4457;font-family:'IBM Plex Mono',monospace">☐</span> Hand as scroll row, 200×264 faces</div>
+            <div style="display:flex;gap:8px"><span style="color:#4B4457;font-family:'IBM Plex Mono',monospace">☐</span> CardModal with effect sentences</div>
+            <div style="display:flex;gap:8px"><span style="color:#4B4457;font-family:'IBM Plex Mono',monospace">☐</span> Reveal beat: dim → hold → flip → clash</div>
+            <div style="display:flex;gap:8px"><span style="color:#4B4457;font-family:'IBM Plex Mono',monospace">☐</span> CANCELLED stamp + no-tween on dead cards</div>
+            <div style="display:flex;gap:8px"><span style="color:#4B4457;font-family:'IBM Plex Mono',monospace">☐</span> Game over: DECIDED BY + final board</div>
+            <div style="display:flex;gap:8px"><span style="color:#4B4457;font-family:'IBM Plex Mono',monospace">☐</span> Title + Menu merged</div>
+            <div style="display:flex;gap:8px"><span style="color:#4B4457;font-family:'IBM Plex Mono',monospace">☐</span> tokens.js + BattleScene extraction</div>
+          </div>
+        </div>
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:11px;border-bottom:1px solid #322D3C;padding-bottom:7px"><span style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:24px;color:#35D57F">P2</span><span style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.14em;color:#9A93A3">DEPTH — AFTER FIRST PLAYTEST</span></div>
+          <div style="display:grid;gap:8px;font-size:13.5px;color:#B4AEBD;line-height:1.4">
+            <div style="display:flex;gap:8px"><span style="color:#4B4457;font-family:'IBM Plex Mono',monospace">☐</span> Five-step in-match tutorial</div>
+            <div style="display:flex;gap:8px"><span style="color:#4B4457;font-family:'IBM Plex Mono',monospace">☐</span> Progressive disclosure triggers</div>
+            <div style="display:flex;gap:8px"><span style="color:#4B4457;font-family:'IBM Plex Mono',monospace">☐</span> Portrait expression changes at thresholds</div>
+            <div style="display:flex;gap:8px"><span style="color:#4B4457;font-family:'IBM Plex Mono',monospace">☐</span> Test harness surface</div>
+            <div style="display:flex;gap:8px"><span style="color:#4B4457;font-family:'IBM Plex Mono',monospace">☐</span> LARGE TEXT + REDUCE MOTION</div>
+            <div style="display:flex;gap:8px"><span style="color:#4B4457;font-family:'IBM Plex Mono',monospace">☐</span> Three sound cues</div>
+            <div style="display:flex;gap:8px"><span style="color:#4B4457;font-family:'IBM Plex Mono',monospace">☐</span> Desktop adaptive scale</div>
+            <div style="display:flex;gap:8px"><span style="color:#4B4457;font-family:'IBM Plex Mono',monospace">☐</span> Rename decks/assets off the homage</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1460,&quot;height&quot;:1200}}">
+const SIDES = {
+  detective: {
+    key: "detective", name: "DETECTIVE", full: "Independent Detective", color: "#4FC3E8",
+    portrait: { neutral: "assets/images/DetectivePortraits/detective-neutral.png", winning: "assets/images/DetectivePortraits/detective-winning.png", losing: "assets/images/DetectivePortraits/detective-losing.png" },
+    labels: { investigation: "Evidence Chain", morale: "Task Force Unity", publicOpinion: "Public Panic", pressure: "Case Doubt" },
+    short: { investigation: "EVIDENCE", morale: "UNITY", publicOpinion: "PANIC", pressure: "DOUBT" },
+    greens: ["investigation", "morale"], reds: ["publicOpinion", "pressure"],
+    blurb: "Slow, methodical, punishing to rush. You win by proving it — and you die if the city panics or the case rots.",
+  },
+  vigilante: {
+    key: "vigilante", name: "VIGILANTE", full: "Vigilante", color: "#E0A83C",
+    portrait: { neutral: "assets/images/KillerPortraits/killer-neutral.png", winning: "assets/images/KillerPortraits/killer-winning.png", losing: "assets/images/KillerPortraits/killer-losing.png" },
+    labels: { investigation: "Evidence Against", morale: "Cult Resolve", publicOpinion: "Public Support", pressure: "Manhunt Heat" },
+    short: { investigation: "EVIDENCE", morale: "RESOLVE", publicOpinion: "SUPPORT", pressure: "HEAT" },
+    greens: ["morale", "publicOpinion"], reds: ["investigation", "pressure"],
+    blurb: "Fast, loud, expensive. You win the street — and you die the moment they can prove it or the manhunt closes.",
+  },
+};
+
+const AXES = [
+  { key: "investigation", name: "THE EVIDENCE" },
+  { key: "morale", name: "THE RESOLVE" },
+  { key: "publicOpinion", name: "THE STREET" },
+  { key: "pressure", name: "THE HEAT" },
+];
+
+const TYPE_META = {
+  COUNTER: { color: "#A86BFF", glyph: "⟡", order: "FIRST — ALWAYS" },
+  QUICK: { color: "#6FE3FF", glyph: "▲", order: "EARLY" },
+  NORMAL: { color: "#B9B2A6", glyph: "■", order: "MIDDLE" },
+  POWER: { color: "#FF8A3D", glyph: "✦", order: "LAST" },
+};
+
+const DECKS = {
+  detective: [
+    { id: "l_defensive_stance", name: "Counter Strategy", description: "Anticipate and counter the opponent's move", energyCost: 2, cardType: "COUNTER", speed: 10, cancels: true, selfEffects: { morale: 12, publicOpinion: -8 }, opponentEffects: { publicOpinion: -12 } },
+    { id: "l_interrogation", name: "Interrogation", description: "Question a key witness", energyCost: 4, cardType: "QUICK", speed: 8, selfEffects: { investigation: 10 }, opponentEffects: { investigation: 7, pressure: 10 } },
+    { id: "l_public_statement", name: "Public Statement", description: "Calm public panic and steady your team", energyCost: 4, cardType: "QUICK", speed: 9, selfEffects: { morale: 10 }, opponentEffects: { publicOpinion: -10 } },
+    { id: "l_logical_trap", name: "Logical Trap", description: "Set a clever trap for the vigilante", energyCost: 5, cardType: "NORMAL", speed: 5, selfEffects: { investigation: 12 }, opponentEffects: { investigation: 6, morale: -5, publicOpinion: -8, pressure: 10 } },
+    { id: "l_surveillance_sweep", name: "Surveillance Sweep", description: "Monitor suspects intensively", energyCost: 5, cardType: "NORMAL", speed: 4, selfEffects: { investigation: 12 }, opponentEffects: { investigation: 8, pressure: 12 } },
+    { id: "l_forensic_breakthrough", name: "Forensic Breakthrough", description: "Link clues into a stronger evidence chain", energyCost: 7, cardType: "POWER", speed: 4, selfEffects: { investigation: 15, morale: 8 }, opponentEffects: { investigation: 12, pressure: 15 } },
+    { id: "l_media_exposure", name: "Media Exposure", description: "Leak information to turn the public", energyCost: 5, cardType: "NORMAL", speed: 5, selfEffects: { publicOpinion: -8 }, opponentEffects: { investigation: 8, publicOpinion: -18, pressure: 12 } },
+  ],
+  vigilante: [
+    { id: "kira_lay_low", name: "Evasive Counter", description: "Slip away and counter the detective's approach", energyCost: 2, cardType: "COUNTER", speed: 10, cancels: true, selfEffects: { morale: 18, pressure: -10 }, opponentEffects: {} },
+    { id: "kira_charismatic_speech", name: "Charismatic Speech", description: "Rally supporters while pressuring investigators", energyCost: 4, cardType: "QUICK", speed: 7, selfEffects: { morale: 6, publicOpinion: 12 }, opponentEffects: { publicOpinion: 10, pressure: 8 } },
+    { id: "kira_cover_tracks", name: "Cover Tracks", description: "Hide your involvement", energyCost: 4, cardType: "QUICK", speed: 9, selfEffects: { investigation: -5, pressure: -9 }, opponentEffects: { investigation: -3 } },
+    { id: "kira_discredit_investigation", name: "Discredit Investigation", description: "Make the case look incompetent", energyCost: 5, cardType: "NORMAL", speed: 5, selfEffects: { investigation: -5, morale: 8, publicOpinion: 8 }, opponentEffects: { morale: -12, publicOpinion: 18, pressure: 10 } },
+    { id: "kira_righteous_act", name: "Righteous Act", description: "Execute a major criminal", energyCost: 6, cardType: "POWER", speed: 3, selfEffects: { publicOpinion: 15, pressure: 6 }, opponentEffects: { morale: -8, publicOpinion: 12, pressure: 8 } },
+    { id: "kira_media_manipulation", name: "Media Manipulation", description: "Control the narrative", energyCost: 6, cardType: "POWER", speed: 1, selfEffects: { publicOpinion: 12, pressure: -18 }, opponentEffects: { morale: -15 } },
+  ],
+};
+
+const TIPS = [
+  { title: "Two locks. Open both.", body: "The two green rows are your locks. Push BOTH to 100 and the case is closed in your favour. The lower one is all that matters — we show it as SEAL.", top: 300 },
+  { title: "Two fuses. Snuff neither.", body: "The two red rows are burning. If EITHER hits 100 you are finished. We show the worst one as DOOM, so you always know how close the drop is.", top: 300 },
+  { title: "One board, both sides.", body: "Each row is one axis. Your number sits on the left, theirs on the right, and the colour tells you who it helps. Same fact, two meanings.", top: 220 },
+  { title: "You both choose blind.", body: "Pick a card and lock it in. They are choosing at the same moment — no waiting, no peeking. Energy limits what you can afford.", top: 380 },
+  { title: "Speed decides who lands first.", body: "The notch spine on each card is its speed. COUNTER always resolves first and can cancel a slow card outright. That is the whole mind game.", top: 380 },
+];
+
+class Component extends DCLogic {
+  state = {
+    screen: "battle", side: "detective", phase: "select", turn: 4,
+    me: { investigation: 58, morale: 44, publicOpinion: 37, pressure: 62 },
+    them: { investigation: 51, morale: 39, publicOpinion: 46, pressure: 55 },
+    myEnergy: 6, theirEnergy: 5,
+    hand: [1, 3, 5, 2], picked: null,
+    myCard: null, theirCard: null, cancelled: null,
+    deltas: [], showLog: false, inspect: null,
+    tutorial: 0, log: [
+      { turn: "T03", text: "Surveillance Sweep (SPD 4) resolved after Cover Tracks (SPD 9)." },
+      { turn: "T02", text: "Charismatic Speech pushed Public Panic to 37." },
+      { turn: "T01", text: "Interrogation opened the Evidence Chain at 22." },
+    ],
+    over: null,
+  };
+
+  timers = [];
+  componentWillUnmount() { this.timers.forEach(clearTimeout); }
+  later(fn, ms) { this.timers.push(setTimeout(fn, ms)); }
+
+  side() { return SIDES[this.state.side]; }
+  foe() { return SIDES[this.state.side === "detective" ? "vigilante" : "detective"]; }
+  deck() { return DECKS[this.state.side]; }
+  foeDeck() { return DECKS[this.state.side === "detective" ? "vigilante" : "detective"]; }
+
+  seal(stats, s) { return Math.min.apply(null, s.greens.map((k) => stats[k])); }
+  doom(stats, s) { return Math.max.apply(null, s.reds.map((k) => stats[k])); }
+
+  apply(stats, eff) {
+    const out = Object.assign({}, stats);
+    Object.keys(eff || {}).forEach((k) => {
+      if (out[k] === undefined) return;
+      out[k] = Math.max(0, Math.min(100, out[k] + eff[k]));
+    });
+    return out;
+  }
+
+  goodForMe(key, delta, onMe) {
+    const s = onMe ? this.side() : this.foe();
+    const isGreen = s.greens.indexOf(key) >= 0;
+    const helpsOwner = isGreen ? delta > 0 : delta < 0;
+    return onMe ? helpsOwner : !helpsOwner;
+  }
+
+  pick(i) {
+    if (this.state.phase !== "select") return;
+    const card = this.deck()[this.state.hand[i]];
+    if (card.energyCost > this.state.myEnergy) return;
+    this.setState({ picked: i });
+  }
+
+  primary() {
+    const st = this.state;
+    if (st.phase === "select") { if (st.picked !== null) this.lockIn(); return; }
+    if (st.phase === "resolve") this.nextTurn();
+  }
+
+  lockIn() {
+    const st = this.state;
+    const myCard = this.deck()[st.hand[st.picked]];
+    const affordable = this.foeDeck().filter((c) => c.energyCost <= st.theirEnergy);
+    const pool = affordable.length ? affordable : this.foeDeck();
+    const theirCard = pool[Math.floor(Math.random() * pool.length)];
+    this.setState({ phase: "locked", myCard, theirCard, cancelled: null, deltas: [] });
+    this.later(() => this.setState({ phase: "reveal" }), 260);
+    this.later(() => this.resolve(myCard, theirCard), 900);
+  }
+
+  order(a, b) {
+    if (a.cardType === "COUNTER" && b.cardType !== "COUNTER") return "me";
+    if (b.cardType === "COUNTER" && a.cardType !== "COUNTER") return "them";
+    if ((a.speed || 0) > (b.speed || 0)) return "me";
+    if ((b.speed || 0) > (a.speed || 0)) return "them";
+    return "me";
+  }
+
+  resolve(myCard, theirCard) {
+    const st = this.state;
+    const first = this.order(myCard, theirCard);
+    let cancelled = null;
+    if (first === "me" && myCard.cancels && (theirCard.speed || 0) <= 6) cancelled = "them";
+    if (first === "them" && theirCard.cancels && (myCard.speed || 0) <= 6) cancelled = "me";
+
+    let me = Object.assign({}, st.me);
+    let them = Object.assign({}, st.them);
+    const seq = first === "me" ? ["me", "them"] : ["them", "me"];
+    seq.forEach((who) => {
+      if (cancelled === who) return;
+      if (who === "me") { me = this.apply(me, myCard.selfEffects); them = this.apply(them, myCard.opponentEffects); }
+      else { them = this.apply(them, theirCard.selfEffects); me = this.apply(me, theirCard.opponentEffects); }
+    });
+
+    const deltas = [];
+    AXES.forEach((ax) => {
+      const dm = me[ax.key] - st.me[ax.key];
+      if (dm) deltas.push({ text: (dm > 0 ? "+" : "") + dm + " " + this.side().short[ax.key], color: this.goodForMe(ax.key, dm, true) ? "#35D57F" : "#FF4034" });
+      const dt = them[ax.key] - st.them[ax.key];
+      if (dt) deltas.push({ text: (dt > 0 ? "+" : "") + dt + " " + this.foe().short[ax.key] + " ›THEM", color: this.goodForMe(ax.key, dt, false) ? "#35D57F" : "#FF4034" });
+    });
+
+    const line = { turn: "T" + String(st.turn).padStart(2, "0"), text: myCard.name + " (SPD " + myCard.speed + ") vs " + theirCard.name + " (SPD " + theirCard.speed + ") — " + (cancelled ? (cancelled === "me" ? "yours was cancelled." : "theirs was cancelled.") : (first === "me" ? "you landed first." : "they landed first.")) };
+
+    this.setState({
+      phase: "resolve", me, them, cancelled, deltas,
+      myEnergy: Math.max(0, st.myEnergy - myCard.energyCost),
+      theirEnergy: Math.max(0, st.theirEnergy - theirCard.energyCost),
+      log: [line].concat(st.log).slice(0, 12),
+    });
+    this.later(() => this.checkEnd(me, them), 1500);
+  }
+
+  checkEnd(me, them) {
+    const s = this.side(), f = this.foe();
+    const iWin = s.greens.every((k) => me[k] >= 100);
+    const iLose = s.reds.some((k) => me[k] >= 100);
+    const theyWin = f.greens.every((k) => them[k] >= 100);
+    const theyLose = f.reds.some((k) => them[k] >= 100);
+    if (iWin) return this.end("win", "BOTH LOCKS OPEN");
+    if (iLose) return this.end("lose", s.labels[s.reds.find((k) => me[k] >= 100)].toUpperCase() + " HIT 100");
+    if (theyLose) return this.end("win", f.labels[f.reds.find((k) => them[k] >= 100)].toUpperCase() + " HIT 100");
+    if (theyWin) return this.end("lose", "THEY OPENED BOTH LOCKS");
+    this.nextTurn();
+  }
+
+  end(result, decider) { this.setState({ screen: "over", over: { result, decider }, deltas: [], tutorial: 0 }); }
+
+  nextTurn() {
+    if (this.state.screen === "over") return;
+    const deck = this.deck();
+    const hand = [0, 1, 2, 3].map(() => Math.floor(Math.random() * deck.length));
+    this.setState((s) => ({
+      phase: "select", turn: s.turn + 1, picked: null, myCard: null, theirCard: null,
+      cancelled: null, deltas: [], hand,
+      myEnergy: Math.min(10, s.myEnergy + 2), theirEnergy: Math.min(10, s.theirEnergy + 2),
+    }));
+  }
+
+  reset(screen) {
+    this.timers.forEach(clearTimeout);
+    this.setState({
+      screen: screen || "battle", phase: "select", turn: 4, picked: null, myCard: null, theirCard: null,
+      cancelled: null, deltas: [], over: null, showLog: false, inspect: null, tutorial: 0,
+      me: { investigation: 58, morale: 44, publicOpinion: 37, pressure: 62 },
+      them: { investigation: 51, morale: 39, publicOpinion: 46, pressure: 55 },
+      myEnergy: 6, theirEnergy: 5, hand: [1, 3, 5, 2],
+    });
+  }
+
+  renderVals() {
+    const st = this.state, s = this.side(), f = this.foe();
+    const deck = this.deck();
+    const isBattle = st.screen === "battle";
+    const phaseMap = {
+      select: { label: "CHOOSE YOUR PLAY", color: "#E0A83C" },
+      locked: { label: "COMMITTED — BOTH BLIND", color: "#9A93A3" },
+      reveal: { label: "REVEAL", color: "#F2EDE4" },
+      resolve: { label: "RESOLVING", color: "#4FC3E8" },
+    };
+    const mySeal = this.seal(st.me, s), myDoom = this.doom(st.me, s);
+    const foeSeal = this.seal(st.them, f), foeDoom = this.doom(st.them, f);
+
+    const axes = AXES.map((ax) => {
+      const myV = st.me[ax.key], thV = st.them[ax.key];
+      const myGreen = s.greens.indexOf(ax.key) >= 0;
+      const thGreen = f.greens.indexOf(ax.key) >= 0;
+      const myCol = myGreen ? "#35D57F" : "#FF4034";
+      const thCol = thGreen ? "#35D57F" : "#FF4034";
+      return {
+        name: ax.name, myVal: myV, theirVal: thV,
+        myHalf: myV / 2, theirHalf: thV / 2,
+        myFill: myGreen ? "repeating-linear-gradient(90deg," + myCol + " 0 5px,#20A867 5px 7px)" : "repeating-linear-gradient(135deg," + myCol + " 0 4px,#A82A20 4px 8px)",
+        theirFill: thGreen ? "repeating-linear-gradient(90deg," + thCol + " 0 5px,#20A867 5px 7px)" : "repeating-linear-gradient(135deg," + thCol + " 0 4px,#A82A20 4px 8px)",
+        myInk: myV >= 100 ? "#F2EDE4" : myCol, theirInk: thV >= 100 ? "#F2EDE4" : thCol,
+      };
+    });
+
+    const hand = st.hand.map((di, i) => {
+      const c = deck[di], tm = TYPE_META[c.cardType];
+      const afford = c.energyCost <= st.myEnergy;
+      const chips = [];
+      Object.keys(c.selfEffects || {}).forEach((k) => { if (c.selfEffects[k]) chips.push({ k, v: c.selfEffects[k], onMe: true }); });
+      Object.keys(c.opponentEffects || {}).forEach((k) => { if (c.opponentEffects[k]) chips.push({ k, v: c.opponentEffects[k], onMe: false }); });
+      chips.sort((a, b) => Math.abs(b.v) - Math.abs(a.v));
+      return {
+        border: st.picked === i ? s.color : afford ? "#322D3C" : "#211E28",
+        bg: st.picked === i ? "#221C16" : "#16141B",
+        typeColor: afford ? tm.color : "#4B4457", glyph: tm.glyph, type: c.cardType,
+        cost: c.energyCost, costColor: afford ? "#F2EDE4" : "#FF4034",
+        name: c.name, speed: c.speed, opacity: afford ? 1 : 0.45,
+        lift: st.picked === i ? -14 : 0,
+        spine: Array.from({ length: 10 }, (_, n) => ({ on: n < c.speed ? (afford ? tm.color : "#4B4457") : "#26222E" })),
+        chips: chips.slice(0, 2).map((ch) => ({
+          val: (ch.v > 0 ? "+" : "") + ch.v,
+          label: ch.onMe ? s.short[ch.k] : f.short[ch.k] + " ▸THEM",
+          color: this.goodForMe(ch.k, ch.v, ch.onMe) ? "#35D57F" : "#FF4034",
+        })),
+        more: chips.length > 2 ? "+" + (chips.length - 2) + " MORE" : "",
+        onPick: () => this.pick(i),
+        onInspect: (e) => { if (e && e.stopPropagation) e.stopPropagation(); this.setState({ inspect: i }); },
+      };
+    });
+
+    const ins = st.inspect !== null ? deck[st.hand[st.inspect]] : null;
+    const insTm = ins ? TYPE_META[ins.cardType] : TYPE_META.NORMAL;
+    const insEffects = [];
+    if (ins) {
+      Object.keys(ins.selfEffects || {}).forEach((k) => { if (ins.selfEffects[k]) insEffects.push({ k, v: ins.selfEffects[k], onMe: true }); });
+      Object.keys(ins.opponentEffects || {}).forEach((k) => { if (ins.opponentEffects[k]) insEffects.push({ k, v: ins.opponentEffects[k], onMe: false }); });
+      insEffects.sort((a, b) => Math.abs(b.v) - Math.abs(a.v));
+    }
+
+    const revealing = st.phase === "reveal" || st.phase === "resolve";
+    const ctaReady = st.phase === "select" && st.picked !== null;
+    const over = st.over || { result: "win", decider: "—" };
+    const won = over.result === "win";
+
+    const navDefs = [
+      ["01", "TITLE", "title"], ["02", "MODE SELECT", "mode"], ["03", "CHARACTER", "select"],
+      ["04", "BATTLE HUD", "battle"], ["05", "GAME OVER", "over"], ["06", "TEST MODE", "test"],
+    ];
+
+    return {
+      isTitle: st.screen === "title", isMode: st.screen === "mode", isSelect: st.screen === "select",
+      isBattle: isBattle, isOver: st.screen === "over", isTest: st.screen === "test",
+      screenTag: st.screen.toUpperCase(), sideKey: st.side, phaseKey: st.phase,
+      turnPad: String(st.turn).padStart(2, "0"),
+      phaseLabel: phaseMap[st.phase].label, phaseColor: phaseMap[st.phase].color,
+      sideColor: s.color, myName: s.name, foeName: f.name, foeColor: f.color,
+      myPortrait: s.portrait.neutral, foePortrait: f.portrait.neutral,
+      myEnergy: st.myEnergy, foeEnergy: st.theirEnergy,
+      mySeal, myDoom, foeSeal, foeDoom,
+      myDoomColor: myDoom >= 85 ? "#FF4034" : myDoom >= 70 ? "#FFB020" : "#9A93A3",
+      foeDoomColor: foeDoom >= 85 ? "#FF4034" : foeDoom >= 70 ? "#FFB020" : "#9A93A3",
+      doomAnim: myDoom >= 85 ? "sojBurn 1.1s infinite" : "none",
+      axes,
+      dimOpacity: revealing ? 0.42 : 0,
+      showTheirSlot: st.phase !== "select",
+      showMySlot: st.phase !== "select",
+      theirSlotLabel: st.phase === "locked" ? "THEY HAVE COMMITTED" : "THEIR PLAY",
+      theirCardName: st.phase === "locked" ? "?" : st.theirCard ? st.theirCard.name : "—",
+      theirCardMeta: st.phase === "locked" ? "HIDDEN" : st.theirCard ? TYPE_META[st.theirCard.cardType].glyph + " " + st.theirCard.cardType + " · SPD " + st.theirCard.speed : "",
+      theirCardBorder: st.phase === "locked" ? "#4B4457" : st.theirCard ? TYPE_META[st.theirCard.cardType].color : "#4B4457",
+      theirCardBg: st.phase === "locked" ? "repeating-linear-gradient(45deg,#181420 0 6px,#13111A 6px 12px)" : "#1A1720",
+      theirCardAnim: st.phase === "reveal" ? "sojFlip 320ms cubic-bezier(.2,.9,.3,1) both" : "none",
+      theirCancelled: st.cancelled === "them",
+      myCardName: st.myCard ? st.myCard.name : "—",
+      myCardMeta: st.myCard ? TYPE_META[st.myCard.cardType].glyph + " " + st.myCard.cardType + " · SPD " + st.myCard.speed : "",
+      myCardBorder: st.myCard ? TYPE_META[st.myCard.cardType].color : "#4B4457",
+      myCancelled: st.cancelled === "me",
+      vsText: st.phase === "select" ? "choose" : st.cancelled ? "cancelled!" : st.phase === "resolve" ? "clash" : "vs",
+      vsSize: st.phase === "select" ? 15 : st.cancelled ? 26 : 21,
+      vsColor: st.cancelled ? "#FF4034" : st.phase === "select" ? "#4B4457" : "#E0A83C",
+      vsAnim: st.phase === "resolve" ? "sojShake 300ms ease-out both" : "none",
+      showDeltas: st.phase === "resolve" && st.deltas.length > 0,
+      deltaChips: st.deltas,
+      hand,
+      ctaLabel: st.phase === "select" ? (st.picked === null ? "PICK A CARD" : "LOCK IT IN ▶") : st.phase === "resolve" ? "NEXT TURN ▶" : "WAITING…",
+      ctaBg: ctaReady ? s.color : st.phase === "resolve" ? "#211E28" : "#13111A",
+      ctaBorder: ctaReady ? s.color : st.phase === "resolve" ? "#4B4457" : "#211E28",
+      ctaInk: ctaReady ? "#14100A" : st.phase === "resolve" ? "#F2EDE4" : "#4B4457",
+      ctaCursor: ctaReady || st.phase === "resolve" ? "pointer" : "default",
+      ctaShadow: ctaReady ? "0 4px 0 rgba(0,0,0,.55)" : "none",
+      onPrimary: () => this.primary(),
+      showLog: st.showLog, logLines: st.log,
+      openLog: () => this.setState({ showLog: true }), closeLog: () => this.setState({ showLog: false }),
+      inspecting: st.inspect !== null,
+      insName: ins ? ins.name : "", insDesc: ins ? ins.description : "",
+      insType: ins ? ins.cardType : "", insGlyph: insTm.glyph, insTypeColor: insTm.color, insOrder: insTm.order,
+      insCost: ins ? ins.energyCost : 0, insSpeed: ins ? ins.speed : 0,
+      insCostColor: ins && ins.energyCost > st.myEnergy ? "#FF4034" : "#35D57F",
+      insCancels: ins && ins.cancels ? "YES ≤6" : "NO",
+      insCancelColor: ins && ins.cancels ? "#A86BFF" : "#4B4457",
+      insEffects: insEffects.map((e) => ({
+        val: (e.v > 0 ? "+" : "") + e.v,
+        sentence: (e.onMe ? "your " + s.labels[e.k] : "their " + f.labels[e.k]),
+        tag: e.onMe ? "YOU" : "THEM",
+        color: this.goodForMe(e.k, e.v, e.onMe) ? "#35D57F" : "#FF4034",
+      })),
+      insPickLabel: ins && ins.energyCost > st.myEnergy ? "NOT ENOUGH ENERGY" : "SELECT THIS CARD",
+      insPickBg: ins && ins.energyCost > st.myEnergy ? "#211E28" : s.color,
+      insPickInk: ins && ins.energyCost > st.myEnergy ? "#625C6E" : "#14100A",
+      closeInspect: () => this.setState({ inspect: null }),
+      pickFromInspect: () => { const i = st.inspect; this.setState({ inspect: null }); this.pick(i); },
+      tutorialOn: st.tutorial > 0,
+      tipStep: st.tutorial, tipTitle: TIPS[Math.max(0, st.tutorial - 1)].title,
+      tipBody: TIPS[Math.max(0, st.tutorial - 1)].body, tipTop: TIPS[Math.max(0, st.tutorial - 1)].top,
+      tipCta: st.tutorial >= 5 ? "PLAY ▶" : "NEXT ▸",
+      tipDots: Array.from({ length: 5 }, (_, i) => ({ on: i < st.tutorial ? "#E0A83C" : "#4B4457" })),
+      nextTip: () => this.setState((p) => ({ tutorial: p.tutorial >= 5 ? 0 : p.tutorial + 1 })),
+      skipTutorial: () => this.setState({ tutorial: 0 }),
+      startTutorial: () => this.setState({ screen: "battle", tutorial: 1 }),
+      selGreens: s.greens.map((k) => ({ label: s.labels[k] })),
+      selReds: s.reds.map((k) => ({ label: s.labels[k] })),
+      selBlurb: s.blurb,
+      detBorder: st.side === "detective" ? "#4FC3E8" : "#322D3C",
+      vigBorder: st.side === "vigilante" ? "#E0A83C" : "#322D3C",
+      detOpacity: st.side === "detective" ? 1 : 0.4,
+      vigOpacity: st.side === "vigilante" ? 1 : 0.4,
+      pickDetective: () => this.setState({ side: "detective", hand: [1, 3, 5, 2], picked: null }),
+      pickVigilante: () => this.setState({ side: "vigilante", hand: [1, 3, 4, 2], picked: null }),
+      goTitle: () => this.setState({ screen: "title", showLog: false, inspect: null, tutorial: 0 }),
+      goMode: () => this.setState({ screen: "mode" }),
+      goSelect: () => this.setState({ screen: "select" }),
+      goBattle: () => this.setState({ screen: "battle" }),
+      goTest: () => this.setState({ screen: "test" }),
+      overPortrait: won ? s.portrait.winning : s.portrait.losing,
+      overFilter: won ? "saturate(1.1)" : "grayscale(.6) brightness(.7)",
+      overColor: won ? "#35D57F" : "#FF4034",
+      overVerdict: won ? "CASE CLOSED" : "CASE LOST",
+      overHeadline: won ? "You sealed both locks." : "The fuse ran out.",
+      overReason: won ? s.labels[s.greens[0]] + " and " + s.labels[s.greens[1]] + " both reached 100. Nothing they did mattered after that." : "You needed both locks open. You only ever needed to lose one fuse.",
+      overDecider: over.decider,
+      rematch: () => this.reset("battle"),
+      resetAll: () => this.reset("battle"),
+      momentReveal: () => { this.reset("battle"); this.later(() => { this.setState({ picked: 1 }); this.later(() => this.lockIn(), 320); }, 60); },
+      momentCounter: () => {
+        this.timers.forEach(clearTimeout);
+        const myCounter = this.deck()[0];
+        const theirPower = this.foeDeck().find((c) => c.cardType === "POWER");
+        this.setState({ screen: "battle", phase: "locked", myEnergy: 8, theirEnergy: 8, picked: 0, myCard: myCounter, theirCard: theirPower, cancelled: null, deltas: [], over: null, tutorial: 0, inspect: null, showLog: false });
+        this.later(() => this.setState({ phase: "reveal" }), 240);
+        this.later(() => this.resolve(myCounter, theirPower), 880);
+      },
+      testStats: AXES.map((ax) => ({
+        label: s.labels[ax.key], val: st.me[ax.key], pct: st.me[ax.key],
+        color: s.greens.indexOf(ax.key) >= 0 ? "#35D57F" : "#FF4034",
+        inc: () => this.setState((p) => ({ me: Object.assign({}, p.me, { [ax.key]: Math.min(100, p.me[ax.key] + 10) }) })),
+        dec: () => this.setState((p) => ({ me: Object.assign({}, p.me, { [ax.key]: Math.max(0, p.me[ax.key] - 10) }) })),
+        max: () => this.setState((p) => ({ me: Object.assign({}, p.me, { [ax.key]: 100 }) })),
+      })),
+      testCards: deck.map((c, i) => ({
+        name: c.name.toUpperCase(), color: TYPE_META[c.cardType].color,
+        force: () => this.setState((p) => ({ hand: [i].concat(p.hand.slice(0, 3)), picked: 0, screen: "battle", phase: "select" })),
+      })),
+      testToReveal: () => { this.setState({ screen: "battle", phase: "select", picked: 1 }); this.later(() => this.lockIn(), 220); },
+      testWin: () => { const me = Object.assign({}, st.me); s.greens.forEach((k) => (me[k] = 100)); this.setState({ me }); this.later(() => this.end("win", "BOTH LOCKS OPEN"), 120); },
+      testLose: () => { const me = Object.assign({}, st.me); me[s.reds[0]] = 100; this.setState({ me }); this.later(() => this.end("lose", s.labels[s.reds[0]].toUpperCase() + " HIT 100"), 120); },
+      testCritical: () => this.setState((p) => ({ screen: "battle", phase: "select", me: Object.assign({}, p.me, { [s.reds[1]]: 92 }) })),
+      navItems: navDefs.map(([num, label, key]) => ({
+        num, label, mark: st.screen === key ? "●" : "",
+        border: st.screen === key ? s.color : "#322D3C",
+        bg: st.screen === key ? "#1D1A24" : "#13111A",
+        ink: st.screen === key ? "#F2EDE4" : "#9A93A3",
+        go: () => this.setState({ screen: key, showLog: false, inspect: null, tutorial: 0, over: st.over || { result: "win", decider: "BOTH LOCKS OPEN" } }),
+      })),
+    };
+  }
+}
+
+</script>
+</body>
+</html>
