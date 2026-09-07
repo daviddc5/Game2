@@ -18,7 +18,7 @@ export default class BattleScene extends Phaser.Scene {
     // Check if this is multiplayer mode
     this.isMultiplayer = this.registry.get("isMultiplayer") || false;
     this.multiplayerData = this.registry.get("multiplayerData") || null;
-    this.debugMode = this.registry.get("debugMode") || false;
+    this.debugMode = import.meta.env.DEV && this.registry.get("debugMode");
     this.simpleMode = !this.isMultiplayer;
 
     // Initialize game state
@@ -43,9 +43,12 @@ export default class BattleScene extends Phaser.Scene {
     // Create exit button (top-right corner)
     this.createExitButton();
 
-    // Optional debug controls for testing win/loss conditions.
-    if (this.debugMode && !this.isMultiplayer) {
-      this.createDebugControls();
+    if (import.meta.env.DEV && this.debugMode && !this.isMultiplayer) {
+      import("./DebugControls.js").then(({ createDebugControls }) => {
+        if (this.sys.isActive()) {
+          createDebugControls(this);
+        }
+      });
     }
 
     // Check if PASS button should be shown initially
@@ -66,7 +69,7 @@ export default class BattleScene extends Phaser.Scene {
 
     // MULTIPLAYER MODE
     if (this.isMultiplayer && this.multiplayerData) {
-      console.log("🎮 Initializing multiplayer game state");
+      if (import.meta.env.DEV) console.log("🎮 Initializing multiplayer game state");
 
       // Set up network callbacks
       this.setupMultiplayerCallbacks();
@@ -94,7 +97,7 @@ export default class BattleScene extends Phaser.Scene {
 
       // Get hand from server (hand is card IDs)
       this.hand = NetworkManager.getMyHand();
-      console.log("🃏 Hand from server:", this.hand);
+      if (import.meta.env.DEV) console.log("🃏 Hand from server:", this.hand);
 
       // Deck sizes (we don't need actual deck, server manages it)
       this.playerDeckSize = NetworkManager.getMyDeckSize();
@@ -162,27 +165,27 @@ export default class BattleScene extends Phaser.Scene {
   setupMultiplayerCallbacks() {
     // Set up network event handlers for this game
     NetworkManager.onCardAccepted = (data) => {
-      console.log("✅ Server accepted card, waiting for opponent...");
+      if (import.meta.env.DEV) console.log("✅ Server accepted card, waiting for opponent...");
       this.showWaitingForOpponent();
     };
 
     NetworkManager.onOpponentCardPlayed = (data) => {
-      console.log("👤 Opponent played card, showing face-down...");
+      if (import.meta.env.DEV) console.log("👤 Opponent played card, showing face-down...");
       this.showOpponentCardFaceDown();
     };
 
     NetworkManager.onTurnComplete = (data) => {
-      console.log("🔄 Turn complete from server", data);
+      if (import.meta.env.DEV) console.log("🔄 Turn complete from server", data);
       this.handleTurnCompleteFromServer(data);
     };
 
     NetworkManager.onGameOver = (data) => {
-      console.log("🏁 Game over from server", data);
+      if (import.meta.env.DEV) console.log("🏁 Game over from server", data);
       this.handleGameOverFromServer(data);
     };
 
     NetworkManager.onOpponentDisconnected = () => {
-      console.log("❌ Opponent disconnected");
+      if (import.meta.env.DEV) console.log("❌ Opponent disconnected");
       this.handleOpponentDisconnected();
     };
   }
@@ -847,7 +850,6 @@ export default class BattleScene extends Phaser.Scene {
 
   // legacy version of playcard
   // playCard(card, cardIndex) {
-  //   console.log("Playing card:", card.name);
 
   //   //block if not player's turn
   //   if (!this.isPlayerTurn) {
@@ -892,7 +894,7 @@ export default class BattleScene extends Phaser.Scene {
 
   // sets selected cards and shows confirm button
   selectCard(card, cardIndex) {
-    console.log("Selecting card:", card.name);
+    if (import.meta.env.DEV) console.log("Selecting card:", card.name);
 
     // Block if not player's turn
     if (!this.isPlayerTurn) {
@@ -911,7 +913,7 @@ export default class BattleScene extends Phaser.Scene {
     //Show the confirm button
     // Check if button exists AND is not destroyed (handles scene restart)
     if (!this.confirmButton || !this.viewButtonBg || !this.viewButtonBg.scene) {
-      console.log("Creating/recreating confirm buttons");
+      if (import.meta.env.DEV) console.log("Creating/recreating confirm buttons");
       this.createConfirmButton();
     }
 
@@ -920,59 +922,62 @@ export default class BattleScene extends Phaser.Scene {
 
     // Show buttons
     this.confirmButton.setVisible(true);
-    console.log(
-      "✅ Confirm button shown at position:",
-      this.confirmButton.x,
-      this.confirmButton.y,
-    );
+    if (import.meta.env.DEV) {
+      console.log(
+        "✅ Confirm button shown at position:",
+        this.confirmButton.x,
+        this.confirmButton.y,
+      );
+    }
 
-    // DEBUG: Verify each element is actually visible
-    console.log("🔍 BUTTON DEBUG INFO:");
-    console.log(
-      "  - viewButtonGlow:",
-      this.viewButtonGlow?.visible,
-      "depth:",
-      this.viewButtonGlow?.depth,
-    );
-    console.log(
-      "  - viewButtonBg:",
-      this.viewButtonBg?.visible,
-      "depth:",
-      this.viewButtonBg?.depth,
-    );
-    console.log(
-      "  - viewButtonText:",
-      this.viewButtonText?.visible,
-      "depth:",
-      this.viewButtonText?.depth,
-    );
-    console.log(
-      "  - confirmButtonGlow:",
-      this.confirmButtonGlow?.visible,
-      "depth:",
-      this.confirmButtonGlow?.depth,
-    );
-    console.log(
-      "  - confirmButtonBg:",
-      this.confirmButtonBg?.visible,
-      "depth:",
-      this.confirmButtonBg?.depth,
-    );
-    console.log(
-      "  - confirmButtonText:",
-      this.confirmButtonText?.visible,
-      "depth:",
-      this.confirmButtonText?.depth,
-    );
-    console.log("  - Camera bounds:", this.cameras.main.worldView);
-    console.log(
-      "  - Element count in array:",
-      this.actionButtonElements.length,
-    );
+    if (import.meta.env.DEV) {
+      console.log("🔍 BUTTON DEBUG INFO:");
+      console.log(
+        "  - viewButtonGlow:",
+        this.viewButtonGlow?.visible,
+        "depth:",
+        this.viewButtonGlow?.depth,
+      );
+      console.log(
+        "  - viewButtonBg:",
+        this.viewButtonBg?.visible,
+        "depth:",
+        this.viewButtonBg?.depth,
+      );
+      console.log(
+        "  - viewButtonText:",
+        this.viewButtonText?.visible,
+        "depth:",
+        this.viewButtonText?.depth,
+      );
+      console.log(
+        "  - confirmButtonGlow:",
+        this.confirmButtonGlow?.visible,
+        "depth:",
+        this.confirmButtonGlow?.depth,
+      );
+      console.log(
+        "  - confirmButtonBg:",
+        this.confirmButtonBg?.visible,
+        "depth:",
+        this.confirmButtonBg?.depth,
+      );
+      console.log(
+        "  - confirmButtonText:",
+        this.confirmButtonText?.visible,
+        "depth:",
+        this.confirmButtonText?.depth,
+      );
+      console.log("  - Camera bounds:", this.cameras.main.worldView);
+      console.log(
+        "  - Element count in array:",
+        this.actionButtonElements.length,
+      );
+    }
   }
 
   createConfirmButton() {
-    console.log("Creating action buttons");
+    if (import.meta.env.DEV) console.log("Creating action buttons");
 
     // Store button elements for group management
     this.actionButtonElements = [];
@@ -1093,14 +1098,18 @@ export default class BattleScene extends Phaser.Scene {
     // For compatibility, create a pseudo-container object
     this.cardActionButtons = {
       setVisible: (visible) => {
-        console.log(
-          `🔧 Setting ${this.actionButtonElements.length} button elements to visible=${visible}`,
-        );
+        if (import.meta.env.DEV) {
+          console.log(
+            `🔧 Setting ${this.actionButtonElements.length} button elements to visible=${visible}`,
+          );
+        }
         this.actionButtonElements.forEach((el, index) => {
           el.setVisible(visible);
-          console.log(
-            `  - Element ${index}: visible=${el.visible}, depth=${el.depth}, x=${el.x}, y=${el.y}, alpha=${el.alpha}`,
-          );
+          if (import.meta.env.DEV) {
+            console.log(
+              `  - Element ${index}: visible=${el.visible}, depth=${el.depth}, x=${el.x}, y=${el.y}, alpha=${el.alpha}`,
+            );
+          }
         });
       },
       setPosition: (x, y) => {
@@ -1123,9 +1132,11 @@ export default class BattleScene extends Phaser.Scene {
           baseX + 60 + offsetX,
           baseY + 28 + offsetY,
         );
-        console.log(
-          `📍 Buttons repositioned to ${x}, ${y} (offset: ${offsetX}, ${offsetY})`,
-        );
+        if (import.meta.env.DEV) {
+          console.log(
+            `📍 Buttons repositioned to ${x}, ${y} (offset: ${offsetX}, ${offsetY})`,
+          );
+        }
       },
       setDepth: (depth) => {
         this.actionButtonElements.forEach((el) => el.setDepth(depth));
@@ -1139,10 +1150,12 @@ export default class BattleScene extends Phaser.Scene {
 
     this.confirmButton = this.cardActionButtons;
 
-    console.log(
-      "✅ Action buttons created successfully, element count:",
-      this.actionButtonElements.length,
-    );
+    if (import.meta.env.DEV) {
+      console.log(
+        "✅ Action buttons created successfully, element count:",
+        this.actionButtonElements.length,
+      );
+    }
   }
 
   // Position the action buttons above the elevated card
@@ -1158,7 +1171,7 @@ export default class BattleScene extends Phaser.Scene {
       this.cardActionButtons.setPosition(375, 750);
       this.cardActionButtons.x = 375;
       this.cardActionButtons.y = 750;
-      console.log("Using fallback position: 375, 750");
+      if (import.meta.env.DEV) console.log("Using fallback position: 375, 750");
       return;
     }
 
@@ -1174,7 +1187,7 @@ export default class BattleScene extends Phaser.Scene {
       this.cardActionButtons.setPosition(375, 750);
       this.cardActionButtons.x = 375;
       this.cardActionButtons.y = 750;
-      console.log("Using fallback position: 375, 750");
+      if (import.meta.env.DEV) console.log("Using fallback position: 375, 750");
       return;
     }
 
@@ -1188,7 +1201,9 @@ export default class BattleScene extends Phaser.Scene {
     this.cardActionButtons.setPosition(center.x, buttonY);
     this.cardActionButtons.x = center.x;
     this.cardActionButtons.y = buttonY;
-    console.log(`Positioned buttons at: ${center.x}, ${buttonY}`);
+    if (import.meta.env.DEV) {
+      console.log(`Positioned buttons at: ${center.x}, ${buttonY}`);
+    }
   }
 
   createStagingArea() {
@@ -1269,185 +1284,6 @@ export default class BattleScene extends Phaser.Scene {
     this.exitButtonText.on("pointerout", () => {
       this.exitButtonText.setBackgroundColor("transparent");
     });
-  }
-
-  createDebugControls() {
-    this.debugButton = this.add
-      .text(70, 40, "DEBUG", {
-        fontFamily: "DeathNote",
-        fontSize: "26px",
-        color: "#ffffff",
-        backgroundColor: "#8a4b00",
-        padding: { x: 14, y: 8 },
-      })
-      .setOrigin(0.5)
-      .setDepth(170)
-      .setInteractive({ useHandCursor: true });
-
-    this.debugButton.on("pointerover", () => {
-      this.debugButton.setBackgroundColor("#b36000");
-    });
-    this.debugButton.on("pointerout", () => {
-      this.debugButton.setBackgroundColor("#8a4b00");
-    });
-    this.debugButton.on("pointerdown", () => {
-      this.toggleDebugPanel();
-    });
-
-    const panelObjects = [];
-    const panelBg = this.add
-      .rectangle(375, 667, 680, 760, 0x111111, 0.96)
-      .setDepth(3500)
-      .setStrokeStyle(3, 0xaa7700)
-      .setVisible(false);
-    panelObjects.push(panelBg);
-
-    const panelTitle = this.add
-      .text(375, 330, "TEST MODE", {
-        fontFamily: "DeathNote",
-        fontSize: "52px",
-        color: "#ffcc66",
-      })
-      .setOrigin(0.5)
-      .setDepth(3501)
-      .setVisible(false);
-    panelObjects.push(panelTitle);
-
-    const panelHint = this.add
-      .text(375, 380, "Set instant stat values for quick win/lose checks", {
-        fontFamily: "Arial, sans-serif",
-        fontSize: "20px",
-        color: "#dddddd",
-      })
-      .setOrigin(0.5)
-      .setDepth(3501)
-      .setVisible(false);
-    panelObjects.push(panelHint);
-
-    const statRows = ["investigation", "morale", "publicOpinion", "pressure"];
-
-    statRows.forEach((stat, index) => {
-      const y = 460 + index * 95;
-      const label = this.add
-        .text(375, y, this.playerCharacter.statLabels[stat], {
-          fontFamily: "Arial, sans-serif",
-          fontSize: "22px",
-          color: "#ffffff",
-          fontStyle: "bold",
-        })
-        .setOrigin(0.5)
-        .setDepth(3501)
-        .setVisible(false);
-      panelObjects.push(label);
-
-      const youButton = this.createDebugPanelButton(
-        225,
-        y,
-        "YOU = 100",
-        "#007a2f",
-        () => this.setDebugStat("player", stat, 100),
-      );
-      panelObjects.push(...youButton);
-
-      const foeButton = this.createDebugPanelButton(
-        525,
-        y,
-        "FOE = 100",
-        "#8f1f1f",
-        () => this.setDebugStat("opponent", stat, 100),
-      );
-      panelObjects.push(...foeButton);
-    });
-
-    const resetButtonsY = 870;
-    const resetAll = this.createDebugPanelButton(
-      250,
-      resetButtonsY,
-      "RESET BOTH",
-      "#555555",
-      () => this.resetDebugStats(),
-      210,
-      48,
-    );
-    panelObjects.push(...resetAll);
-
-    const closePanel = this.createDebugPanelButton(
-      500,
-      resetButtonsY,
-      "CLOSE",
-      "#4444aa",
-      () => this.toggleDebugPanel(false),
-      170,
-      48,
-    );
-    panelObjects.push(...closePanel);
-
-    this.debugPanelObjects = panelObjects;
-    this.debugPanelVisible = false;
-  }
-
-  createDebugPanelButton(x, y, text, color, onClick, width = 180, height = 42) {
-    const bg = this.add
-      .rectangle(
-        x,
-        y,
-        width,
-        height,
-        Phaser.Display.Color.HexStringToColor(color).color,
-      )
-      .setDepth(3501)
-      .setInteractive({ useHandCursor: true })
-      .setVisible(false);
-
-    const label = this.add
-      .text(x, y, text, {
-        fontFamily: "Arial, sans-serif",
-        fontSize: "16px",
-        color: "#ffffff",
-        fontStyle: "bold",
-      })
-      .setOrigin(0.5)
-      .setDepth(3502)
-      .setVisible(false);
-
-    bg.on("pointerdown", onClick);
-    bg.on("pointerover", () => {
-      bg.setAlpha(0.85);
-    });
-    bg.on("pointerout", () => {
-      bg.setAlpha(1);
-    });
-
-    return [bg, label];
-  }
-
-  toggleDebugPanel(forceState) {
-    const nextState =
-      typeof forceState === "boolean" ? forceState : !this.debugPanelVisible;
-    this.debugPanelVisible = nextState;
-
-    if (!this.debugPanelObjects) return;
-    this.debugPanelObjects.forEach((obj) => obj.setVisible(nextState));
-  }
-
-  setDebugStat(target, stat, value) {
-    const clamped = GameLogic.clampStat(value);
-    if (target === "player") {
-      this.playerStats[stat] = clamped;
-    } else {
-      this.opponentStats[stat] = clamped;
-    }
-
-    this.updateStatBars();
-    this.checkGameOver();
-  }
-
-  resetDebugStats() {
-    Object.keys(this.playerStats).forEach((stat) => {
-      this.playerStats[stat] = 0;
-      this.opponentStats[stat] = 0;
-    });
-    this.updateStatBars();
   }
 
   showExitConfirmation() {
@@ -1573,7 +1409,7 @@ export default class BattleScene extends Phaser.Scene {
 
     // MULTIPLAYER: Send PASS to server
     if (this.isMultiplayer) {
-      console.log("🌐 Sending PASS to server");
+      if (import.meta.env.DEV) console.log("🌐 Sending PASS to server");
 
       // Lock the turn IMMEDIATELY
       this.turnInProgress = true;
@@ -1969,15 +1805,17 @@ export default class BattleScene extends Phaser.Scene {
     // Check if player has enough energy
     const energyCost = this.selectedCard.card.energyCost || 0;
     if (this.playerEnergy < energyCost) {
-      console.log("Not enough energy!");
+      if (import.meta.env.DEV) console.log("Not enough energy!");
       return;
     }
 
     // MULTIPLAYER: Send card selection to server
     if (this.isMultiplayer) {
-      console.log("🌐 Sending card to server:", this.selectedCard.card.id);
-      console.log("🌐 Full card object:", this.selectedCard.card);
-      console.log("🌐 Current hand:", this.hand);
+      if (import.meta.env.DEV) {
+        console.log("🌐 Sending card to server:", this.selectedCard.card.id);
+        console.log("🌐 Full card object:", this.selectedCard.card);
+        console.log("🌐 Current hand:", this.hand);
+      }
 
       // Lock the turn IMMEDIATELY to prevent multiple clicks
       this.turnInProgress = true;
@@ -2071,7 +1909,7 @@ export default class BattleScene extends Phaser.Scene {
     );
 
     if (!aiCard) {
-      console.log("AI has no affordable cards!");
+      if (import.meta.env.DEV) console.log("AI has no affordable cards!");
       // Skip AI turn
       this.time.delayedCall(1000, () => this.revealBothCards(null));
       return;
@@ -2576,19 +2414,21 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   endAITurn() {
-    console.log("--- AI turn ended ---");
+    if (import.meta.env.DEV) console.log("--- AI turn ended ---");
     this.turnNumber++;
     this.isPlayerTurn = true;
     this.turnInProgress = false;
 
-    console.log(`=== Turn ${this.turnNumber} - Player's turn ===`);
+    if (import.meta.env.DEV) {
+      console.log(`=== Turn ${this.turnNumber} - Player's turn ===`);
+    }
 
     // Update PASS button visibility for new player turn
     this.updatePassButtonVisibility();
   }
 
   aiTurn() {
-    console.log("AI turn...");
+    if (import.meta.env.DEV) console.log("AI turn...");
 
     // AI draws 3 random cards to choose from
     const aiCards = drawCards(this.opponentDeck, 3);
@@ -2599,7 +2439,7 @@ export default class BattleScene extends Phaser.Scene {
 
     // Choose the best card based on AI logic
     const bestCard = this.chooseBestAICard(aiCards);
-    console.log("AI plays:", bestCard.name);
+    if (import.meta.env.DEV) console.log("AI plays:", bestCard.name);
 
     // Apply AI card effects
     this.applyCardEffects(bestCard.effects, true);
@@ -2640,9 +2480,11 @@ export default class BattleScene extends Phaser.Scene {
         this.playerCharacter.winCondition,
       )
     ) {
-      console.log(
-        `Game Over! Player wins - ${playerWinStats.join(", ")} reached target`,
-      );
+      if (import.meta.env.DEV) {
+        console.log(
+          `Game Over! Player wins - ${playerWinStats.join(", ")} reached target`,
+        );
+      }
       this.gameOver("player", `${this.playerCharacter.winCondition.message}`);
       return true;
     }
@@ -2654,9 +2496,11 @@ export default class BattleScene extends Phaser.Scene {
         this.playerCharacter.loseCondition,
       )
     ) {
-      console.log(
-        `Game Over! Player loses - ${playerLoseStats.join(", ")} danger threshold hit`,
-      );
+      if (import.meta.env.DEV) {
+        console.log(
+          `Game Over! Player loses - ${playerLoseStats.join(", ")} danger threshold hit`,
+        );
+      }
       this.gameOver(
         "opponent",
         `${this.playerCharacter.loseCondition.message}`,
@@ -2671,9 +2515,11 @@ export default class BattleScene extends Phaser.Scene {
         this.opponentCharacter.winCondition,
       )
     ) {
-      console.log(
-        `Game Over! Opponent wins - ${opponentWinStats.join(", ")} reached target`,
-      );
+      if (import.meta.env.DEV) {
+        console.log(
+          `Game Over! Opponent wins - ${opponentWinStats.join(", ")} reached target`,
+        );
+      }
       this.gameOver(
         "opponent",
         `${this.opponentCharacter.winCondition.message}`,
@@ -2688,9 +2534,11 @@ export default class BattleScene extends Phaser.Scene {
         this.opponentCharacter.loseCondition,
       )
     ) {
-      console.log(
-        `Game Over! Opponent loses - ${opponentLoseStats.join(", ")} danger threshold hit`,
-      );
+      if (import.meta.env.DEV) {
+        console.log(
+          `Game Over! Opponent loses - ${opponentLoseStats.join(", ")} danger threshold hit`,
+        );
+      }
       this.gameOver(
         "player",
         `${this.opponentCharacter.loseCondition.message}`,
@@ -2729,9 +2577,11 @@ export default class BattleScene extends Phaser.Scene {
         }
       }
 
-      console.log(
-        `Out of cards! Player score: ${playerScore}, Opponent score: ${opponentScore}`,
-      );
+      if (import.meta.env.DEV) {
+        console.log(
+          `Out of cards! Player score: ${playerScore}, Opponent score: ${opponentScore}`,
+        );
+      }
 
       const playerName = this.playerCharacter.displayName;
       const opponentName = this.opponentCharacter.displayName;
@@ -2888,7 +2738,9 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   async revealBothCardsMultiplayer(myCard, opponentCard) {
-    console.log("Revealing cards:", myCard, opponentCard);
+    if (import.meta.env.DEV) {
+      console.log("Revealing cards:", myCard, opponentCard);
+    }
 
     this.isRevealingCards = true;
 
@@ -2998,11 +2850,13 @@ export default class BattleScene extends Phaser.Scene {
   }
 
   handleGameOverFromServer(data) {
-    console.log("Game over:", data);
+    if (import.meta.env.DEV) console.log("Game over:", data);
 
     // If we're in the middle of revealing cards, defer the game over
     if (this.isRevealingCards) {
-      console.log("Deferring game over until card reveal finishes");
+      if (import.meta.env.DEV) {
+        console.log("Deferring game over until card reveal finishes");
+      }
       this.pendingGameOver = data;
       return;
     }
@@ -3175,9 +3029,11 @@ export default class BattleScene extends Phaser.Scene {
 
     // AUTO-PASS: If player has no cards left, automatically pass
     if (this.isMultiplayer && this.hand.length === 0) {
-      console.log("🚫 No cards left - auto-passing");
-      console.log("   Hand length:", this.hand.length);
-      console.log("   Deck size:", this.playerDeckSize);
+      if (import.meta.env.DEV) {
+        console.log("🚫 No cards left - auto-passing");
+        console.log("   Hand length:", this.hand.length);
+        console.log("   Deck size:", this.playerDeckSize);
+      }
       this.handlePass();
     }
   }

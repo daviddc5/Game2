@@ -8,7 +8,7 @@ export default class SinglePlayerLobbyScene extends Phaser.Scene {
   }
 
   init(data) {
-    this.debugMode = !!data?.debugMode;
+    this.debugMode = import.meta.env.DEV && !!data?.debugMode;
   }
 
   create() {
@@ -24,7 +24,7 @@ export default class SinglePlayerLobbyScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
-    if (this.debugMode) {
+    if (import.meta.env.DEV && this.debugMode) {
       this.add
         .text(centerX, 210, "TEST MODE ENABLED", {
           fontFamily: "DeathNote",
@@ -193,7 +193,7 @@ export default class SinglePlayerLobbyScene extends Phaser.Scene {
       if (this.selectedCharacter) {
         this.registry.set("playerCharacter", this.selectedCharacter);
         this.registry.set("isMultiplayer", false);
-        this.registry.set("debugMode", this.debugMode);
+        this.registry.set("debugMode", import.meta.env.DEV && this.debugMode);
         this.scene.start("BattleScene");
       }
     });

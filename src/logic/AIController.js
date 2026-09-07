@@ -20,10 +20,12 @@ export default class AIController {
     // Sort by score (highest first)
     scoredCards.sort((a, b) => b.score - a.score);
 
-    console.log(
-      "AI card scores:",
-      scoredCards.map((sc) => `${sc.card.name}: ${sc.score}`)
-    );
+    if (import.meta.env.DEV) {
+      console.log(
+        "AI card scores:",
+        scoredCards.map((sc) => `${sc.card.name}: ${sc.score}`),
+      );
+    }
 
     return scoredCards[0].card;
   }

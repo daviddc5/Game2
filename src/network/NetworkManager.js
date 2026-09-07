@@ -21,7 +21,7 @@ class NetworkManager {
   }
   connect(serverUrl = null) {
     if (this.socket && this.connected) {
-      console.log("Already connected to server");
+      if (import.meta.env.DEV) console.log("Already connected to server");
       return;
     }
 
@@ -33,7 +33,7 @@ class NetworkManager {
         : window.location.origin;
     }
 
-    console.log("Connecting to server:", serverUrl);
+    if (import.meta.env.DEV) console.log("Connecting to server:", serverUrl);
     this.socket = io(serverUrl, {
       transports: ["websocket", "polling"],
       reconnection: true,
@@ -46,12 +46,14 @@ class NetworkManager {
 
   setupEventListeners() {
     this.socket.on("connect", () => {
-      console.log("✅ Connected to server, socket ID:", this.socket.id);
+      if (import.meta.env.DEV) {
+        console.log("✅ Connected to server, socket ID:", this.socket.id);
+      }
       this.connected = true;
     });
 
     this.socket.on("disconnect", () => {
-      console.log("❌ Disconnected from server");
+      if (import.meta.env.DEV) console.log("❌ Disconnected from server");
       this.connected = false;
       this.roomId = null;
     });
@@ -64,7 +66,7 @@ class NetworkManager {
     });
 
     this.socket.on("matchFound", (data) => {
-      console.log("🎮 Match found!", data);
+      if (import.meta.env.DEV) console.log("🎮 Match found!", data);
       this.roomId = data.roomId;
       this.isPlayer1 = data.playerNumber === 1; // Convert to boolean
       this.opponentCharacter = data.opponent.character;
@@ -105,14 +107,18 @@ class NetworkManager {
     });
 
     this.socket.on("cardAccepted", (data) => {
-      console.log("✅ Card accepted by server:", data.card);
+      if (import.meta.env.DEV) {
+        console.log("✅ Card accepted by server:", data.card);
+      }
       if (this.onCardAccepted) {
         this.onCardAccepted(data);
       }
     });
 
     this.socket.on("opponentCardPlayed", (data) => {
-      console.log("👤 Opponent played a card (face-down)");
+      if (import.meta.env.DEV) {
+        console.log("👤 Opponent played a card (face-down)");
+      }
       if (this.onOpponentCardPlayed) {
         this.onOpponentCardPlayed(data);
       }
@@ -151,14 +157,14 @@ class NetworkManager {
     });
 
     this.socket.on("gameOver", (data) => {
-      console.log("🏁 Game over:", data);
+      if (import.meta.env.DEV) console.log("🏁 Game over:", data);
       if (this.onGameOver) {
         this.onGameOver(data);
       }
     });
 
     this.socket.on("opponentDisconnected", () => {
-      console.log("👋 Opponent disconnected");
+      if (import.meta.env.DEV) console.log("👋 Opponent disconnected");
       if (this.onOpponentDisconnected) {
         this.onOpponentDisconnected();
       }
@@ -175,7 +181,7 @@ class NetworkManager {
       return;
     }
 
-    console.log("🔍 Finding match with character:", character);
+    if (import.meta.env.DEV) console.log("🔍 Finding match with character:", character);
     this.myCharacter = character; // Store our character
     this.socket.emit("findMatch", { character });
   }
@@ -186,7 +192,7 @@ class NetworkManager {
       return;
     }
 
-    console.log("🃏 Selecting card:", cardId);
+    if (import.meta.env.DEV) console.log("🃏 Selecting card:", cardId);
     this.socket.emit("selectCard", {
       roomId: this.roomId,
       cardId: cardId, // Changed from 'card' to 'cardId'
@@ -195,7 +201,7 @@ class NetworkManager {
 
   disconnect() {
     if (this.socket) {
-      console.log("Disconnecting from server");
+      if (import.meta.env.DEV) console.log("Disconnecting from server");
       this.socket.disconnect();
       this.socket = null;
       this.connected = false;
