@@ -221,7 +221,9 @@ export default class MultiplayerLobbyScene extends Phaser.Scene {
 
     // Set up callbacks
     NetworkManager.onMatchFound = (data) => {
-      console.log("Match found, starting battle...");
+      if (import.meta.env.DEV) {
+        console.log("Match found, starting battle...");
+      }
       this.isSearching = false;
 
       // Store game data in registry for BattleScene
